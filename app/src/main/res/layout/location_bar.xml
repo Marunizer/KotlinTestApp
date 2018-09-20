@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#e3e1e1"
+    android:elevation="15dp">
+
+    <TextView
+        android:id="@+id/address_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:singleLine="true"
+        android:text="testing App Bar"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="24sp" />
+
+    <!--currently not using layout this way, so commented out for now, testing different style-->
+    <!--<LinearLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:orientation="horizontal">-->
+
+    <!--&lt;!&ndash;<ImageView&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:contentDescription="Search Settings"&ndash;&gt;-->
+    <!--&lt;!&ndash;android:src="@android:drawable/ic_menu_mylocation" />&ndash;&gt;-->
+
+    <!--<TextView-->
+    <!--android:id="@+id/address_text"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="testing App Bar"-->
+    <!--android:textAlignment="center"-->
+    <!--android:singleLine="true"-->
+    <!--android:textColor="#000000"-->
+    <!--android:textSize="24sp" />-->
+
+    <!--</LinearLayout>-->
+
+</android.support.v7.widget.Toolbar>

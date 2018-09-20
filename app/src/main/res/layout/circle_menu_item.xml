@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="8.2dp"
+    android:paddingRight="8.2dp">
+
+    <com.joooonho.SelectableRoundedImageView
+        android:id="@+id/circle_image"
+        android:src="@drawable/noni_icon"
+        android:layout_width="66dp"
+        android:layout_height="66dp"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        app:sriv_border_color="@color/common_google_signin_btn_text_light"
+        app:sriv_border_width="2dp"
+        app:sriv_oval="true" />
+    <!--android:src="@drawable/cast_album_art_placeholder"-->
+
+    <TextView
+        android:id="@+id/circle_text"
+        android:layout_width="66dp"
+        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:maxLines="2"
+        android:textColor="@android:color/white"
+        android:textSize="12sp" />
+
+</LinearLayout>
