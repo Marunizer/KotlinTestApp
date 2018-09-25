@@ -53,6 +53,8 @@ import com.google.android.gms.location.LocationServices
  *  * Implement using WIFI (network calls) over gps when available, consumes less battery, better accuracy
  *      afterwards will need to need to include feature android.hardware.wifi in manifest
  *
+ * -------------------------------------------------------------------------------------------------
+ * TODO: make area unclickable/stagnant when searching for location after inputting zipcode in Dialogue.
  * */
 class MainActivity : AppCompatActivity() {
 
@@ -84,6 +86,7 @@ class MainActivity : AppCompatActivity() {
         resultReceiver = AddressResultReceiver(Handler())
 
         progressBar = findViewById(R.id.progress_bar)
+        //progressBar.indeterminateDrawable
 
         // Set defaults, then update using values stored in the Bundle.
         addressRequested = false

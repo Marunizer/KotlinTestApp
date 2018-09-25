@@ -1,6 +1,7 @@
 package com.example.mende.kotlintestapp.views
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
@@ -12,6 +13,7 @@ import android.util.Log
 import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.adapters.ItemCircleViewAdapter
 import com.example.mende.kotlintestapp.objects.ItemCircle
+import com.example.mende.kotlintestapp.objects.EmojiObjects
 import kotlinx.android.synthetic.main.activity_model_container.*
 
 
@@ -72,15 +74,14 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
     fun setUpGUI(){
 
         title_text.text = "3D Hamburger"
-        item_cost.text = "$999.99"
-        item_description.text = "Best Burger NA"
+        item_cost.text = "$99.99"
+//        item_description.text = "Best Burger NA"
 
         circle_item_recycler_view.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
-        category_button.text = "Gucci 3D Food"
-        switch_button.text = "Switch View"
+        switch_button.text = "Magic " + EmojiObjects.CAMERA
         switch_button.setOnClickListener { onSwitchClick()}
-        //category_button.visibility = View.GONE
+        order_button.text = "Order Now"
 
         // Access the RecyclerView Adapter and load the data into it
 
@@ -101,20 +102,17 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
     }
 
     private fun onSwitchClick() {
+        val i = Intent(this@ModelContainerViewActivity, TestButtonARActivity::class.java)
+        startActivity(i)
+        finish()
 
-        val newFragment = TestButtonARFragment.newInstance()
 
-        Log.d(TAG, "SWITCH BUTTON CLICKED")
-        supportFragmentManager.inTransaction {
-            remove(currentFragment)
-            add(R.id.model_frame, newFragment)
-        }
-        currentFragment = newFragment
+
     }
 
     private fun setFragmentView() {
 
-        //currentFragment = TestButtonARFragment.newInstance()
+        //currentFragment = TestButtonARActivity.newInstance()
         currentFragment = ModelSceneViewFragment.newInstance()
         //SAMPLE CODE
         supportFragmentManager

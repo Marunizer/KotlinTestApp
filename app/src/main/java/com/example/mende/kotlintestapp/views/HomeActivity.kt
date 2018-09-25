@@ -146,10 +146,10 @@ class HomeActivity : AppCompatActivity(), LoadMore {
     private fun onCardClick(card : RestaurantCard?) {
 
         Log.d(TAG, "Card = text: ${card?.itemName}")
-       // val i = Intent(this@HomeActivity, ModelARViewActivity::class.java)
+
         val i = Intent(this@HomeActivity, ModelContainerViewActivity::class.java)
         startActivity(i)
-        finish()
+        //finish()
 
         //TODO: Make an AR/3D selection before making this assumption
         // If Device does not support ARCore, remove access to Camera button
