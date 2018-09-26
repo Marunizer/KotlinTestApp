@@ -32,7 +32,7 @@
          source: "build/sceneform_sdk/default_materials/obj_material.sfm",
       },
    ],
-   model: {
+   model: { 
       attributes: [
          "Position",
          "TexCoord",

@@ -57,7 +57,7 @@ class TestButtonARActivity : AppCompatActivity() {
 
     // Set the onclick lister for our button
     // Change this string to point to the .sfb file of your choice :)
-    floatingActionButton.setOnClickListener { addObject(Uri.parse("Hamburger.sfb")) }
+    floatingActionButton.setOnClickListener { addObject(Uri.parse("Cupcake.sfb")) }
     showFab(false)
 
 

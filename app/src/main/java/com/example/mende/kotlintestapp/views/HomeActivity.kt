@@ -8,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
@@ -18,6 +19,7 @@ import com.example.mende.kotlintestapp.objects.RestaurantCard
 import com.example.mende.kotlintestapp.util.SharedPref
 import com.google.ar.core.ArCoreApk
 import kotlinx.android.synthetic.main.activity_home.*
+import kotlinx.android.synthetic.main.location_bar.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -46,10 +48,10 @@ import kotlin.collections.ArrayList
 class HomeActivity : AppCompatActivity(), LoadMore {
 
     private var ziptextView: TextView? = null
-    private var newString: String? = null
     private val TAG = HomeActivity::class.java.simpleName
     private var EMPTY = ""
-
+    private lateinit var toolbar: Toolbar
+//internal
     private lateinit var mAdapter: RestaurantCardAdapter
     private lateinit var mHandler: Handler
     private lateinit var mRunnable:Runnable
@@ -72,9 +74,12 @@ class HomeActivity : AppCompatActivity(), LoadMore {
 
         onInit()
 
-//        ziptextView = zipText
-        newString  = SharedPref().read(SharedPref().ZIPCODE,EMPTY)
-//        zipText.text = newString
+        val newString  = SharedPref().read(SharedPref().CITY, EMPTY)
+        val appBarText = text_bar
+        appBarText.text = newString
+
+//        toolbar = app_bar as Toolbar
+//        setSupportActionBar(toolbar)
         Log.d(TAG, "CHECKING READING: $newString")
     }
 

@@ -65,9 +65,7 @@ class ModelSceneViewFragment : Fragment() {
 //        val resources = context!!.resources
 //        names = resources.getStringArray(R.array.names)
 //        descriptions = resources.getStringArray(R.array.descriptions)
-//        urls = resources.getStringArray(R.array.urls)
-
-
+//        urls = resources.getStringArray(R.array.urls
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
