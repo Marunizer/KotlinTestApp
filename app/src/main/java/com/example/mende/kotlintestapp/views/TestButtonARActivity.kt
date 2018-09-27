@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import com.example.mende.kotlintestapp.R
+import com.example.mende.kotlintestapp.util.RotatingNode
 import com.google.ar.core.Anchor
 import com.google.ar.core.HitResult
 import com.google.ar.core.Plane
@@ -175,10 +176,17 @@ class TestButtonARActivity : AppCompatActivity() {
      */
     private fun addNodeToScene(fragment: ArFragment, anchor: Anchor, renderable: ModelRenderable) {
         val anchorNode = AnchorNode(anchor)
-        // TransformableNode means the user to move, scale and rotate the model
+        val rotatingNode = RotatingNode()
         val transformableNode = TransformableNode(fragment.transformationSystem)
+        // TransformableNode means the user to move, scale and rotate the model
+
         transformableNode.renderable = renderable
         transformableNode.setParent(anchorNode)
+
+        rotatingNode.renderable = renderable
+        rotatingNode.addChild(transformableNode)
+        rotatingNode.setParent(anchorNode)
+
         fragment.arSceneView.scene.addChild(anchorNode)
         transformableNode.select()
     }

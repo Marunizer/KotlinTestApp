@@ -2,15 +2,13 @@
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#e3e1e1"
-    android:elevation="15dp">
+    android:background="@color/app_bar_theme">
 
     <TextView
         android:id="@+id/text_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:singleLine="true"
-        android:text="testing App Bar"
         android:textAlignment="center"
         android:textColor="#000000"
         android:textSize="24sp" />
