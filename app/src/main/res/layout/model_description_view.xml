@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="108dp"
+    android:layout_height="wrap_content">
+
+    <!--<LinearLayout   20dp is close height for 1 line-->
+
+        <Button
+            android:id="@+id/xml_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_button"
+            android:foregroundGravity="center"
+            android:textAllCaps="false"
+            android:textColor="#000000"
+            android:textSize="6sp" />
+        <!--android:fontFamily="@font/avenir"-->
+
+</RelativeLayout>

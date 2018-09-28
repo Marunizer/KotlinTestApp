@@ -10,12 +10,15 @@ import android.widget.TextView
 import android.widget.Toast
 import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.util.RotatingNode
+import com.example.mende.kotlintestapp.util.toast
 import com.google.ar.core.Anchor
 import com.google.ar.core.HitResult
 import com.google.ar.core.Plane
 import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import kotlinx.android.synthetic.main.activity_model_test_button_ar.*
@@ -35,34 +38,57 @@ import kotlinx.android.synthetic.main.activity_model_test_button_ar.*
 class TestButtonARActivity : AppCompatActivity() {
 
     private lateinit var arFragment: ArFragment
-    //private var containerActivity : FragmentActivity? = null
     private var isTracking: Boolean = false
     private var isHitting: Boolean = false
+
+    private var descriptionBubbleRenderable: ViewRenderable? = null
+    private lateinit var descriptionBubble: DescriptionBubble
+
 
     @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_model_test_button_ar)
 
+        initResources()
+
         arFragment = sceneform_button_fragment as ArFragment
 
-     // Adds a listener to the ARSceneView
+        // Adds a listener to the ARSceneView
         // Called before processing each frame
         arFragment.arSceneView.scene.addOnUpdateListener { frameTime ->
            arFragment.onUpdate(frameTime)
           onUpdate()
          }
 
-    val myText : TextView = test_text as TextView
-    myText.setTextColor(R.color.background_material_light)
+    //val myText : TextView = test_text as TextView
+    //myText.setTextColor(R.color.background_material_light)
 
     // Set the onclick lister for our button
     // Change this string to point to the .sfb file of your choice :)
     floatingActionButton.setOnClickListener { addObject(Uri.parse("Cupcake.sfb")) }
     showFab(false)
-
-
 }
+    // itemDescriptionRenderable
+    private fun initResources() {
+
+        descriptionBubble = DescriptionBubble(this)
+
+        descriptionBubble.onStartTapped = {
+            // Can Add initiation stuff here later on
+        }
+
+        // create a xml renderable (asynchronous operation,
+        // result is delivered to `thenAccept` method)
+        ViewRenderable.builder()
+                .setView(this, descriptionBubble)
+                .build()
+                .thenAccept {
+                    it.isShadowReceiver = true
+                    descriptionBubbleRenderable = it
+                }
+                .exceptionally { it.toast(this) }
+    }
 
     // Simple function to show/hide our FAB
     @SuppressLint("RestrictedApi")
@@ -175,19 +201,34 @@ class TestButtonARActivity : AppCompatActivity() {
      * Once the nodes are connected we select the TransformableNode so it is available for interactions
      */
     private fun addNodeToScene(fragment: ArFragment, anchor: Anchor, renderable: ModelRenderable) {
+
         val anchorNode = AnchorNode(anchor)
         val rotatingNode = RotatingNode()
         val transformableNode = TransformableNode(fragment.transformationSystem)
+        val transformableBubbleNode = TransformableNode(fragment.transformationSystem)
         // TransformableNode means the user to move, scale and rotate the model
+
+
+        transformableBubbleNode.renderable = descriptionBubbleRenderable
+        transformableBubbleNode.setParent(anchorNode)
+
+        descriptionBubble.let {
+            transformableBubbleNode.apply {
+                localPosition = Vector3(0f, .3f, 0f)
+                localScale = Vector3(.05f, .05f, .05f)
+            }
+        }
 
         transformableNode.renderable = renderable
         transformableNode.setParent(anchorNode)
+
 
         rotatingNode.renderable = renderable
         rotatingNode.addChild(transformableNode)
         rotatingNode.setParent(anchorNode)
 
         fragment.arSceneView.scene.addChild(anchorNode)
+        transformableBubbleNode.select()
         transformableNode.select()
     }
 

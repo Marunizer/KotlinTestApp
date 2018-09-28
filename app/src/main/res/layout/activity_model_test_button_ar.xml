@@ -16,12 +16,51 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/test_text"
+        android:id="@+id/title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="end"
+        android:textColor="#000000"
+        android:textSize="22sp"
+        app:layout_constraintRight_toRightOf= "parent"/>
+
+    <LinearLayout
+        android:id="@+id/item_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="TESTING"
-        android:textSize="88dp"
-        android:textColor="@color/noni_theme"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:layoutDirection="rtl"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/title_text">
+
+        <TextView
+            android:id="@+id/item_cost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <Button
+            android:id="@+id/order_button"
+            android:layout_width="110dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="16dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:background="@drawable/rounded_button_order"
+            android:foregroundGravity="center"
+            android:maxLines="1"
+            android:textAllCaps="false"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            app:layout_constraintRight_toLeftOf="@id/item_cost"
+            />
+
+    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton"

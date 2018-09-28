@@ -12,7 +12,7 @@ class RotatingNode : Node(), Node.OnTapListener {
     // We'll use Property Animation to make this node rotate.
 
     private var rotationAnimation: ObjectAnimator? = null
-    private var degreesPerSecond = 90.0f
+    private var degreesPerSecond = 45.0f
 
     private var lastSpeedMultiplier = 1.0f
 
