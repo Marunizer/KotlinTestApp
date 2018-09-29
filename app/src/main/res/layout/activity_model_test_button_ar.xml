@@ -15,16 +15,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <LinearLayout
+        android:id="@+id/title_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:layoutDirection="rtl"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
     <TextView
         android:id="@+id/title_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
         android:gravity="end"
-        android:textColor="#000000"
+        android:textColor="@color/app_bar_theme"
         android:textSize="22sp"
-        app:layout_constraintRight_toRightOf= "parent"/>
+        android:layout_marginStart="16dp"
+        android:layoutDirection="rtl" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/item_bar_layout"
@@ -33,32 +42,53 @@
         android:layout_marginTop="18dp"
         android:layoutDirection="rtl"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/title_text">
+        app:layout_constraintTop_toBottomOf="@id/title_bar_layout">
 
         <TextView
             android:id="@+id/item_cost"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:textColor="#000000"
+            android:textColor="@color/app_bar_theme"
             android:textSize="20sp"
             app:layout_constraintRight_toRightOf="parent"/>
 
         <Button
             android:id="@+id/order_button"
             android:layout_width="110dp"
+            android:fontFamily="@font/avenir_lt_std_medium"
             android:layout_height="36dp"
             android:layout_marginStart="16dp"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
-            android:background="@drawable/rounded_button_order"
+            android:background="@drawable/rounded_button_order_ar"
             android:foregroundGravity="center"
             android:maxLines="1"
             android:textAllCaps="false"
-            android:textColor="#000000"
+            android:textColor="@color/app_bar_theme"
             android:textSize="16sp"
+            android:text="@string/order_now_btn"
             app:layout_constraintRight_toLeftOf="@id/item_cost"
             />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/select_item_layout"
+        android:layout_width="match_parent"
+        android:layout_height="92dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="horizontal">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/circle_item_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:scrollbars="horizontal">
+
+        </android.support.v7.widget.RecyclerView>
 
     </LinearLayout>
 
@@ -66,13 +96,13 @@
         android:id="@+id/floatingActionButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="48dp"
+        android:background="@color/noni_theme"
+        app:backgroundTint="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/noni_icon"
-        />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

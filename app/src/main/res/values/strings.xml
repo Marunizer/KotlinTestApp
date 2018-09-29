@@ -3,4 +3,5 @@
 
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_model">Model View</string>
+    <string name="order_now_btn">Order Now</string>
 </resources>

@@ -6,6 +6,15 @@
         <item name="colorPrimary">@color/noni_theme</item>
         <item name="colorPrimaryDark">@color/app_bar_theme</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textViewStyle">@style/AvenirTextViewStyle</item>
+    </style>
+
+    <style name="AvenirTextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">@font/avenir_lt_std_medium</item>
+    </style>
+
+    <style name="AvenirButtonStyle" parent="android:Widget.Holo.Button">
+        <item name="android:fontFamily">@font/avenir_lt_std_medium</item>
     </style>
 
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">

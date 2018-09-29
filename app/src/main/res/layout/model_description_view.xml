@@ -11,6 +11,8 @@
             android:id="@+id/xml_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="3"
+            android:maxHeight="60dp"
             android:background="@drawable/rounded_button"
             android:foregroundGravity="center"
             android:textAllCaps="false"

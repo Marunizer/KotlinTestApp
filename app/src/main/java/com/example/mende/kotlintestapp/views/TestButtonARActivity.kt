@@ -70,7 +70,11 @@ class TestButtonARActivity : AppCompatActivity() {
     showFab(false)
 }
     // itemDescriptionRenderable
+    @SuppressLint("SetTextI18n")
     private fun initResources() {
+
+        title_text.text = "Party Cupcake"
+        item_cost.text = "$10.99"
 
         descriptionBubble = DescriptionBubble(this)
 

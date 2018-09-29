@@ -74,8 +74,8 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
     @SuppressLint("SetTextI18n")
     fun setUpGUI(){
 
-        title_text.text = "3D Hamburger"
-        item_cost.text = "$99.99"
+        title_text.text = "Party Cupcake"
+        item_cost.text = "$10.99"
 //        item_description.text = "Best Burger NA"
 
         circle_item_recycler_view.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)

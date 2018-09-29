@@ -4,6 +4,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="noni_theme">#f29ab2</color>
-    <color name="app_bar_theme">#e3e1e1</color>
+    <color name="app_bar_theme">#ffffff</color>
 
 </resources>
