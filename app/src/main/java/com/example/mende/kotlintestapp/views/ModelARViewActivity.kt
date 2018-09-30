@@ -3,6 +3,7 @@ package com.example.mende.kotlintestapp.views
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
+import android.graphics.Color
 import android.net.Uri
 import android.graphics.Point
 import android.os.Build
@@ -21,6 +22,7 @@ import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import kotlinx.android.synthetic.main.activity_model_ar.*
+import kotlinx.android.synthetic.main.activity_test_ar.*
 
 class ModelARViewActivity : AppCompatActivity() {
 
@@ -39,9 +41,11 @@ class ModelARViewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_model_ar)
 
         fragment = supportFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
+       // fragment.view?.setBackgroundColor(Color.WHITE)
+        //fragment.ux_fragment.view?.setBackgroundColor(Color.WHITE)
 
         quick_add_button.setOnClickListener {view ->
-            addObject(Uri.parse("Hamburger.sfb"))
+            addObject(Uri.parse("Cupcake.sfb"))
         }
     }
 

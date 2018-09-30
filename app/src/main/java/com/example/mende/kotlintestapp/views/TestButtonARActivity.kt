@@ -22,6 +22,10 @@ import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import kotlinx.android.synthetic.main.activity_model_test_button_ar.*
+import com.google.ar.sceneform.math.Quaternion
+import com.google.ar.sceneform.FrameTime
+
+
 
 
 /**
@@ -241,6 +245,15 @@ class TestButtonARActivity : AppCompatActivity() {
         if (arFragment != null)
              arFragment.onPause()
     }
+
+    //onUpdate -> sceneform gesture dector, can use so bubble always faces user !!
+//    override fun onUpdate(frameTime: FrameTime) {
+//        val cameraPosition = getScene().getCamera().getWorldPosition()
+//        val cardPosition = infoCard.getWorldPosition()
+//        val direction = Vector3.subtract(cameraPosition, cardPosition)
+//        val lookRotation = Quaternion.lookRotation(direction, Vector3.up())
+//        infoCard.setWorldRotation(lookRotation)
+//    }
 
     override fun onResume() {
         super.onResume()

@@ -30,11 +30,13 @@ internal class ItemViewHolder(view : View) : RecyclerView.ViewHolder(view)
     var restaurantDistance = view.restaurant_distance
     var restaurantEmoji = view.restaurant_emoji
     var restaurantCost = view.restaurant_cost
+    var restaurantImage = view.restaurant_image
 }
 
 class RestaurantCardAdapter(recyclerView: RecyclerView,
                             internal var activity: Activity,
                             internal var items : ArrayList<RestaurantCard?>,
+                            internal var pictures: ArrayList<Int>,
                             val clickListener: (RestaurantCard?) -> Unit) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -84,12 +86,24 @@ class RestaurantCardAdapter(recyclerView: RecyclerView,
         if(holder is ItemViewHolder) {
 
             val item = items[position]
-
+            if(position==0) {
+                val picture = pictures[0]
+                holder.restaurantImage.setImageResource(picture)
+            }
+            if(position==1) {
+                val picture = pictures[1]
+                holder.restaurantImage.setImageResource(picture)
+            }
+            if(position==2) {
+                val picture = pictures[2]
+                holder.restaurantImage.setImageResource(picture)
+            }
             holder.bind(item, clickListener)
             holder.restaurantName?.text = item?.itemName
             holder.restaurantDistance?.text = "sample_distance"
             holder.restaurantEmoji?.text = "emoji_area"
             holder.restaurantCost?.text = "$$$$$"
+
         }
         else if(holder is LoadingViewHolder) {
             holder.progressBar.isIndeterminate = true

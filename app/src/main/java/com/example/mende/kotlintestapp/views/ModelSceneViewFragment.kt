@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AlertDialog
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,12 @@ import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.Scene
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.ar.sceneform.ux.*
 import kotlinx.android.synthetic.main.activity_model_scene.*
+import android.view.MotionEvent
+import android.view.GestureDetector
+
+
 
 /**
  * Created by Marunizer
@@ -83,6 +89,27 @@ class ModelSceneViewFragment : Fragment() {
 //        camera.localRotation = Quaternion.axisAngle(Vector3.right(), -30.0f)
 
         scene = sceneView.scene // get current scene
+
+//        transformationSystem = makeTransformationSystem()
+//
+//        gestureDetector = GestureDetector(
+//                context,
+//                object : GestureDetector.SimpleOnGestureListener() {
+//                    override fun onSingleTapUp(e: MotionEvent): Boolean {
+//                        onSingleTap(e)
+//                        return true
+//                    }
+//
+//                    override fun onDown(e: MotionEvent): Boolean {
+//                        return true
+//                    }
+//                })
+//
+//        scene.addOnPeekTouchListener(this)
+//        arSceneView.getScene().addOnUpdateListener(this)
+
+
+
         renderObject(Uri.parse("Cupcake.sfb")) // Render the object
     }
 
@@ -113,6 +140,26 @@ class ModelSceneViewFragment : Fragment() {
      * @param model - rendered model
      */
     private fun addNodeToScene(model: ModelRenderable?) {
+        //for ar button
+        // maybe reference code to have an on click listener on food for description bubble
+//        base.setRenderable(exampleLayoutRenderable);
+//        Context c = this;
+//        // Add  listeners etc here
+//        View eView = exampleLayoutRenderable.getView();
+//        eView.setOnTouchListener((v, event) -> {
+//            Toast.makeText(
+//                    c, "Location marker touched.", Toast.LENGTH_LONG)
+//                    .show();
+
+//        Node base = new Node();
+//        base.setRenderable(andyRenderable);
+//        Context c = this;
+//        base.setOnTapListener((v, event) -> {
+//            Toast.makeText(
+//                    c, "Andy touched.", Toast.LENGTH_LONG)
+//                    .show();
+//        });
+//        retur
 
         model?.let {
             cupCakeNode = Node().apply {
@@ -121,6 +168,7 @@ class ModelSceneViewFragment : Fragment() {
                 localScale = Vector3(3f, 3f, 3f)
                 name = "Cupcake"
                 renderable = it
+
             }
 //            scene.addOnPeekTouchListener()
 //            scene.addOnPeekTouchListener(
@@ -128,23 +176,22 @@ class ModelSceneViewFragment : Fragment() {
 //                        //do stuff
 //
 //                    })
-//
-//
-//
-//
 //            // Create the transformable andy and add it to the anchor.
-//            val andy = TransformableNode(cupCakeNode.getTransformationSystem())
-//            andy.setParent(anchorNode)
-//            andy.renderable = model
-//            andy.select()
+           // val fragment = ArFragment()
+            val dm = resources.displayMetrics
+            val sv = FootprintSelectionVisualizer()
 
-//            val rotatingNode = RotatingNode()
-//
-//            rotatingNode.renderable = model
-//            rotatingNode.addChild(cupCakeNode)
-//            rotatingNode.setParent(scene)
+            val transformationSystem = TransformationSystem(dm,sv)
+            //transformationSystem.addGestureRecognizer()
+            val transformableNode = TransformableNode(transformationSystem)
 
-            scene.addChild(cupCakeNode)
+            transformableNode.renderable = cupCakeNode.renderable
+            transformableNode.localScale = cupCakeNode.localScale
+            transformableNode.localPosition = cupCakeNode.localPosition
+            transformableNode.setParent(cupCakeNode) //anchor node maybe cupcakenode //scene
+
+
+            scene.addChild(transformableNode) //cupCakeNode
         }
     }
 

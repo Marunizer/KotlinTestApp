@@ -56,6 +56,7 @@ class HomeActivity : AppCompatActivity(), LoadMore {
     private lateinit var mHandler: Handler
     private lateinit var mRunnable:Runnable
     private var testData: ArrayList<RestaurantCard?> = ArrayList()
+    private var testDataImages: ArrayList<Int> = ArrayList()
 
     //TODO: REMOVE IF NEVER USE, AFTER FINISHED
     private var mRecyclerView: RecyclerView? = null
@@ -69,6 +70,7 @@ class HomeActivity : AppCompatActivity(), LoadMore {
 
         // Loads animals into the ArrayList
         addTestData()
+        addTestDataPictures()
         // Initialize the handler instance
         mHandler = Handler()
 
@@ -89,7 +91,7 @@ class HomeActivity : AppCompatActivity(), LoadMore {
         restaurant_recycler_view.layoutManager = LinearLayoutManager(this)
 
         // Access the RecyclerView Adapter and load the data into it
-        mAdapter = RestaurantCardAdapter(restaurant_recycler_view, this, testData)
+        mAdapter = RestaurantCardAdapter(restaurant_recycler_view, this, testData, testDataImages)
             { card : RestaurantCard?-> onCardClick(card) }
         restaurant_recycler_view.adapter = mAdapter
         mAdapter.setLoadedMore(this)
@@ -153,6 +155,7 @@ class HomeActivity : AppCompatActivity(), LoadMore {
         Log.d(TAG, "Card = text: ${card?.itemName}")
 
         val i = Intent(this@HomeActivity, ModelContainerViewActivity::class.java)
+//        val i = Intent(this@HomeActivity, ModelARViewActivity::class.java)
         startActivity(i)
         //finish()
 
@@ -177,5 +180,13 @@ class HomeActivity : AppCompatActivity(), LoadMore {
         testData.add(RestaurantCard(119,"ftw"))
         testData.add(RestaurantCard(110,"wat"))
         testData.add(RestaurantCard(121,"heheheh"))
+    }
+
+    fun addTestDataPictures() {
+        testDataImages.add(R.drawable.bento_main_image)
+        testDataImages.add(R.drawable.omelet_bar_main_image)
+        testDataImages.add(R.drawable.mecatos_main_image)
+//        testDataImages.add("R.drawable.neighbors_house_main_image")
+//        testDataImages.add("R.drawable.bento_main_image")
     }
 }

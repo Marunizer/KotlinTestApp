@@ -6,7 +6,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="views.ModelARViewActivity"
-    tools:showIn="@layout/activity_model_ar">
+    tools:showIn="@layout/activity_model_ar"
+    android:background="@color/noni_theme">
 
 
     <!-- add the below fragment-->
