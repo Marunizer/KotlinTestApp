@@ -19,6 +19,9 @@ import com.google.ar.sceneform.ux.*
 import kotlinx.android.synthetic.main.activity_model_scene.*
 import android.view.MotionEvent
 import android.view.GestureDetector
+import com.example.mende.kotlintestapp.util.RotatingNode
+import com.google.ar.sceneform.ux.ArFragment
+
 
 
 
@@ -140,26 +143,6 @@ class ModelSceneViewFragment : Fragment() {
      * @param model - rendered model
      */
     private fun addNodeToScene(model: ModelRenderable?) {
-        //for ar button
-        // maybe reference code to have an on click listener on food for description bubble
-//        base.setRenderable(exampleLayoutRenderable);
-//        Context c = this;
-//        // Add  listeners etc here
-//        View eView = exampleLayoutRenderable.getView();
-//        eView.setOnTouchListener((v, event) -> {
-//            Toast.makeText(
-//                    c, "Location marker touched.", Toast.LENGTH_LONG)
-//                    .show();
-
-//        Node base = new Node();
-//        base.setRenderable(andyRenderable);
-//        Context c = this;
-//        base.setOnTapListener((v, event) -> {
-//            Toast.makeText(
-//                    c, "Andy touched.", Toast.LENGTH_LONG)
-//                    .show();
-//        });
-//        retur
 
         model?.let {
             cupCakeNode = Node().apply {
@@ -177,18 +160,25 @@ class ModelSceneViewFragment : Fragment() {
 //
 //                    })
 //            // Create the transformable andy and add it to the anchor.
-           // val fragment = ArFragment()
+            //val fragment = ArFragment()
+            //fragment.transformationSystem
+
             val dm = resources.displayMetrics
             val sv = FootprintSelectionVisualizer()
 
-            val transformationSystem = TransformationSystem(dm,sv)
+            val transformationSystem =  TransformationSystem(dm,sv)
             //transformationSystem.addGestureRecognizer()
             val transformableNode = TransformableNode(transformationSystem)
+            val rotatingNode = RotatingNode()
 
-            transformableNode.renderable = cupCakeNode.renderable
+            //transformableNode.renderable = cupCakeNode.renderable
             transformableNode.localScale = cupCakeNode.localScale
             transformableNode.localPosition = cupCakeNode.localPosition
             transformableNode.setParent(cupCakeNode) //anchor node maybe cupcakenode //scene
+            transformableNode.scaleController.maxScale = 3f
+
+            rotatingNode.renderable = cupCakeNode.renderable
+            rotatingNode.setParent(transformableNode)
 
 
             scene.addChild(transformableNode) //cupCakeNode

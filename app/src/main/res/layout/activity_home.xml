@@ -31,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
-        android:paddingTop="4dp"/>
+        android:paddingTop="8dp"/>
         </android.support.v4.widget.SwipeRefreshLayout>
 
     </LinearLayout>

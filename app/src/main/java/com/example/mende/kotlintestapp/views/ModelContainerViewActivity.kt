@@ -15,6 +15,7 @@ import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.adapters.ItemCircleViewAdapter
 import com.example.mende.kotlintestapp.objects.ItemCircle
 import com.example.mende.kotlintestapp.objects.EmojiObjects
+import com.google.ar.sceneform.ux.ArFragment
 import kotlinx.android.synthetic.main.activity_model_container.*
 
 
@@ -54,6 +55,7 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
 //external fun stringFromJNI(dracoFile:String, objFile:String)
 
     private lateinit var currentFragment : Fragment
+    lateinit var fakeFragment : ArFragment
     private lateinit var mAdapter: ItemCircleViewAdapter
     private lateinit var mHandler: Handler
     private val TAG = ModelContainerViewActivity::class.java.simpleName
@@ -91,6 +93,7 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
         circle_item_recycler_view.adapter = mAdapter
 
 
+        fakeFragment = fake_fragment as ArFragment
         setFragmentView()
     }
 
@@ -123,15 +126,15 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
                 .commit()
     }
 
-    //TODO: Use this lambda expression to change switch fragments
-    inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction) {
-        beginTransaction().func().commit()
-        //If Cannot use, for whatever reason: this is the alternative:
-//        supportFragmentManager.inTransaction {
-//            remove(fragmentA)
-//            add(R.id.frameLayoutContent, fragmentB)
-//        }
-    }
+//    //TODO: Use this lambda expression to change switch fragments
+//    inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction) {
+//        beginTransaction().func().commit()
+//        //If Cannot use, for whatever reason: this is the alternative:
+////        supportFragmentManager.inTransaction {
+////            remove(fragmentA)
+////            add(R.id.frameLayoutContent, fragmentB)
+////        }
+//    }
 
     fun addTestData() {
         testData.add(ItemCircle(112,"one"))

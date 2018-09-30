@@ -16,6 +16,7 @@ import com.google.ar.core.HitResult
 import com.google.ar.core.Plane
 import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.ArSceneView
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.ViewRenderable
@@ -24,8 +25,7 @@ import com.google.ar.sceneform.ux.TransformableNode
 import kotlinx.android.synthetic.main.activity_model_test_button_ar.*
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.FrameTime
-
-
+import kotlinx.android.synthetic.main.activity_model_scene.view.*
 
 
 /**
@@ -42,11 +42,17 @@ import com.google.ar.sceneform.FrameTime
 class TestButtonARActivity : AppCompatActivity() {
 
     private lateinit var arFragment: ArFragment
+    private lateinit var arSceneView: ArSceneView
     private var isTracking: Boolean = false
     private var isHitting: Boolean = false
 
     private var descriptionBubbleRenderable: ViewRenderable? = null
     private lateinit var descriptionBubble: DescriptionBubble
+
+//    ArSceneView directly. That one behaves like a default Android
+//    View so you can use an onTouchListener and use a GestureDetector to
+//    detect the gestures. But in this case you have to do rotation and
+//    translation of your objects on your own.
 
 
     @SuppressLint("ResourceAsColor")
@@ -57,9 +63,10 @@ class TestButtonARActivity : AppCompatActivity() {
         initResources()
 
         arFragment = sceneform_button_fragment as ArFragment
-
+        // arSceneView = sceneform_button_fragment as ArSceneView
         // Adds a listener to the ARSceneView
         // Called before processing each frame
+
         arFragment.arSceneView.scene.addOnUpdateListener { frameTime ->
            arFragment.onUpdate(frameTime)
           onUpdate()
@@ -120,8 +127,15 @@ class TestButtonARActivity : AppCompatActivity() {
                 showFab(isHitting)
             }
         }
-
     }
+    //onUpdate -> sceneform gesture dector, can use so bubble always faces user !!
+//    override fun onUpdate(frameTime: FrameTime) {
+//        val cameraPosition = getScene().getCamera().getWorldPosition()
+//        val cardPosition = infoCard.getWorldPosition()
+//        val direction = Vector3.subtract(cameraPosition, cardPosition)
+//        val lookRotation = Quaternion.lookRotation(direction, Vector3.up())
+//        infoCard.setWorldRotation(lookRotation)
+//    }
 
     // Performs frame.HitTest and returns if a hit is detected
     private fun updateHitTest(): Boolean {
@@ -218,7 +232,29 @@ class TestButtonARActivity : AppCompatActivity() {
 
 
         transformableBubbleNode.renderable = descriptionBubbleRenderable
+        transformableBubbleNode.scaleController.maxScale = 1f
         transformableBubbleNode.setParent(anchorNode)
+        //TODO: Remove this renderable node, instead apply how SolarSystem applies 2D views
+        //for ar button
+        // maybe reference code to have an on click listener on food for description bubble
+//        base.setRenderable(exampleLayoutRenderable);
+//        Context c = this;
+//        // Add  listeners etc here
+//        View eView = exampleLayoutRenderable.getView();
+//        eView.setOnTouchListener((v, event) -> {
+//            Toast.makeText(
+//                    c, "Location marker touched.", Toast.LENGTH_LONG)
+//                    .show();
+
+//        Node base = new Node();
+//        base.setRenderable(andyRenderable);
+//        Context c = this;
+//        base.setOnTapListener((v, event) -> {
+//            Toast.makeText(
+//                    c, "Andy touched.", Toast.LENGTH_LONG)
+//                    .show();
+//        });
+//        retur
 
         descriptionBubble.let {
             transformableBubbleNode.apply {
@@ -227,17 +263,18 @@ class TestButtonARActivity : AppCompatActivity() {
             }
         }
 
-        transformableNode.renderable = renderable
+        //transformableNode.renderable = renderable
+        transformableNode.scaleController.maxScale = 1f
         transformableNode.setParent(anchorNode)
 
 
         rotatingNode.renderable = renderable
-        rotatingNode.addChild(transformableNode)
-        rotatingNode.setParent(anchorNode)
+        rotatingNode.setParent(transformableNode)
+        //rotatingNode.setParent(anchorNode)
 
         fragment.arSceneView.scene.addChild(anchorNode)
         transformableBubbleNode.select()
-        transformableNode.select()
+        //transformableNode.select()
     }
 
     override fun onPause() {
@@ -245,15 +282,6 @@ class TestButtonARActivity : AppCompatActivity() {
         if (arFragment != null)
              arFragment.onPause()
     }
-
-    //onUpdate -> sceneform gesture dector, can use so bubble always faces user !!
-//    override fun onUpdate(frameTime: FrameTime) {
-//        val cameraPosition = getScene().getCamera().getWorldPosition()
-//        val cardPosition = infoCard.getWorldPosition()
-//        val direction = Vector3.subtract(cameraPosition, cardPosition)
-//        val lookRotation = Quaternion.lookRotation(direction, Vector3.up())
-//        infoCard.setWorldRotation(lookRotation)
-//    }
 
     override fun onResume() {
         super.onResume()
