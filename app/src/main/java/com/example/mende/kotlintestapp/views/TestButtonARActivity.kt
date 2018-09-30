@@ -23,9 +23,6 @@ import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import kotlinx.android.synthetic.main.activity_model_test_button_ar.*
-import com.google.ar.sceneform.math.Quaternion
-import com.google.ar.sceneform.FrameTime
-import kotlinx.android.synthetic.main.activity_model_scene.view.*
 
 
 /**
@@ -71,9 +68,6 @@ class TestButtonARActivity : AppCompatActivity() {
            arFragment.onUpdate(frameTime)
           onUpdate()
          }
-
-    //val myText : TextView = test_text as TextView
-    //myText.setTextColor(R.color.background_material_light)
 
     // Set the onclick lister for our button
     // Change this string to point to the .sfb file of your choice :)

@@ -98,11 +98,51 @@ class RestaurantCardAdapter(recyclerView: RecyclerView,
                 val picture = pictures[2]
                 holder.restaurantImage.setImageResource(picture)
             }
+            if(position==3) {
+                val picture = pictures[3]
+                holder.restaurantImage.setImageResource(picture)
+            }
+            if(position==4) {
+                val picture = pictures[4]
+                holder.restaurantImage.setImageResource(picture)
+            }
+            if(position==5) {
+                val picture = pictures[5]
+                holder.restaurantImage.setImageResource(picture)
+            }
+            if(position==6) {
+                val picture = pictures[6]
+                holder.restaurantImage.setImageResource(picture)
+            }
+            if(position==7) {
+                val picture = pictures[7]
+                holder.restaurantImage.setImageResource(picture)
+            }
             holder.bind(item, clickListener)
-            holder.restaurantName?.text = item?.itemName
-            holder.restaurantDistance?.text = "sample_distance"
-            holder.restaurantEmoji?.text = "emoji_area"
-            holder.restaurantCost?.text = "$$$$$"
+            holder.restaurantName?.text = item?.restaurant?.name
+            holder.restaurantDistance?.text = "2.0 miles away"
+            holder.restaurantEmoji?.text = item?.restaurant?.streetAddress//"emoji_area"
+
+            if (item?.restaurant?.generalCost == 5)
+            {
+                holder.restaurantCost?.text = "$$$$$"
+            }
+            else if (item?.restaurant?.generalCost == 4)
+            {
+                holder.restaurantCost?.text = "$$$$"
+            }
+            else if (item?.restaurant?.generalCost == 3)
+            {
+                holder.restaurantCost?.text = "$$$"
+            }
+            else if (item?.restaurant?.generalCost == 2)
+            {
+                holder.restaurantCost?.text = "$$"
+            }
+            else if (item?.restaurant?.generalCost == 1)
+            {
+                holder.restaurantCost?.text = "$"
+            }
 
         }
         else if(holder is LoadingViewHolder) {

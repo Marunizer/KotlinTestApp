@@ -1,5 +1,6 @@
 package com.example.mende.kotlintestapp.objects
 
+import com.google.ar.sceneform.rendering.Renderable
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -24,16 +25,17 @@ import java.util.concurrent.atomic.AtomicInteger
 data class RestaurantMenuitem(
         val name: String,
         val cost: String,
-        val description: String,
-        val drcPath: String,
-        val objPath: String,
-        val mtlPath: String,
-        val jpgPath: String,
-        val iconPath: String,
-        val listOfCategory : ArrayList<String> //To hold the categories one item can be a part of
+        val description: String
+        //val drcPath: String,
+        //val objPath: String,
+        //val mtlPath: String,
+        //val jpgPath: String,
+        //val iconPath: String,
+        //val listOfCategory : ArrayList<String> //To hold the categories one item can be a part of
 )
 {
     var isDownloaded: Boolean = false //This is declared and initialized
+    lateinit var renderReference: Renderable
     var isDrcDownloaded: Boolean = false
     var isObjDownlaoded: Boolean = false
     var isMtlDownloaded: Boolean = false

@@ -60,11 +60,14 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
     private lateinit var mHandler: Handler
     private val TAG = ModelContainerViewActivity::class.java.simpleName
     private var testData: ArrayList<ItemCircle?> = ArrayList()
+    lateinit var restaurantRef : String
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_model_container)
+
+        restaurantRef = intent.getStringExtra("card_name")
 
         addTestData()
         // Initialize the handler instance
@@ -76,7 +79,7 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
     @SuppressLint("SetTextI18n")
     fun setUpGUI(){
 
-        title_text.text = "Party Cupcake"
+        title_text.text = "Party Cupcake $restaurantRef"
         item_cost.text = "$10.99"
 //        item_description.text = "Best Burger NA"
 

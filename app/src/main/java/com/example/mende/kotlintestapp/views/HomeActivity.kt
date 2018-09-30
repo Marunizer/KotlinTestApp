@@ -15,7 +15,9 @@ import android.widget.Toast
 import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.adapters.RestaurantCardAdapter
 import com.example.mende.kotlintestapp.interfaces.LoadMore
+import com.example.mende.kotlintestapp.objects.Restaurant
 import com.example.mende.kotlintestapp.objects.RestaurantCard
+import com.example.mende.kotlintestapp.objects.RestaurantMenuitem
 import com.example.mende.kotlintestapp.util.SharedPref
 import com.google.ar.core.ArCoreApk
 import kotlinx.android.synthetic.main.activity_home.*
@@ -57,6 +59,7 @@ class HomeActivity : AppCompatActivity(), LoadMore {
     private lateinit var mRunnable:Runnable
     private var testData: ArrayList<RestaurantCard?> = ArrayList()
     private var testDataImages: ArrayList<Int> = ArrayList()
+    private var restaurantDataList : ArrayList<Restaurant> = ArrayList()
 
     //TODO: REMOVE IF NEVER USE, AFTER FINISHED
     private var mRecyclerView: RecyclerView? = null
@@ -69,7 +72,8 @@ class HomeActivity : AppCompatActivity(), LoadMore {
         setContentView(R.layout.activity_home)
 
         // Loads animals into the ArrayList
-        addTestData()
+        retrieveRestaurants()
+        addTestData(restaurantDataList)
         addTestDataPictures()
         // Initialize the handler instance
         mHandler = Handler()
@@ -103,7 +107,7 @@ class HomeActivity : AppCompatActivity(), LoadMore {
 
                 Toast.makeText(applicationContext, "Refreshing", Toast.LENGTH_SHORT).show()
 
-                testData.add(RestaurantCard(111,"ewd")) //TODO: <-- Only here to test if refresh works, delete  later, delete toast as well
+                testData.add(RestaurantCard(111, Restaurant("refreshAddition", 1, "test", getItemList()))) //TODO: <-- Only here to test if refresh works, delete  later, delete toast as well
 
 
                 onInit() //re-initaites list, I'm not sure if this is what wa want, to remake everything, but sounds right when I think about it
@@ -118,6 +122,31 @@ class HomeActivity : AppCompatActivity(), LoadMore {
                     (2000).toLong() // Delay 2 seconds
             )
         }
+    }
+
+    //intended to be used when filling up data from database provider, for now it is just a sample data 'factory'
+    fun retrieveRestaurants() { //will return void in the future
+
+        restaurantDataList.add(Restaurant("Weenie Hut Juniors",3,"Bikini Bottom", getItemList()))
+        restaurantDataList.add(Restaurant("Super Weenie Hut Juniors",4,"MORDOR", getItemList()))
+        restaurantDataList.add(Restaurant("Weenie Hut General",5,"Pacific Ocean", getItemList()))
+        restaurantDataList.add(Restaurant("The Krusty Krab",2,"831 Bottom Feeder Lane", getItemList()))
+        restaurantDataList.add(Restaurant("The Chum Bucket",1,"832 Bottom Feeder Lane", getItemList()))
+
+        //this will not return anything in
+    }
+
+    //fake function for sample item data
+    fun getItemList() : ArrayList<RestaurantMenuitem> {
+        val restaurantMenuitemList : ArrayList<RestaurantMenuitem> = ArrayList()
+
+        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","5.00","hyperbolic space cupcake of time"))
+        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","6.00","hyperbolic space cupcake of timex2"))
+        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","7.00","hyperbolic space cupcake of timex4"))
+        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","8.00","hyperbolic space cupcake of timex6"))
+        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","9.00","hyperbolic space cupcake of timex8"))
+        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","10.00","hyperbolic space cupcake of timex10"))
+        return restaurantMenuitemList
     }
 
     override fun onLoadMore() {
@@ -137,7 +166,7 @@ class HomeActivity : AppCompatActivity(), LoadMore {
                     val end = index + 10
 
                     for (i in index until end) {
-                        testData.add(RestaurantCard(111, "generatedItem"))
+                        testData.add(RestaurantCard(111, Restaurant("generated Store", 4, "test", getItemList())))
                     }
 
                     mAdapter.notifyDataSetChanged()
@@ -152,9 +181,10 @@ class HomeActivity : AppCompatActivity(), LoadMore {
 
     private fun onCardClick(card : RestaurantCard?) {
 
-        Log.d(TAG, "Card = text: ${card?.itemName}")
+        Log.d(TAG, "Card = text: ${card?.restaurant?.name}")
 
         val i = Intent(this@HomeActivity, ModelContainerViewActivity::class.java)
+        i.putExtra("card_name",card?.restaurant?.name)
 //        val i = Intent(this@HomeActivity, ModelARViewActivity::class.java)
         startActivity(i)
         //finish()
@@ -168,25 +198,42 @@ class HomeActivity : AppCompatActivity(), LoadMore {
 
     }
 
+
+
+    //Function that can be called, if the card id is pased to next activity, and the restaurant info
+    //is retrieved here, problem here is that usually we dont want to access 1 activity from another,
+    //will maybe end up just completely separating restaurant information from next activity and make more calls
+    //OR make some kind of all powerful class.
+    //TODO: OH SHIT ^^^^ that's probably why I need some type of SQL table for the app LMFAO, was avoiding for a long time, but make one !
+//    fun getRestaurant(id: Long) : Restaurant? {
+//        for(card in testData)
+//        {
+//            if (card?.id == id)
+//                return card.restaurant
+//        }
+//        return null
+//    }
+
     //TODO:Remove, only here to test sample data
-    fun addTestData() {
-        testData.add(RestaurantCard(112,"one"))
-        testData.add(RestaurantCard(113,"two"))
-        testData.add(RestaurantCard(114,"three"))
-        testData.add(RestaurantCard(115,"elf"))
-        testData.add(RestaurantCard(116,"ok"))
-        testData.add(RestaurantCard(117,"work"))
-        testData.add(RestaurantCard(118,"we dat best"))
-        testData.add(RestaurantCard(119,"ftw"))
-        testData.add(RestaurantCard(110,"wat"))
-        testData.add(RestaurantCard(121,"heheheh"))
+    fun addTestData(restaurantList: ArrayList<Restaurant>) {
+
+        var id : Long = 112
+        for(item in restaurantList)
+        {
+            testData.add(RestaurantCard(112,item))
+            id++
+        }
     }
 
     fun addTestDataPictures() {
-        testDataImages.add(R.drawable.bento_main_image)
+        testDataImages.add(R.drawable.weenie_hut_juniors_image)
+        testDataImages.add(R.drawable.super_weenie_image)
+        testDataImages.add(R.drawable.weenie_hut_general_image)
+        testDataImages.add(R.drawable.the_krusty_krab_image)
+        testDataImages.add(R.drawable.the_chum_bucket_image)
         testDataImages.add(R.drawable.omelet_bar_main_image)
+        testDataImages.add(R.drawable.bento_main_image)
+        testDataImages.add(R.drawable.dominoes_main_image)
         testDataImages.add(R.drawable.mecatos_main_image)
-//        testDataImages.add("R.drawable.neighbors_house_main_image")
-//        testDataImages.add("R.drawable.bento_main_image")
     }
 }

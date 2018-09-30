@@ -22,7 +22,6 @@ import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import kotlinx.android.synthetic.main.activity_model_ar.*
-import kotlinx.android.synthetic.main.activity_test_ar.*
 
 class ModelARViewActivity : AppCompatActivity() {
 
