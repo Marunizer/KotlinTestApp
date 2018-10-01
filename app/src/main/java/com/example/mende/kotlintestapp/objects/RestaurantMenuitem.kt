@@ -26,6 +26,7 @@ data class RestaurantMenuitem(
         val name: String,
         val cost: String,
         val description: String
+        //val path?
         //val drcPath: String,
         //val objPath: String,
         //val mtlPath: String,

@@ -15,6 +15,7 @@ import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.adapters.ItemCircleViewAdapter
 import com.example.mende.kotlintestapp.objects.ItemCircle
 import com.example.mende.kotlintestapp.objects.EmojiObjects
+import com.example.mende.kotlintestapp.objects.RestaurantMenuitem
 import com.google.ar.sceneform.ux.ArFragment
 import kotlinx.android.synthetic.main.activity_model_container.*
 
@@ -55,7 +56,6 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
 //external fun stringFromJNI(dracoFile:String, objFile:String)
 
     private lateinit var currentFragment : Fragment
-    lateinit var fakeFragment : ArFragment
     private lateinit var mAdapter: ItemCircleViewAdapter
     private lateinit var mHandler: Handler
     private val TAG = ModelContainerViewActivity::class.java.simpleName
@@ -69,7 +69,7 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
 
         restaurantRef = intent.getStringExtra("card_name")
 
-        addTestData()
+        addTestData(getItemList())
         // Initialize the handler instance
         mHandler = Handler()
 
@@ -96,14 +96,17 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
         circle_item_recycler_view.adapter = mAdapter
 
 
-        fakeFragment = fake_fragment as ArFragment
         setFragmentView()
     }
 
     private fun onCircleClick(circleView : ItemCircle?) {
 
-        Log.d(TAG, "CLICKED: circleView = text: ${circleView?.itemName}")
+        Log.d(TAG, "CLICKED: circleView = text: ${circleView?.restaurantMenuitem?.name}")
 
+        //TODO: Replace cupcake model with hamburger model while as a first step
+        //then Link cards to specific models to test if being accessed correctly
+        //then try to make a model on the fly programmatically using obj,mtl,jpg, NOTE: gltf models are the best for sceneform
+        //then path the models to particular circles(menuItems)
         //do stuff
 
     }
@@ -112,9 +115,6 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
         val i = Intent(this@ModelContainerViewActivity, TestButtonARActivity::class.java)
         startActivity(i)
         finish()
-
-
-
     }
 
     private fun setFragmentView() {
@@ -129,6 +129,7 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
                 .commit()
     }
 
+    //if we are able to make ARFragment be held by a Fragment in the future
 //    //TODO: Use this lambda expression to change switch fragments
 //    inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction) {
 //        beginTransaction().func().commit()
@@ -139,17 +140,27 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
 ////        }
 //    }
 
-    fun addTestData() {
-        testData.add(ItemCircle(112,"one"))
-        testData.add(ItemCircle(113,"two"))
-        testData.add(ItemCircle(114,"three"))
-        testData.add(ItemCircle(115,"elf"))
-        testData.add(ItemCircle(116,"ok"))
-        testData.add(ItemCircle(117,"work"))
-        testData.add(ItemCircle(118,"we dat best"))
-        testData.add(ItemCircle(119,"ftw"))
-        testData.add(ItemCircle(110,"wat"))
-        testData.add(ItemCircle(121,"heheheh"))
+    //fake function for sample item data
+    fun getItemList() : ArrayList<RestaurantMenuitem> {
+        val restaurantMenuitemList : ArrayList<RestaurantMenuitem> = ArrayList()
+
+        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","5.00","hyperbolic space cupcake of time"))
+        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","6.00","hyperbolic space cupcake of timex2"))
+        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","7.00","hyperbolic space cupcake of timex4"))
+        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","8.00","hyperbolic space cupcake of timex6"))
+        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","9.00","hyperbolic space cupcake of timex8"))
+        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","10.00","hyperbolic space cupcake of timex10"))
+        return restaurantMenuitemList
+    }
+
+    fun addTestData(itemList: ArrayList<RestaurantMenuitem>) {
+
+        var id : Long = 112
+        for(item in itemList)
+        {
+            testData.add(ItemCircle(112,item))
+            id++
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
