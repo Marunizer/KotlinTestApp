@@ -45,7 +45,7 @@ class ItemCircleViewAdapter(recyclerView: RecyclerView,
 
 
             holder.bind(item, clickListener)
-            holder.itemName?.text = item?.restaurantMenuitem?.name
+            holder.itemName?.text = item?.restaurantMenuItem?.name
 //            holder.itemImage.background = getItemViewType(R.drawable.abc_btn_check_material)
         }
     }

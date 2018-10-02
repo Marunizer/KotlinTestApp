@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
@@ -17,12 +16,10 @@ import com.example.mende.kotlintestapp.adapters.RestaurantCardAdapter
 import com.example.mende.kotlintestapp.interfaces.LoadMore
 import com.example.mende.kotlintestapp.objects.Restaurant
 import com.example.mende.kotlintestapp.objects.RestaurantCard
-import com.example.mende.kotlintestapp.objects.RestaurantMenuitem
+import com.example.mende.kotlintestapp.objects.RestaurantMenuItem
 import com.example.mende.kotlintestapp.util.SharedPref
-import com.google.ar.core.ArCoreApk
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.location_bar.*
-import java.util.*
 import kotlin.collections.ArrayList
 
 /**
@@ -137,16 +134,16 @@ class HomeActivity : AppCompatActivity(), LoadMore {
     }
 
     //fake function for sample item data
-    fun getItemList() : ArrayList<RestaurantMenuitem> {
-        val restaurantMenuitemList : ArrayList<RestaurantMenuitem> = ArrayList()
+    fun getItemList() : ArrayList<RestaurantMenuItem> {
+        val restaurantMenuItemList : ArrayList<RestaurantMenuItem> = ArrayList()
 
-        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","5.00","hyperbolic space cupcake of time"))
-        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","6.00","hyperbolic space cupcake of timex2"))
-        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","7.00","hyperbolic space cupcake of timex4"))
-        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","8.00","hyperbolic space cupcake of timex6"))
-        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","9.00","hyperbolic space cupcake of timex8"))
-        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","10.00","hyperbolic space cupcake of timex10"))
-        return restaurantMenuitemList
+        restaurantMenuItemList.add(RestaurantMenuItem("cupcake","5.00","hyperbolic space cupcake of time"))
+        restaurantMenuItemList.add(RestaurantMenuItem("cupcake","6.00","hyperbolic space cupcake of timex2"))
+        restaurantMenuItemList.add(RestaurantMenuItem("cupcake","7.00","hyperbolic space cupcake of timex4"))
+        restaurantMenuItemList.add(RestaurantMenuItem("cupcake","8.00","hyperbolic space cupcake of timex6"))
+        restaurantMenuItemList.add(RestaurantMenuItem("cupcake","9.00","hyperbolic space cupcake of timex8"))
+        restaurantMenuItemList.add(RestaurantMenuItem("cupcake","10.00","hyperbolic space cupcake of timex10"))
+        return restaurantMenuItemList
     }
 
     override fun onLoadMore() {

@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * TODO: Remove objPath eventually, draco path will provide draco file that converts obj
  */
 
-data class RestaurantMenuitem(
+data class RestaurantMenuItem(
         val name: String,
         val cost: String,
         val description: String

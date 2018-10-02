@@ -1,7 +1,5 @@
 package com.example.mende.kotlintestapp.objects
 
-import android.location.Location
-
 import java.util.ArrayList
 
 /**
@@ -26,7 +24,7 @@ data class  Restaurant(
     //val coordinateKey: String,
     val generalCost: Int, //assigns number of '$'
     val streetAddress: String,
-    val listOfItems : ArrayList<RestaurantMenuitem>
+    val listOfItems : ArrayList<RestaurantMenuItem>
     //val userLocation: Location,  // TODO: value should taken from sharedPref in function calling this
 //  val distanceAway: Float -
 //    val restaurantMenu: RestaurantMenu //TODO: Find out if we need multiple menu's for one restaurant, or only 1 menu per restaurant(1 for now)

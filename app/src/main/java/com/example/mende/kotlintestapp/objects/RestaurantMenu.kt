@@ -22,7 +22,7 @@ import java.util.*
 
 data class RestaurantMenu(
         val listOfCategories : ArrayList<RestaurantMenuCategory>,
-        val listOfItems : ArrayList<RestaurantMenuitem>
+        val listOfItems : ArrayList<RestaurantMenuItem>
 ) {
 
 

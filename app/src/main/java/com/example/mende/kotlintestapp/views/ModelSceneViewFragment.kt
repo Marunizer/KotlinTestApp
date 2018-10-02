@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AlertDialog
-import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,12 +17,8 @@ import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.*
 import kotlinx.android.synthetic.main.activity_model_scene.*
-import android.view.MotionEvent
-import android.view.GestureDetector
+import com.example.mende.kotlintestapp.objects.RestaurantMenuItem
 import com.example.mende.kotlintestapp.util.RotatingNode
-import com.google.ar.sceneform.ux.ArFragment
-
-
 
 
 /**
@@ -55,8 +51,9 @@ class ModelSceneViewFragment : Fragment() {
     var containerActivity : FragmentActivity? = null
     lateinit var sceneContext : Context
     lateinit var scene: Scene
+    var firstTimeWinkyFace : Boolean = true
 
-    lateinit var cupCakeNode: Node
+    lateinit var itemModelNode: Node
     companion object {
 
         fun newInstance(): ModelSceneViewFragment {
@@ -93,6 +90,9 @@ class ModelSceneViewFragment : Fragment() {
 
         scene = sceneView.scene // get current scene
 
+        val container : ModelContainerViewActivity  = activity as ModelContainerViewActivity
+        container.begin()
+
 //        transformationSystem = makeTransformationSystem()
 //
 //        gestureDetector = GestureDetector(
@@ -113,19 +113,19 @@ class ModelSceneViewFragment : Fragment() {
 
 
 
-        renderObject(Uri.parse("Cupcake.sfb")) // Render the object
+     //   renderObject(Uri.parse("Cupcake.sfb")) // Render the object
     }
 
     /**
      * load the 3D model in the space
      * @param parse URI of the model, imported using Sceneform plugin
      */
-    private fun renderObject(parse: Uri) {
+    private fun renderObject(parse: Uri, name: String?) {
         ModelRenderable.builder()
                 .setSource(sceneContext, parse)
                 .build()
                 .thenAccept {
-                    addNodeToScene(it)
+                    addNodeToScene(it,name)
                 }
                 .exceptionally {
                     val builder = AlertDialog.Builder(sceneContext)
@@ -142,16 +142,14 @@ class ModelSceneViewFragment : Fragment() {
      * Adds a node to the current scene
      * @param model - rendered model
      */
-    private fun addNodeToScene(model: ModelRenderable?) {
+    private fun addNodeToScene(model: ModelRenderable?, modelName : String?) {
 
         model?.let {
-            cupCakeNode = Node().apply {
-                setParent(scene)
+            itemModelNode = Node().apply {
+                //setParent(scene)
                 localPosition = Vector3(0f, -.4f, -1f)
                 localScale = Vector3(3f, 3f, 3f)
-                name = "Cupcake"
-                renderable = it
-
+                name = modelName
             }
 //            scene.addOnPeekTouchListener()
 //            scene.addOnPeekTouchListener(
@@ -172,16 +170,15 @@ class ModelSceneViewFragment : Fragment() {
             val rotatingNode = RotatingNode()
 
             //transformableNode.renderable = cupCakeNode.renderable
-            transformableNode.localScale = cupCakeNode.localScale
-            transformableNode.localPosition = cupCakeNode.localPosition
-            transformableNode.setParent(cupCakeNode) //anchor node maybe cupcakenode //scene
-            transformableNode.scaleController.maxScale = 3f
+            transformableNode.localScale = itemModelNode.localScale
+            transformableNode.localPosition = itemModelNode.localPosition
+            transformableNode.scaleController.maxScale = 5f
+            transformableNode.setParent(itemModelNode) //could make this main node later
 
-            rotatingNode.renderable = cupCakeNode.renderable
+            rotatingNode.renderable = model
             rotatingNode.setParent(transformableNode)
 
-
-            scene.addChild(transformableNode) //cupCakeNode
+            scene.addChild(itemModelNode)
         }
     }
 
@@ -194,5 +191,26 @@ class ModelSceneViewFragment : Fragment() {
         super.onResume()
         sceneView.resume()
     }
+
+    //should instead implement a listener that knows when a different circle item has been selected.
+    //the lambda way
+    fun passData(restaurantMenuItem: RestaurantMenuItem?) {
+
+
+        Log.d("MAGIC SPEAKER", "${restaurantMenuItem?.name} =?= ")
+
+
+        if (firstTimeWinkyFace) {
+            renderObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name) // Render the object
+            firstTimeWinkyFace = false
+        }
+        else if (restaurantMenuItem?.name != itemModelNode.name)
+        {
+            scene.removeChild(itemModelNode)
+            renderObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
+        }
+
+    }
+
 
 }

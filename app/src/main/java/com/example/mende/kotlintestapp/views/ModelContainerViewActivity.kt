@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentTransaction
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.View
@@ -15,8 +13,7 @@ import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.adapters.ItemCircleViewAdapter
 import com.example.mende.kotlintestapp.objects.ItemCircle
 import com.example.mende.kotlintestapp.objects.EmojiObjects
-import com.example.mende.kotlintestapp.objects.RestaurantMenuitem
-import com.google.ar.sceneform.ux.ArFragment
+import com.example.mende.kotlintestapp.objects.RestaurantMenuItem
 import kotlinx.android.synthetic.main.activity_model_container.*
 
 
@@ -52,15 +49,22 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
 //    private var storageFile: File? = null
 //private var externalFile:File? = null
 
-
-//external fun stringFromJNI(dracoFile:String, objFile:String)
-
     private lateinit var currentFragment : Fragment
     private lateinit var mAdapter: ItemCircleViewAdapter
     private lateinit var mHandler: Handler
     private val TAG = ModelContainerViewActivity::class.java.simpleName
     private var testData: ArrayList<ItemCircle?> = ArrayList()
     lateinit var restaurantRef : String
+
+    //remove this in the future
+    lateinit var currentSelectedItem : RestaurantMenuItem
+
+    //Consider doing this in a service instead since it is a task of decoding a file
+//    external fun stringFromJNI(dracoFile: String, objFile: String)
+//    static
+//    {
+//        System.loadLibrary("hello-libs");
+//    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,6 +74,7 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
         restaurantRef = intent.getStringExtra("card_name")
 
         addTestData(getItemList())
+
         // Initialize the handler instance
         mHandler = Handler()
 
@@ -79,8 +84,8 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
     @SuppressLint("SetTextI18n")
     fun setUpGUI(){
 
-        title_text.text = "Party Cupcake $restaurantRef"
-        item_cost.text = "$10.99"
+        title_text.text = currentSelectedItem.name + "  " + restaurantRef
+        item_cost.text = "$${currentSelectedItem.cost}"
 //        item_description.text = "Best Burger NA"
 
         circle_item_recycler_view.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -101,14 +106,19 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
 
     private fun onCircleClick(circleView : ItemCircle?) {
 
-        Log.d(TAG, "CLICKED: circleView = text: ${circleView?.restaurantMenuitem?.name}")
-
-        //TODO: Replace cupcake model with hamburger model while as a first step
+        Log.d(TAG, "CLICKED: circleView = text: ${circleView?.restaurantMenuItem?.name}")
+        title_text.text = circleView?.restaurantMenuItem?.name
+        item_cost.text = circleView?.restaurantMenuItem?.cost
+        onChangeModel(circleView?.restaurantMenuItem)
+        //TODO: Replace cupcake model with hamburger model  as a first step
         //then Link cards to specific models to test if being accessed correctly
         //then try to make a model on the fly programmatically using obj,mtl,jpg, NOTE: gltf models are the best for sceneform
         //then path the models to particular circles(menuItems)
         //do stuff
+    }
 
+    private fun onChangeModel(restaurantMenuItem : RestaurantMenuItem?) {
+        (currentFragment as ModelSceneViewFragment).passData(restaurantMenuItem)
     }
 
     private fun onSwitchClick() {
@@ -129,6 +139,7 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
                 .commit()
     }
 
+
     //if we are able to make ARFragment be held by a Fragment in the future
 //    //TODO: Use this lambda expression to change switch fragments
 //    inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> FragmentTransaction) {
@@ -141,27 +152,35 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
 //    }
 
     //fake function for sample item data
-    fun getItemList() : ArrayList<RestaurantMenuitem> {
-        val restaurantMenuitemList : ArrayList<RestaurantMenuitem> = ArrayList()
+    fun getItemList() : ArrayList<RestaurantMenuItem> {
+        val restaurantMenuItemList : ArrayList<RestaurantMenuItem> = ArrayList()
 
-        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","5.00","hyperbolic space cupcake of time"))
-        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","6.00","hyperbolic space cupcake of timex2"))
-        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","7.00","hyperbolic space cupcake of timex4"))
-        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","8.00","hyperbolic space cupcake of timex6"))
-        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","9.00","hyperbolic space cupcake of timex8"))
-        restaurantMenuitemList.add(RestaurantMenuitem("cupcake","10.00","hyperbolic space cupcake of timex10"))
-        return restaurantMenuitemList
+        restaurantMenuItemList.add(RestaurantMenuItem("Cupcake","5.00","hyperbolic space cupcake of time"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Hamburger","6.00","hyperbolic space Hamburger of timex2"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Heart","7.00","hyperbolic space Heart of timex4"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Cupcake","8.00","hyperbolic space Cupcake of timex6"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Hamburger","9.00","hyperbolic space Hamburger of timex8"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Heart","10.00","hyperbolic space Heart of timex10"))
+        return restaurantMenuItemList
     }
 
-    fun addTestData(itemList: ArrayList<RestaurantMenuitem>) {
+    fun addTestData(itemList: ArrayList<RestaurantMenuItem>) {
 
         var id : Long = 112
+
+        currentSelectedItem = itemList[0]
+
         for(item in itemList)
         {
-            testData.add(ItemCircle(112,item))
+            testData.add(ItemCircle(id,item))
             id++
         }
     }
+
+    fun begin() {
+        onChangeModel(currentSelectedItem)
+    }
+
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
