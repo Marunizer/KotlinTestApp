@@ -20,8 +20,9 @@ import java.util.concurrent.atomic.AtomicInteger
  *
  * -------------------------------------------------------------------------------------------------
  * TODO: Remove objPath eventually, draco path will provide draco file that converts obj
+ *
  */
-
+//TODO:Consider extending class to node, so we can make the node model reference and build the description bubble for it here instead
 data class RestaurantMenuItem(
         val name: String,
         val cost: String,

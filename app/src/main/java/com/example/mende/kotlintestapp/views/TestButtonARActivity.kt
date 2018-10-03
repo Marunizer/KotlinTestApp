@@ -16,12 +16,17 @@ import com.google.ar.core.HitResult
 import com.google.ar.core.Plane
 import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.assets.RenderableSource
 import com.google.ar.sceneform.ArSceneView
+import com.google.ar.sceneform.FrameTime
+import com.google.ar.sceneform.Node
+import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
+import kotlinx.android.synthetic.main.activity_model_scene.*
 import kotlinx.android.synthetic.main.activity_model_test_button_ar.*
 
 
@@ -45,6 +50,7 @@ class TestButtonARActivity : AppCompatActivity() {
 
     private var descriptionBubbleRenderable: ViewRenderable? = null
     private lateinit var descriptionBubble: DescriptionBubble
+    private lateinit var bubbleNode : Node
 
 //    ArSceneView directly. That one behaves like a default Android
 //    View so you can use an onTouchListener and use a GestureDetector to
@@ -66,7 +72,7 @@ class TestButtonARActivity : AppCompatActivity() {
 
         arFragment.arSceneView.scene.addOnUpdateListener { frameTime ->
            arFragment.onUpdate(frameTime)
-          onUpdate()
+          onUpdate(frameTime)
          }
 
     // Set the onclick lister for our button
@@ -86,6 +92,7 @@ class TestButtonARActivity : AppCompatActivity() {
         descriptionBubble.onStartTapped = {
             // Can Add initiation stuff here later on
         }
+        bubbleNode = Node()
 
         // create a xml renderable (asynchronous operation,
         // result is delivered to `thenAccept` method)
@@ -112,7 +119,7 @@ class TestButtonARActivity : AppCompatActivity() {
     }
 
     // Updates the tracking state
-    private fun onUpdate() {
+    private fun onUpdate(frameTime: FrameTime) {
         updateTracking()
         // Check if the devices gaze is hitting a plane detected by ARCore
         if (isTracking) {
@@ -121,15 +128,19 @@ class TestButtonARActivity : AppCompatActivity() {
                 showFab(isHitting)
             }
         }
+        if(bubbleNode.isEnabled)
+        {
+            val cameraPosition = arFragment.arSceneView.scene.camera.worldPosition
+            val cardPosition = bubbleNode.getWorldPosition()
+            val direction = Vector3.subtract(cameraPosition, cardPosition)
+            val lookRotation = Quaternion.lookRotation(direction, Vector3.up())
+            bubbleNode.setWorldRotation(lookRotation)
+        }
+
     }
-    //onUpdate -> sceneform gesture dector, can use so bubble always faces user !!
-//    override fun onUpdate(frameTime: FrameTime) {
-//        val cameraPosition = getScene().getCamera().getWorldPosition()
-//        val cardPosition = infoCard.getWorldPosition()
-//        val direction = Vector3.subtract(cameraPosition, cardPosition)
-//        val lookRotation = Quaternion.lookRotation(direction, Vector3.up())
-//        infoCard.setWorldRotation(lookRotation)
-//    }
+
+
+
 
     // Performs frame.HitTest and returns if a hit is detected
     private fun updateHitTest(): Boolean {
@@ -204,6 +215,25 @@ class TestButtonARActivity : AppCompatActivity() {
                     Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
                     return@exceptionally null
                 }
+
+        //TODO: If using obj, must also download sfb file, which I think is pretty big, Possible I am wrong, and we only need to download an sfb file without needing obj,mtl,jpg, in which case need to find a way to compress that
+        //TODO: use this if planned to download a glTf, or glb on the fly, run time, if can compress, probably best option, Draco only does OBJ and PLY? I think
+//        ModelRenderable.builder()
+//                .setSource(fragment.context, RenderableSource.builder().setSource(
+//                        fragment.context,
+//                        model, //Uri.parse(GLTF_ASSET) when downloading
+//                        RenderableSource.SourceType.GLTF2).build())
+////   idk what this does vvvvvv letts find out !             .setScale(0.5f)  // Scale the original model to 50%.
+////                .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+//                .setRegistryId(model) //GLTF_ASSET instead of model when downlaoding
+//                .build()
+//                .thenAccept {
+//                    addNodeToScene(fragment, anchor, it)
+//                }
+//                .exceptionally {
+//                    Toast.makeText(this@TestButtonARActivity, "Could not fetch model from $model", Toast.LENGTH_SHORT).show()
+//                    return@exceptionally null
+//                }
     }
 
     /**
@@ -216,7 +246,8 @@ class TestButtonARActivity : AppCompatActivity() {
      * The Transformable node is our Model
      * Once the nodes are connected we select the TransformableNode so it is available for interactions
      */
-    private fun addNodeToScene(fragment: ArFragment, anchor: Anchor, renderable: ModelRenderable) {
+    @SuppressLint("SetTextI18n")
+    private fun addNodeToScene(fragment: ArFragment, anchor: Anchor, renDerable: ModelRenderable) {
 
         val anchorNode = AnchorNode(anchor)
         val rotatingNode = RotatingNode()
@@ -224,8 +255,25 @@ class TestButtonARActivity : AppCompatActivity() {
         val transformableBubbleNode = TransformableNode(fragment.transformationSystem)
         // TransformableNode means the user to move, scale and rotate the model
 
+        bubbleNode.setParent(transformableBubbleNode)
+        bubbleNode.setEnabled(false)
+        bubbleNode.setLocalPosition(Vector3(0f, .3f, 0f))
 
-        transformableBubbleNode.renderable = descriptionBubbleRenderable
+        ViewRenderable.builder()
+                .setView(fragment.context, R.layout.model_description_view)
+                .build()
+                .thenAccept(
+                        { renderable ->
+                            bubbleNode.setRenderable(descriptionBubbleRenderable)
+                            val textView = renderable.getView() as TextView
+                            textView.setText("something different")
+                        })
+                .exceptionally(
+                        { Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
+                            return@exceptionally null })
+
+
+        //transformableBubbleNode.renderable = descriptionBubbleRenderable
         transformableBubbleNode.scaleController.maxScale = 1f
         transformableBubbleNode.setParent(anchorNode)
         //TODO: Remove this renderable node, instead apply how SolarSystem applies 2D views
@@ -252,23 +300,28 @@ class TestButtonARActivity : AppCompatActivity() {
 
         descriptionBubble.let {
             transformableBubbleNode.apply {
-                localPosition = Vector3(0f, .3f, 0f)
+              //  localPosition = Vector3(0f, .3f, 0f)
                 localScale = Vector3(.05f, .05f, .05f)
             }
         }
+        bubbleNode.setEnabled(true)
 
         //transformableNode.renderable = renderable
         transformableNode.scaleController.maxScale = 1f
         transformableNode.setParent(anchorNode)
 
 
-        rotatingNode.renderable = renderable
+        //TODO: Pause the rotating node when being rotated by transformable node
+
+        rotatingNode.renderable = renDerable
         rotatingNode.setParent(transformableNode)
         //rotatingNode.setParent(anchorNode)
 
         fragment.arSceneView.scene.addChild(anchorNode)
         transformableBubbleNode.select()
         //transformableNode.select()
+
+        //TODO: After successful placement of item on FIRST access, remove floating button and display the choices
     }
 
     override fun onPause() {

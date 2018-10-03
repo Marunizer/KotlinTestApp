@@ -1,18 +1,23 @@
 package com.example.mende.kotlintestapp.util
 
 import android.animation.ObjectAnimator
+import android.view.MotionEvent
 import android.view.animation.LinearInterpolator
 import com.google.ar.sceneform.FrameTime
+import com.google.ar.sceneform.HitTestResult
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.QuaternionEvaluator
 import com.google.ar.sceneform.math.Vector3
 
 class RotatingNode : Node(), Node.OnTapListener {
+    override fun onTap(p0: HitTestResult?, p1: MotionEvent?) {
+
+    }
     // We'll use Property Animation to make this node rotate.
 
     private var rotationAnimation: ObjectAnimator? = null
-    private var degreesPerSecond = 45.0f
+    private var degreesPerSecond = 25.0f
 
     private var lastSpeedMultiplier = 1.0f
 

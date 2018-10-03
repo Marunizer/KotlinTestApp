@@ -1,23 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/root"
-    android:layout_width="108dp"
-    android:layout_height="wrap_content">
+<!--<RelativeLayout-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:id="@+id/root"-->
+    <!--android:layout_width="108dp"-->
+    <!--android:layout_height="wrap_content">-->
 
-    <!--<LinearLayout   20dp is close height for 1 line-->
+    <!--&lt;!&ndash;<LinearLayout   20dp is close height for 1 line&ndash;&gt;-->
 
-        <Button
-            android:id="@+id/xml_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="3"
-            android:maxHeight="60dp"
-            android:background="@drawable/rounded_button"
-            android:foregroundGravity="center"
-            android:textAllCaps="false"
-            android:textColor="#000000"
-            android:textSize="6sp" />
-        <!--android:fontFamily="@font/avenir"-->
+        <!--<Button-->
+            <!--android:id="@+id/xml_btn"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:maxLines="3"-->
+            <!--android:maxHeight="60dp"-->
+            <!--android:background="@drawable/rounded_button"-->
+            <!--android:foregroundGravity="center"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:textColor="#000000"-->
+            <!--android:textSize="6sp" />-->
+        <!--&lt;!&ndash;android:fontFamily="@font/avenir"&ndash;&gt;-->
 
-</RelativeLayout>
+<!--</RelativeLayout>-->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/xml_btn"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:background="@drawable/rounded_bubble"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:paddingTop="24dp"
+    android:paddingBottom="24dp"
+    android:text=""
+    android:textSize="6sp"
+    android:textAllCaps="false"
+    android:textColor="#000000"
+    android:textAlignment="center" />
