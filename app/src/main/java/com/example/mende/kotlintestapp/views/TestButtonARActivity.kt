@@ -4,11 +4,17 @@ import android.annotation.SuppressLint
 import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import com.example.mende.kotlintestapp.R
+import com.example.mende.kotlintestapp.adapters.ItemCircleViewAdapter
+import com.example.mende.kotlintestapp.objects.ItemCircle
+import com.example.mende.kotlintestapp.objects.RestaurantMenuItem
 import com.example.mende.kotlintestapp.util.RotatingNode
 import com.example.mende.kotlintestapp.util.toast
 import com.google.ar.core.Anchor
@@ -26,7 +32,6 @@ import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
-import kotlinx.android.synthetic.main.activity_model_scene.*
 import kotlinx.android.synthetic.main.activity_model_test_button_ar.*
 
 
@@ -43,14 +48,22 @@ import kotlinx.android.synthetic.main.activity_model_test_button_ar.*
  */
 class TestButtonARActivity : AppCompatActivity() {
 
+    private val TAG = TestButtonARActivity::class.java.simpleName
     private lateinit var arFragment: ArFragment
-    private lateinit var arSceneView: ArSceneView
     private var isTracking: Boolean = false
     private var isHitting: Boolean = false
+    private var firstTimeWinkyFace : Boolean = true
 
     private var descriptionBubbleRenderable: ViewRenderable? = null
     private lateinit var descriptionBubble: DescriptionBubble
     private lateinit var bubbleNode : Node
+    private lateinit var mAdapter: ItemCircleViewAdapter
+    private lateinit var mHandler: Handler
+    private var restaurantMenuItem : RestaurantMenuItem? = null
+    private var testData: ArrayList<ItemCircle?> = ArrayList()
+
+    //lateinit var itemModelNode: Node
+    lateinit var anchorNode: AnchorNode
 
 //    ArSceneView directly. That one behaves like a default Android
 //    View so you can use an onTouchListener and use a GestureDetector to
@@ -63,9 +76,14 @@ class TestButtonARActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_model_test_button_ar)
 
-        initResources()
-
         arFragment = sceneform_button_fragment as ArFragment
+        initResources()
+        Log.d(TAG, "CLICKED: circleView = text: ${restaurantMenuItem?.name}")
+//        addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
+
+
+
+
         // arSceneView = sceneform_button_fragment as ArSceneView
         // Adds a listener to the ARSceneView
         // Called before processing each frame
@@ -74,18 +92,21 @@ class TestButtonARActivity : AppCompatActivity() {
            arFragment.onUpdate(frameTime)
           onUpdate(frameTime)
          }
-
-    // Set the onclick lister for our button
-    // Change this string to point to the .sfb file of your choice :)
-    floatingActionButton.setOnClickListener { addObject(Uri.parse("Cupcake.sfb")) }
-    showFab(false)
-}
+        floatingActionButton.setOnClickListener { addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"),restaurantMenuItem?.name) }
+        showFab(false)
+    }
     // itemDescriptionRenderable
     @SuppressLint("SetTextI18n")
     private fun initResources() {
 
-        title_text.text = "Party Cupcake"
-        item_cost.text = "$10.99"
+        addTestData(getItemList())
+
+        // Initialize the handler instance
+        mHandler = Handler()
+
+        title_text_ar.text = restaurantMenuItem?.name
+        item_cost_ar.text = "$${restaurantMenuItem?.cost}"
+        circle_item_ar_recycler_view.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         descriptionBubble = DescriptionBubble(this)
 
@@ -93,6 +114,13 @@ class TestButtonARActivity : AppCompatActivity() {
             // Can Add initiation stuff here later on
         }
         bubbleNode = Node()
+
+        // Access the RecyclerView Adapter and load the data into it
+
+        circle_item_ar_recycler_view.visibility = View.INVISIBLE
+        mAdapter = ItemCircleViewAdapter(circle_item_ar_recycler_view, this, testData)
+        { itemCircle : ItemCircle?-> onCircleClick(itemCircle) }
+        circle_item_ar_recycler_view.adapter = mAdapter
 
         // create a xml renderable (asynchronous operation,
         // result is delivered to `thenAccept` method)
@@ -103,7 +131,40 @@ class TestButtonARActivity : AppCompatActivity() {
                     it.isShadowReceiver = true
                     descriptionBubbleRenderable = it
                 }
-                .exceptionally { it.toast(this) }
+                .exceptionally { //TODO: delete on release
+                     it.toast(this) }
+    }
+
+    private fun onCircleClick(circleView : ItemCircle?) {
+
+        Log.d(TAG, "CLICKED: circleView = text: ${circleView?.restaurantMenuItem?.name}")
+        title_text_ar.text = circleView?.restaurantMenuItem?.name
+        item_cost_ar.text = circleView?.restaurantMenuItem?.cost
+        restaurantMenuItem = circleView?.restaurantMenuItem
+        onChangeModel(restaurantMenuItem)
+        //TODO: Replace cupcake model with hamburger model  as a first step
+        //then Link cards to specific models to test if being accessed correctly
+        //then try to make a model on the fly programmatically using obj,mtl,jpg, NOTE: gltf models are the best for sceneform
+        //then path the models to particular circles(menuItems)
+        //do stuff
+    }
+
+    private fun onChangeModel(restaurantMenuItem : RestaurantMenuItem?) {
+        //replace with new restaurant menu item selected
+
+        Log.d("MAGIC SPEAKER", "${restaurantMenuItem?.name} =?= ")
+
+
+//        if (firstTimeWinkyFace) {
+//         //   renderObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name) // Render the object
+//            firstTimeWinkyFace = false
+//        }
+         if (restaurantMenuItem?.name != anchorNode.name)
+        {
+            arFragment.arSceneView.scene.removeChild(anchorNode)
+            addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
+        }
+
     }
 
     // Simple function to show/hide our FAB
@@ -181,7 +242,7 @@ class TestButtonARActivity : AppCompatActivity() {
      *
      * This method takes in our 3D model and performs a hit test to determine where to place it
      */
-    private fun addObject(model: Uri) {
+    private fun addObject(model: Uri, name: String?) {
         val frame = arFragment.arSceneView.arFrame
         val point = getScreenCenter()
         if (frame != null) {
@@ -189,7 +250,7 @@ class TestButtonARActivity : AppCompatActivity() {
             for (hit in hits) {
                 val trackable = hit.trackable
                 if (trackable is Plane && trackable.isPoseInPolygon(hit.hitPose)) {
-                    placeObject(arFragment, hit.createAnchor(), model)
+                    placeObject(arFragment, hit.createAnchor(), model, name)
                     break
                 }
             }
@@ -204,14 +265,15 @@ class TestButtonARActivity : AppCompatActivity() {
      * Uses the ARCore anchor from the hitTest result and builds the Sceneform nodes.
      * It starts the asynchronous loading of the 3D model using the ModelRenderable builder.
      */
-    private fun placeObject(fragment: ArFragment, anchor: Anchor, model: Uri) {
+    private fun placeObject(fragment: ArFragment, anchor: Anchor, model: Uri, name :String?) {
         ModelRenderable.builder()
                 .setSource(fragment.context, model)
                 .build()
                 .thenAccept {
-                    addNodeToScene(fragment, anchor, it)
+                    addNodeToScene(fragment, anchor, it, name)
                 }
                 .exceptionally {
+                    //TODO: delete on release
                     Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
                     return@exceptionally null
                 }
@@ -247,9 +309,9 @@ class TestButtonARActivity : AppCompatActivity() {
      * Once the nodes are connected we select the TransformableNode so it is available for interactions
      */
     @SuppressLint("SetTextI18n")
-    private fun addNodeToScene(fragment: ArFragment, anchor: Anchor, renDerable: ModelRenderable) {
+    private fun addNodeToScene(fragment: ArFragment, anchor: Anchor, renDerable: ModelRenderable, name : String?) {
 
-        val anchorNode = AnchorNode(anchor)
+        anchorNode = AnchorNode(anchor)
         val rotatingNode = RotatingNode()
         val transformableNode = TransformableNode(fragment.transformationSystem)
         val transformableBubbleNode = TransformableNode(fragment.transformationSystem)
@@ -265,10 +327,9 @@ class TestButtonARActivity : AppCompatActivity() {
                 .thenAccept(
                         { renderable ->
                             bubbleNode.setRenderable(descriptionBubbleRenderable)
-                            val textView = renderable.getView() as TextView
-                            textView.setText("something different")
                         })
                 .exceptionally(
+                        //TODO: delete on release
                         { Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
                             return@exceptionally null })
 
@@ -278,6 +339,7 @@ class TestButtonARActivity : AppCompatActivity() {
         transformableBubbleNode.setParent(anchorNode)
         //TODO: Remove this renderable node, instead apply how SolarSystem applies 2D views
         //for ar button
+        //TODO: Find out if bubble auto shows up, or only shows up when clicked
         // maybe reference code to have an on click listener on food for description bubble
 //        base.setRenderable(exampleLayoutRenderable);
 //        Context c = this;
@@ -296,7 +358,7 @@ class TestButtonARActivity : AppCompatActivity() {
 //                    c, "Andy touched.", Toast.LENGTH_LONG)
 //                    .show();
 //        });
-//        retur
+//        return
 
         descriptionBubble.let {
             transformableBubbleNode.apply {
@@ -312,9 +374,12 @@ class TestButtonARActivity : AppCompatActivity() {
 
 
         //TODO: Pause the rotating node when being rotated by transformable node
+        // to stop rotating : rotatingNode.setDegreesPerSecond(0f)
+        // to begin rotating again: rotatingNode.setDegreesPerSecond(DEFAULT_DPS) //25.0f
 
         rotatingNode.renderable = renDerable
         rotatingNode.setParent(transformableNode)
+
         //rotatingNode.setParent(anchorNode)
 
         fragment.arSceneView.scene.addChild(anchorNode)
@@ -322,6 +387,36 @@ class TestButtonARActivity : AppCompatActivity() {
         //transformableNode.select()
 
         //TODO: After successful placement of item on FIRST access, remove floating button and display the choices
+        //set Transparency of model
+
+        if(circle_item_ar_recycler_view.visibility == View.GONE || circle_item_ar_recycler_view.visibility == View.INVISIBLE)
+            circle_item_ar_recycler_view.visibility = View.VISIBLE
+    }
+
+    //fake function for sample item data
+    fun getItemList() : ArrayList<RestaurantMenuItem> {
+        val restaurantMenuItemList : ArrayList<RestaurantMenuItem> = ArrayList()
+
+        restaurantMenuItemList.add(RestaurantMenuItem("Cupcake","5.00","hyperbolic space cupcake of time"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Hamburger","6.00","hyperbolic space Hamburger of timex2"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Heart","7.00","hyperbolic space Heart of timex4"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Cupcake","8.00","hyperbolic space Cupcake of timex6"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Hamburger","9.00","hyperbolic space Hamburger of timex8"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Heart","10.00","hyperbolic space Heart of timex10"))
+        return restaurantMenuItemList
+    }
+
+    fun addTestData(itemList: ArrayList<RestaurantMenuItem>) {
+
+        var id : Long = 112
+
+        restaurantMenuItem = itemList[0]
+
+        for(item in itemList)
+        {
+            testData.add(ItemCircle(id,item))
+            id++
+        }
     }
 
     override fun onPause() {

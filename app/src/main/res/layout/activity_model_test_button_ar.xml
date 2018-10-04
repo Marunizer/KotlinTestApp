@@ -25,7 +25,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
     <TextView
-        android:id="@+id/title_text"
+        android:id="@+id/title_text_ar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="end"
@@ -45,7 +45,7 @@
         app:layout_constraintTop_toBottomOf="@id/title_bar_layout">
 
         <TextView
-            android:id="@+id/item_cost"
+            android:id="@+id/item_cost_ar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -74,7 +74,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/select_item_layout"
+        android:id="@+id/select_item_ar_layout"
         android:layout_width="match_parent"
         android:layout_height="92dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -82,7 +82,7 @@
         android:orientation="horizontal">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/circle_item_recycler_view"
+            android:id="@+id/circle_item_ar_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
