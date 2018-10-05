@@ -154,7 +154,7 @@ class TestButtonARActivity : AppCompatActivity() {
 
         Log.d("MAGIC SPEAKER", "${restaurantMenuItem?.name} =?= ")
 
-
+        firstTimeWinkyFace = false
 //        if (firstTimeWinkyFace) {
 //         //   renderObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name) // Render the object
 //            firstTimeWinkyFace = false
@@ -170,13 +170,21 @@ class TestButtonARActivity : AppCompatActivity() {
     // Simple function to show/hide our FAB
     @SuppressLint("RestrictedApi")
     private fun showFab(enabled: Boolean) {
-        if (enabled) {
-            floatingActionButton.isEnabled = true
-            floatingActionButton.visibility = View.VISIBLE
-        } else {
+        if (firstTimeWinkyFace)
+        {
+            if (enabled) {
+                floatingActionButton.isEnabled = true
+                floatingActionButton.visibility = View.VISIBLE
+            } else {
+                floatingActionButton.isEnabled = false
+                floatingActionButton.visibility = View.GONE
+            }
+        }
+        else {
             floatingActionButton.isEnabled = false
             floatingActionButton.visibility = View.GONE
         }
+
     }
 
     // Updates the tracking state
