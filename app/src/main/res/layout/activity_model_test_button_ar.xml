@@ -29,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="end"
-        android:textColor="@color/app_bar_theme"
+        android:textColor="@android:color/white"
         android:textSize="22sp"
         android:layout_marginStart="16dp"
         android:layoutDirection="rtl" />
@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:textColor="@color/app_bar_theme"
+            android:textColor="@android:color/white"
             android:textSize="20sp"
             app:layout_constraintRight_toRightOf="parent"/>
 
@@ -65,7 +65,7 @@
             android:foregroundGravity="center"
             android:maxLines="1"
             android:textAllCaps="false"
-            android:textColor="@color/app_bar_theme"
+            android:textColor="@android:color/white"
             android:textSize="16sp"
             android:text="@string/order_now_btn"
             app:layout_constraintRight_toLeftOf="@id/item_cost"

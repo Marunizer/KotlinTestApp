@@ -14,6 +14,7 @@ import com.example.mende.kotlintestapp.adapters.ItemCircleViewAdapter
 import com.example.mende.kotlintestapp.objects.ItemCircle
 import com.example.mende.kotlintestapp.objects.EmojiObjects
 import com.example.mende.kotlintestapp.objects.RestaurantMenuItem
+import com.example.mende.kotlintestapp.util.MenuListHolder
 import kotlinx.android.synthetic.main.activity_model_container.*
 
 
@@ -54,9 +55,9 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
     private lateinit var mHandler: Handler
     private val TAG = ModelContainerViewActivity::class.java.simpleName
     private var testData: ArrayList<ItemCircle?> = ArrayList()
-    lateinit var restaurantRef : String
+    private lateinit var restaurantKey : String
+    private  var currentIndex : Long = 112
 
-    //remove this in the future
     lateinit var currentSelectedItem : RestaurantMenuItem
 
     //Consider doing this in a service instead since it is a task of decoding a file
@@ -66,12 +67,13 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
 //        System.loadLibrary("hello-libs");
 //    }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_model_container)
 
-        restaurantRef = intent.getStringExtra("card_name")
+        restaurantKey = intent.getStringExtra("card_key")
+
+
 
         addTestData(getItemList())
 
@@ -84,19 +86,19 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
     @SuppressLint("SetTextI18n")
     fun setUpGUI(){
 
-        title_text.text = currentSelectedItem.name + "  " + restaurantRef
+        title_text.text = currentSelectedItem.name
         item_cost.text = "$${currentSelectedItem.cost}"
 //        item_description.text = "Best Burger NA"
 
         circle_item_recycler_view.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         switch_button.text = "Magic " + EmojiObjects.CAMERA
-        switch_button.setOnClickListener { onSwitchClick()}
+        switch_button.setOnClickListener { onMagicClick()}
         order_button.text = "Order Now"
 
-        // Access the RecyclerView Adapter and load the data into it
 
-        mAdapter = ItemCircleViewAdapter(circle_item_recycler_view, this, testData)
+        // Access the RecyclerView Adapter and load the data into it
+        mAdapter = ItemCircleViewAdapter(circle_item_recycler_view, this, testData, false)
             { itemCircle : ItemCircle?-> onCircleClick(itemCircle) }
         circle_item_recycler_view.adapter = mAdapter
 
@@ -109,20 +111,19 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
         Log.d(TAG, "CLICKED: circleView = text: ${circleView?.restaurantMenuItem?.name}")
         title_text.text = circleView?.restaurantMenuItem?.name
         item_cost.text = circleView?.restaurantMenuItem?.cost
+        currentIndex = circleView?.id!!
         onChangeModel(circleView?.restaurantMenuItem)
-        //TODO: Replace cupcake model with hamburger model  as a first step
-        //then Link cards to specific models to test if being accessed correctly
-        //then try to make a model on the fly programmatically using obj,mtl,jpg, NOTE: gltf models are the best for sceneform
-        //then path the models to particular circles(menuItems)
-        //do stuff
     }
 
     private fun onChangeModel(restaurantMenuItem : RestaurantMenuItem?) {
         (currentFragment as ModelSceneViewFragment).passData(restaurantMenuItem)
+        currentSelectedItem = restaurantMenuItem!!
     }
 
-    private fun onSwitchClick() {
+    private fun onMagicClick() {
         val i = Intent(this@ModelContainerViewActivity, TestButtonARActivity::class.java)
+        i.putExtra("card_key",restaurantKey)
+        i.putExtra("current_index", currentIndex )
         startActivity(i)
         finish()
     }
@@ -152,23 +153,15 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
 //    }
 
     //fake function for sample item data
-    fun getItemList() : ArrayList<RestaurantMenuItem> {
-        val restaurantMenuItemList : ArrayList<RestaurantMenuItem> = ArrayList()
-
-        restaurantMenuItemList.add(RestaurantMenuItem("Cupcake","5.00","hyperbolic space cupcake of time"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Hamburger","6.00","hyperbolic space Hamburger of timex2"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Heart","7.00","hyperbolic space Heart of timex4"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Cupcake","8.00","hyperbolic space Cupcake of timex6"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Hamburger","9.00","hyperbolic space Hamburger of timex8"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Heart","10.00","hyperbolic space Heart of timex10"))
-        return restaurantMenuItemList
+    fun getItemList() : ArrayList<RestaurantMenuItem>? {
+        return MenuListHolder().getList(restaurantKey)
     }
 
-    fun addTestData(itemList: ArrayList<RestaurantMenuItem>) {
+    fun addTestData(itemList: ArrayList<RestaurantMenuItem>?) {
 
         var id : Long = 112
 
-        currentSelectedItem = itemList[0]
+        currentSelectedItem = itemList!![0]
 
         for(item in itemList)
         {

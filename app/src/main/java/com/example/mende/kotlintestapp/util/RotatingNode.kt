@@ -21,6 +21,8 @@ class RotatingNode : Node(), Node.OnTapListener {
 
     private var lastSpeedMultiplier = 1.0f
 
+    private var isItAnimated: Boolean = true
+
     private val animationDuration: Long
         get() = (1000 * 360 / (degreesPerSecond * speedMultiplier)).toLong()
 
@@ -66,6 +68,20 @@ class RotatingNode : Node(), Node.OnTapListener {
 
     override fun onDeactivate() {
         stopAnimation()
+    }
+
+    fun onPauseAnimation() {
+        rotationAnimation!!.pause()
+        isItAnimated = false
+    }
+
+    fun onResumeAnimation() {
+        rotationAnimation?.resume()
+        isItAnimated = true
+    }
+
+    fun isAnimated() : Boolean {
+        return isItAnimated
     }
 
     private fun startAnimation() {

@@ -65,13 +65,6 @@ class ModelSceneViewFragment : Fragment() {
     override fun onAttach(context: Context) {
         sceneContext = context
         super.onAttach(context)
-
-        //SAMPLE ON HOW TO ATTAIN RESOURCES
-//        // Get rage face names and descriptions.
-//        val resources = context!!.resources
-//        names = resources.getStringArray(R.array.names)
-//        descriptions = resources.getStringArray(R.array.descriptions)
-//        urls = resources.getStringArray(R.array.urls
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -135,7 +128,6 @@ class ModelSceneViewFragment : Fragment() {
                     dialog.show()
                     return@exceptionally null
                 }
-
     }
 
     /**
@@ -198,7 +190,6 @@ class ModelSceneViewFragment : Fragment() {
 
 
         Log.d("MAGIC SPEAKER", "${restaurantMenuItem?.name} =?= ")
-
 
         if (firstTimeWinkyFace) {
             renderObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name) // Render the object

@@ -1,20 +1,24 @@
 package com.example.mende.kotlintestapp.views
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.ActivityManager
+import android.content.Context
 import android.graphics.Point
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.adapters.ItemCircleViewAdapter
 import com.example.mende.kotlintestapp.objects.ItemCircle
 import com.example.mende.kotlintestapp.objects.RestaurantMenuItem
+import com.example.mende.kotlintestapp.util.MenuListHolder
 import com.example.mende.kotlintestapp.util.RotatingNode
 import com.example.mende.kotlintestapp.util.toast
 import com.google.ar.core.Anchor
@@ -22,8 +26,6 @@ import com.google.ar.core.HitResult
 import com.google.ar.core.Plane
 import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.AnchorNode
-import com.google.ar.sceneform.assets.RenderableSource
-import com.google.ar.sceneform.ArSceneView
 import com.google.ar.sceneform.FrameTime
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Quaternion
@@ -53,57 +55,59 @@ class TestButtonARActivity : AppCompatActivity() {
     private var isTracking: Boolean = false
     private var isHitting: Boolean = false
     private var firstTimeWinkyFace : Boolean = true
+    private var nodeAllocated : Boolean = false
 
     private var descriptionBubbleRenderable: ViewRenderable? = null
     private lateinit var descriptionBubble: DescriptionBubble
+    lateinit var anchorNode: AnchorNode
+    lateinit var transformableNode : TransformableNode
+    lateinit var rotatingNode : RotatingNode
     private lateinit var bubbleNode : Node
     private lateinit var mAdapter: ItemCircleViewAdapter
     private lateinit var mHandler: Handler
     private var restaurantMenuItem : RestaurantMenuItem? = null
     private var testData: ArrayList<ItemCircle?> = ArrayList()
 
-    //lateinit var itemModelNode: Node
-    lateinit var anchorNode: AnchorNode
+    private lateinit var restaurantKey: String
+    private var currentIndex : Long = 0
+    private val MIN_OPENGL_VERSION = 3.0
 
 //    ArSceneView directly. That one behaves like a default Android
 //    View so you can use an onTouchListener and use a GestureDetector to
 //    detect the gestures. But in this case you have to do rotation and
 //    translation of your objects on your own.
 
-
-    @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_model_test_button_ar)
 
+        if (!checkIsSupportedDeviceOrFinish(this)) { return }
+
         arFragment = sceneform_button_fragment as ArFragment
+        restaurantKey = intent.getStringExtra("card_key")
+        currentIndex = intent.getLongExtra("current_index", 112)
+
         initResources()
-        Log.d(TAG, "CLICKED: circleView = text: ${restaurantMenuItem?.name}")
-//        addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
-
-
-
-
-        // arSceneView = sceneform_button_fragment as ArSceneView
-        // Adds a listener to the ARSceneView
-        // Called before processing each frame
 
         arFragment.arSceneView.scene.addOnUpdateListener { frameTime ->
            arFragment.onUpdate(frameTime)
           onUpdate(frameTime)
          }
 
+        Log.d(TAG, "FloatingButton : expected from id: $currentIndex menu item: ${restaurantMenuItem?.name}")
         floatingActionButton.setOnClickListener { addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"),restaurantMenuItem?.name) }
         showFab(false)
     }
+
     // itemDescriptionRenderable
     @SuppressLint("SetTextI18n")
     private fun initResources() {
 
         addTestData(getItemList())
 
-        // Initialize the handler instance
+        // Initialize
         mHandler = Handler()
+        bubbleNode = Node()
 
         title_text_ar.text = restaurantMenuItem?.name
         item_cost_ar.text = "$${restaurantMenuItem?.cost}"
@@ -112,16 +116,15 @@ class TestButtonARActivity : AppCompatActivity() {
         descriptionBubble = DescriptionBubble(this)
 
         descriptionBubble.onStartTapped = {
-            // Can Add initiation stuff here later on
+            // Can Add initiation stuff here later on or just delete
         }
-        bubbleNode = Node()
 
         // Access the RecyclerView Adapter and load the data into it
-
         circle_item_ar_recycler_view.visibility = View.INVISIBLE
-        mAdapter = ItemCircleViewAdapter(circle_item_ar_recycler_view, this, testData)
+        mAdapter = ItemCircleViewAdapter(circle_item_ar_recycler_view, this, testData, true)
         { itemCircle : ItemCircle?-> onCircleClick(itemCircle) }
         circle_item_ar_recycler_view.adapter = mAdapter
+
 
         // create a xml renderable (asynchronous operation,
         // result is delivered to `thenAccept` method)
@@ -134,33 +137,6 @@ class TestButtonARActivity : AppCompatActivity() {
                 }
                 .exceptionally { //TODO: delete on release
                      it.toast(this) }
-    }
-
-    private fun onCircleClick(circleView : ItemCircle?) {
-
-        Log.d(TAG, "CLICKED: circleView = text: ${circleView?.restaurantMenuItem?.name}")
-        title_text_ar.text = circleView?.restaurantMenuItem?.name
-        item_cost_ar.text = circleView?.restaurantMenuItem?.cost
-        restaurantMenuItem = circleView?.restaurantMenuItem
-        onChangeModel(restaurantMenuItem)
-        //TODO: Replace cupcake model with hamburger model  as a first step
-        //then Link cards to specific models to test if being accessed correctly
-        //then try to make a model on the fly programmatically using obj,mtl,jpg, NOTE: gltf models are the best for sceneform
-        //then path the models to particular circles(menuItems)
-        //do stuff
-    }
-
-    private fun onChangeModel(restaurantMenuItem : RestaurantMenuItem?) {
-        //replace with new restaurant menu item selected
-
-        Log.d("MAGIC SPEAKER", "${restaurantMenuItem?.name} =?= ")
-
-         if (restaurantMenuItem?.name != anchorNode.name)
-        {
-            arFragment.arSceneView.scene.removeChild(anchorNode)
-            addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
-        }
-
     }
 
     // Simple function to show/hide our FAB
@@ -185,20 +161,28 @@ class TestButtonARActivity : AppCompatActivity() {
                 if(firstTimeWinkyFace)
                     showFab(isHitting)
             }
-        }
-        if(bubbleNode.isEnabled)
-        {
-            val cameraPosition = arFragment.arSceneView.scene.camera.worldPosition
-            val cardPosition = bubbleNode.getWorldPosition()
-            val direction = Vector3.subtract(cameraPosition, cardPosition)
-            val lookRotation = Quaternion.lookRotation(direction, Vector3.up())
-            bubbleNode.setWorldRotation(lookRotation)
-        }
+            if(bubbleNode.isEnabled)
+            {
+                val cameraPosition = arFragment.arSceneView.scene.camera.worldPosition
+                val cardPosition = bubbleNode.getWorldPosition()
+                val direction = Vector3.subtract(cameraPosition, cardPosition)
+                val lookRotation = Quaternion.lookRotation(direction, Vector3.up())
+                bubbleNode.setWorldRotation(lookRotation)
+            }
 
+            if (!firstTimeWinkyFace && nodeAllocated)
+            {
+
+                if(transformableNode.isTransforming) {
+                    rotatingNode.onPauseAnimation()
+                }
+                else if (!rotatingNode.isAnimated()){
+                    rotatingNode.onResumeAnimation()
+                    arFragment.transformationSystem.selectionVisualizer.removeSelectionVisual(transformableNode)
+                }
+            }
+        }
     }
-
-
-
 
     // Performs frame.HitTest and returns if a hit is detected
     private fun updateHitTest(): Boolean {
@@ -232,6 +216,29 @@ class TestButtonARActivity : AppCompatActivity() {
     private fun getScreenCenter(): Point {
         val view = this.findViewById<View>(android.R.id.content)
         return Point(view.width / 2, view.height / 2)
+    }
+
+    private fun onCircleClick(circleView : ItemCircle?) {
+
+        Log.d(TAG, "CLICKED: circleView = text: ${circleView?.restaurantMenuItem?.name}")
+        title_text_ar.text = circleView?.restaurantMenuItem?.name
+        item_cost_ar.text = circleView?.restaurantMenuItem?.cost
+        restaurantMenuItem = circleView?.restaurantMenuItem
+        currentIndex = circleView!!.id
+        onChangeModel(restaurantMenuItem)
+        //TODO: try to make a model on the fly programmatically using obj,mtl,jpg, NOTE: gltf models are the best for sceneform
+    }
+
+    private fun onChangeModel(restaurantMenuItem : RestaurantMenuItem?) {
+        //replace with new restaurant menu item selected
+        Log.d("MAGIC SPEAKER", "${restaurantMenuItem?.name} =?= ")
+
+        if (restaurantMenuItem?.name != anchorNode.name)
+        {
+            nodeAllocated = false
+            arFragment.arSceneView.scene.removeChild(anchorNode)
+            addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
+        }
     }
 
     /**
@@ -311,10 +318,10 @@ class TestButtonARActivity : AppCompatActivity() {
         anchorNode = AnchorNode(anchor)
         val rotatingNode = RotatingNode()
         val transformableNode = TransformableNode(fragment.transformationSystem)
-        val transformableBubbleNode = TransformableNode(fragment.transformationSystem)
+
         // TransformableNode means the user to move, scale and rotate the model
 
-        bubbleNode.setParent(transformableBubbleNode)
+        bubbleNode.setParent(anchorNode)
         bubbleNode.setEnabled(false)
         bubbleNode.setLocalPosition(Vector3(0f, .3f, 0f))
 
@@ -330,13 +337,7 @@ class TestButtonARActivity : AppCompatActivity() {
                         { Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
                             return@exceptionally null })
 
-
-        //transformableBubbleNode.renderable = descriptionBubbleRenderable
-        transformableBubbleNode.scaleController.maxScale = 1f
-        transformableBubbleNode.setParent(anchorNode)
-        //TODO: Remove this renderable node, instead apply how SolarSystem applies 2D views
-        //for ar button
-        //TODO: Find out if bubble auto shows up, or only shows up when clicked
+        //TODO: make bubble show up when clicked
         // maybe reference code to have an on click listener on food for description bubble
 //        base.setRenderable(exampleLayoutRenderable);
 //        Context c = this;
@@ -357,34 +358,23 @@ class TestButtonARActivity : AppCompatActivity() {
 //        });
 //        return
 
-        descriptionBubble.let {
-            transformableBubbleNode.apply {
-              //  localPosition = Vector3(0f, .3f, 0f)
-                localScale = Vector3(.05f, .05f, .05f)
-            }
-        }
+
         bubbleNode.setEnabled(true)
 
-        //transformableNode.renderable = renderable
-        transformableNode.scaleController.maxScale = 1f
+        transformableNode.scaleController.isEnabled = false
         transformableNode.setParent(anchorNode)
-
-
-        //TODO: Pause the rotating node when being rotated by transformable node
-        // to stop rotating : rotatingNode.setDegreesPerSecond(0f)
-        // to begin rotating again: rotatingNode.setDegreesPerSecond(DEFAULT_DPS) //25.0f
 
         rotatingNode.renderable = renDerable
         rotatingNode.setParent(transformableNode)
 
-        //rotatingNode.setParent(anchorNode)
+        this.rotatingNode = rotatingNode
+        this.transformableNode = transformableNode
 
         fragment.arSceneView.scene.addChild(anchorNode)
-        transformableBubbleNode.select()
-        //transformableNode.select()
 
-        //TODO: After successful placement of item on FIRST access, remove floating button and display the choices
         //set Transparency of model
+
+        nodeAllocated = true
 
         if(firstTimeWinkyFace) {
             showFab(false)
@@ -396,29 +386,44 @@ class TestButtonARActivity : AppCompatActivity() {
     }
 
     //fake function for sample item data
-    fun getItemList() : ArrayList<RestaurantMenuItem> {
-        val restaurantMenuItemList : ArrayList<RestaurantMenuItem> = ArrayList()
-
-        restaurantMenuItemList.add(RestaurantMenuItem("Cupcake","5.00","hyperbolic space cupcake of time"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Hamburger","6.00","hyperbolic space Hamburger of timex2"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Heart","7.00","hyperbolic space Heart of timex4"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Cupcake","8.00","hyperbolic space Cupcake of timex6"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Hamburger","9.00","hyperbolic space Hamburger of timex8"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Heart","10.00","hyperbolic space Heart of timex10"))
-        return restaurantMenuItemList
+    fun getItemList() : ArrayList<RestaurantMenuItem>? {
+        return MenuListHolder().getList(restaurantKey)
     }
 
-    fun addTestData(itemList: ArrayList<RestaurantMenuItem>) {
+    fun addTestData(itemList: ArrayList<RestaurantMenuItem>?) {
 
         var id : Long = 112
 
-        restaurantMenuItem = itemList[0]
-
-        for(item in itemList)
+        for(item in itemList!!)
         {
             testData.add(ItemCircle(id,item))
+
+            if (id == currentIndex)
+                restaurantMenuItem = item
+
+
             id++
         }
+    }
+
+    fun checkIsSupportedDeviceOrFinish(activity: Activity): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            Log.e(TAG, "Sceneform requires Android N or later")
+            Toast.makeText(activity, "Sceneform requires Android N or later", Toast.LENGTH_LONG).show()
+            activity.finish()
+            return false
+        }
+        val openGlVersionString = (activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager)
+                .deviceConfigurationInfo
+                .glEsVersion
+        if (java.lang.Double.parseDouble(openGlVersionString) < MIN_OPENGL_VERSION) {
+            Log.e(TAG, "Sceneform requires OpenGL ES 3.0 later")
+            Toast.makeText(activity, "Sceneform requires OpenGL ES 3.0 or later", Toast.LENGTH_LONG)
+                    .show()
+            activity.finish()
+            return false
+        }
+        return true
     }
 
     override fun onPause() {

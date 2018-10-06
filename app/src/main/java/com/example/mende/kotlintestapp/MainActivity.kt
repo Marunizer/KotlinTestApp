@@ -26,6 +26,7 @@ import android.widget.Toast
 import com.example.mende.kotlintestapp.objects.LocationConstants
 import com.example.mende.kotlintestapp.services.FetchLocationService
 import com.example.mende.kotlintestapp.services.FetchLocationWithZipService
+import com.example.mende.kotlintestapp.util.MenuListHolder
 import com.example.mende.kotlintestapp.util.SharedPref
 import com.example.mende.kotlintestapp.views.HomeActivity
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -94,8 +95,9 @@ class MainActivity : AppCompatActivity() {
 
         updateValuesFromBundle(savedInstanceState)
 
-        //Initiate our SharedPreferences singleton class
+        //Initiate singleton class(es)
         SharedPref().init(applicationContext)
+        MenuListHolder().init()
         checkRadius()
 
         setupPermissions()

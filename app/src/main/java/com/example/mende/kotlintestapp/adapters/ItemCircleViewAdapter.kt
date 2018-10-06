@@ -1,6 +1,8 @@
 package com.example.mende.kotlintestapp.adapters
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.graphics.Color
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -16,10 +18,12 @@ internal var totalItemCount : Int = 0
 class ItemCircleViewAdapter(recyclerView: RecyclerView,
                             internal var activity: Activity,
                             internal var items : ArrayList<ItemCircle?>,
+                            val arMode: Boolean,
                             val clickListener: (ItemCircle?) -> Unit) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     init {
+
         val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -44,6 +48,8 @@ class ItemCircleViewAdapter(recyclerView: RecyclerView,
 
             holder.bind(item, clickListener)
             holder.itemName?.text = item?.restaurantMenuItem?.name
+            if(arMode)
+                holder.itemName?.setTextColor(Color.parseColor("#ffffff"))
 //            holder.itemImage.background = getItemViewType(R.drawable.abc_btn_check_material)
         }
     }
@@ -63,10 +69,5 @@ class ItemCircleViewAdapter(recyclerView: RecyclerView,
     override fun getItemCount(): Int {
         return items.size
     }
-
-    //function sample to make new one of
-//    fun setLoadedMore(loadMoreCards: LoadMore) {
-//        this.loadMore = loadMoreCards
-//    }
 
 }
