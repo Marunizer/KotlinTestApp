@@ -92,6 +92,7 @@ class TestButtonARActivity : AppCompatActivity() {
            arFragment.onUpdate(frameTime)
           onUpdate(frameTime)
          }
+
         floatingActionButton.setOnClickListener { addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"),restaurantMenuItem?.name) }
         showFab(false)
     }
@@ -154,11 +155,6 @@ class TestButtonARActivity : AppCompatActivity() {
 
         Log.d("MAGIC SPEAKER", "${restaurantMenuItem?.name} =?= ")
 
-        firstTimeWinkyFace = false
-//        if (firstTimeWinkyFace) {
-//         //   renderObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name) // Render the object
-//            firstTimeWinkyFace = false
-//        }
          if (restaurantMenuItem?.name != anchorNode.name)
         {
             arFragment.arSceneView.scene.removeChild(anchorNode)
@@ -170,21 +166,13 @@ class TestButtonARActivity : AppCompatActivity() {
     // Simple function to show/hide our FAB
     @SuppressLint("RestrictedApi")
     private fun showFab(enabled: Boolean) {
-        if (firstTimeWinkyFace)
-        {
-            if (enabled) {
-                floatingActionButton.isEnabled = true
-                floatingActionButton.visibility = View.VISIBLE
-            } else {
-                floatingActionButton.isEnabled = false
-                floatingActionButton.visibility = View.GONE
-            }
-        }
-        else {
+        if (enabled) {
+            floatingActionButton.isEnabled = true
+            floatingActionButton.visibility = View.VISIBLE
+        } else {
             floatingActionButton.isEnabled = false
             floatingActionButton.visibility = View.GONE
         }
-
     }
 
     // Updates the tracking state
@@ -194,7 +182,8 @@ class TestButtonARActivity : AppCompatActivity() {
         if (isTracking) {
             val hitTestChanged = updateHitTest()
             if (hitTestChanged) {
-                showFab(isHitting)
+                if(firstTimeWinkyFace)
+                    showFab(isHitting)
             }
         }
         if(bubbleNode.isEnabled)
@@ -397,8 +386,13 @@ class TestButtonARActivity : AppCompatActivity() {
         //TODO: After successful placement of item on FIRST access, remove floating button and display the choices
         //set Transparency of model
 
-        if(circle_item_ar_recycler_view.visibility == View.GONE || circle_item_ar_recycler_view.visibility == View.INVISIBLE)
-            circle_item_ar_recycler_view.visibility = View.VISIBLE
+        if(firstTimeWinkyFace) {
+            showFab(false)
+            floatingActionButton.background = null
+            if(circle_item_ar_recycler_view.visibility == View.GONE || circle_item_ar_recycler_view.visibility == View.INVISIBLE)
+                circle_item_ar_recycler_view.visibility = View.VISIBLE
+            firstTimeWinkyFace = false
+        }
     }
 
     //fake function for sample item data

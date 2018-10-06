@@ -42,7 +42,7 @@
       file: "sampledata/Heart.obj",
       name: "Heart",
       recenter: "root",
-      scale: 0.011206000000000001,
+      scale: 0.001 //0.011206000000000001,
    },
    version: "0.52:1",
 }
