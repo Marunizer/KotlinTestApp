@@ -12,10 +12,7 @@ import com.google.ar.sceneform.math.Vector3
 
 class RotatingNode : Node(), Node.OnTapListener {
     override fun onTap(p0: HitTestResult?, p1: MotionEvent?) {
-        if (isAnimated())
-            onPauseAnimation()
-        else if(!isAnimated())
-            onResumeAnimation()
+
     }
     // We'll use Property Animation to make this node rotate.
 

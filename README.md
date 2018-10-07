@@ -6,7 +6,8 @@ Fully Operational on Run? : true //probably, unless I forgot to include a resour
 Done? : False
 
 ------------------------------------------------------------------------------
--still need (not necassarily in order, but kind of in order)
+
+Still need (not necassarily in order, but kind of in order)
 
 - To figure out what file format black magic I have to do for sceneform and hopefully draco
 - Build model at runtime by manually adding files to the phones storage.

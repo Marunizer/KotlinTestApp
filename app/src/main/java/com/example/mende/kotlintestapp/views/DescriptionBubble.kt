@@ -23,8 +23,6 @@ class DescriptionBubble(context: Context, attrs: AttributeSet? = null, defStyle:
       it.isEnabled = false
       onStartTapped?.invoke()
     }
-
-    xml_btn.text = "Wow, that's a tasty meal !!"
   }
 
   var onStartTapped: (() -> Unit)? = null

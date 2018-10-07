@@ -11,6 +11,8 @@ import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import com.example.mende.kotlintestapp.R
@@ -21,12 +23,10 @@ import com.example.mende.kotlintestapp.util.AnimatedNode
 import com.example.mende.kotlintestapp.util.MenuListHolder
 import com.example.mende.kotlintestapp.util.RotatingNode
 import com.example.mende.kotlintestapp.util.toast
-import com.google.ar.core.Anchor
-import com.google.ar.core.HitResult
-import com.google.ar.core.Plane
-import com.google.ar.core.TrackingState
+import com.google.ar.core.*
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.FrameTime
+import com.google.ar.sceneform.HitTestResult
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
@@ -35,6 +35,7 @@ import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import kotlinx.android.synthetic.main.activity_model_test_button_ar.*
+import kotlinx.android.synthetic.main.model_description_view.view.*
 
 
 /**
@@ -84,6 +85,8 @@ class TestButtonARActivity : AppCompatActivity() {
     lateinit var transformableNode : TransformableNode
     lateinit var rotatingNode : RotatingNode
 
+    private lateinit var trackableGestureDetector: GestureDetector
+
 //    ArSceneView directly. That one behaves like a default Android
 //    View so you can use an onTouchListener and use a GestureDetector to
 //    detect the gestures. But in this case you have to do rotation and
@@ -106,10 +109,15 @@ class TestButtonARActivity : AppCompatActivity() {
           onUpdate(frameTime)
          }
 
-        Log.d(TAG, "FloatingButton : expected from id: $currentIndex menu item: ${restaurantMenuItem?.name}")
+        //set special listener for adding/removing description bubble
+        arFragment.arSceneView.scene.addOnPeekTouchListener(this::handleOnTouch)
+                this.trackableGestureDetector = GestureDetector(this, MyGestureDetector())
+
+
         floatingActionButton.setOnClickListener { addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"),restaurantMenuItem?.name) }
         showFab(false)
     }
+
 
     // itemDescriptionRenderable
     @SuppressLint("SetTextI18n")
@@ -138,18 +146,6 @@ class TestButtonARActivity : AppCompatActivity() {
         { itemCircle : ItemCircle?-> onCircleClick(itemCircle) }
         circle_item_ar_recycler_view.adapter = mAdapter
 
-
-        // create a xml renderable (asynchronous operation,
-        // result is delivered to `thenAccept` method)
-        ViewRenderable.builder()
-                .setView(this, descriptionBubble)
-                .build()
-                .thenAccept {
-                    it.isShadowReceiver = true
-                    descriptionBubbleRenderable = it
-                }
-                .exceptionally { //TODO: delete on release
-                     it.toast(this) }
     }
 
     // Simple function to show/hide our FAB
@@ -200,6 +196,7 @@ class TestButtonARActivity : AppCompatActivity() {
                         if(currentScale >= scaleMax) {
                             animatedNode.localScale = Vector3(scaleMax, scaleMax, scaleMax)
                             animatedNode.isFullSizeAnimationDone = true
+                            descriptionBubble.xml_btn.text = restaurantMenuItem?.description
                         }
                         else if(currentScale < scaleMax) {
                             animatedNode.localScale = Vector3(currentScale, currentScale, currentScale)
@@ -393,49 +390,11 @@ class TestButtonARActivity : AppCompatActivity() {
         val animatedNode = AnimatedNode()
         val transformableNode = TransformableNode(fragment.transformationSystem)
 
-        // TransformableNode means the user to move, scale and rotate the model
-
-        bubbleNode.setParent(anchorNode)
         bubbleNode.setEnabled(false)
         bubbleNode.setLocalPosition(Vector3(0f, .3f, 0f))
 
-        ViewRenderable.builder()
-                .setView(fragment.context, R.layout.model_description_view)
-                .build()
-                .thenAccept(
-                        { renderable ->
-                            bubbleNode.setRenderable(descriptionBubbleRenderable)
-                        })
-                .exceptionally(
-                        //TODO: delete on release
-                        { Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
-                            return@exceptionally null })
-
-        //TODO: make bubble show up when clicked
-        // maybe reference code to have an on click listener on food for description bubble
-//        base.setRenderable(exampleLayoutRenderable);
-//        Context c = this;
-//        // Add  listeners etc here
-//        View eView = exampleLayoutRenderable.getView();
-//        eView.setOnTouchListener((v, event) -> {
-//            Toast.makeText(
-//                    c, "Location marker touched.", Toast.LENGTH_LONG)
-//                    .show();
-
-//        Node base = new Node();
-//        base.setRenderable(andyRenderable);
-//        Context c = this;
-//        base.setOnTapListener((v, event) -> {
-//            Toast.makeText(
-//                    c, "Andy touched.", Toast.LENGTH_LONG)
-//                    .show();
-//        });
-//        return
-
-        bubbleNode.setEnabled(true)
-
         transformableNode.setParent(anchorNode)
-
+        transformableNode.scaleController.isEnabled = false
         rotatingNode.setParent(transformableNode)
 
         animatedNode.renderable = renDerable
@@ -462,6 +421,82 @@ class TestButtonARActivity : AppCompatActivity() {
         }
     }
 
+    private fun addDescriptionBubble() {
+
+        // create a xml renderable (asynchronous operation,
+        // result is delivered to `thenAccept` method)
+        ViewRenderable.builder()
+                .setView(this, descriptionBubble)
+                .build()
+                .thenAccept {
+                    it.isShadowReceiver = true
+                    descriptionBubbleRenderable = it
+                    bubbleNode.renderable = it
+                }
+                .exceptionally { //TODO: delete on release
+                    it.toast(this) }
+
+        bubbleNode.setParent(anchorNode)
+        bubbleNode.isEnabled = true
+    }
+
+    inner class MyGestureDetector : GestureDetector.SimpleOnGestureListener() {
+        private var mLastOnDownEvent: MotionEvent? = null
+
+        override fun onSingleTapUp(e: MotionEvent): Boolean {
+            onSingleTap(e)
+            return true
+        }
+
+        override fun onDown(e: MotionEvent): Boolean {
+            //Android 4.0 bug means e1 in onFling may be NULL due to onLongPress eating it.
+            mLastOnDownEvent = e
+            return super.onDown(e)
+        }
+    }
+
+    private fun handleOnTouch(hitTestResults: HitTestResult, motionEvent: MotionEvent){
+
+        arFragment.onPeekTouch(hitTestResults, motionEvent)
+
+        //check for touching a Animated Node
+        if ( hitTestResults.node != animatedNode){
+            Log.d(TAG, "if animatedNode was not hit, then don't worry about it")
+            return
+        }
+
+        //Otherwise call gesture detector
+        trackableGestureDetector.onTouchEvent(motionEvent)
+    }
+
+    private fun onSingleTap(motionEvent: MotionEvent) {
+        Log.d("GESTURE CONTROL : OnSingleTap", "${restaurantMenuItem?.name} ")
+
+        val frame = arFragment.arSceneView.arFrame
+        if(frame != null && motionEvent != null && frame.camera.trackingState == TrackingState.TRACKING ){
+            for( hit in frame.hitTest(motionEvent)) {
+
+                Log.d("GESTURE CONTROL : OnSingleTap - in frame loop, trackable: ${hit.trackable}", "${restaurantMenuItem?.name} ")
+                var trackable = hit.trackable
+
+                if(trackable is Plane && trackable.isPoseInPolygon(hit.hitPose)){
+                    var plane = trackable
+                    //Handle Plane hits if we want to in the future
+                }
+                else if(trackable is com.google.ar.core.Point) {
+
+                    val point = trackable
+
+                    if (!bubbleNode.isEnabled)
+                        addDescriptionBubble()
+                    else {
+                        anchorNode.removeChild(bubbleNode)
+                        bubbleNode.isEnabled = false
+                    }
+                }
+            }
+        }
+    }
 
     //fake function for sample item data
     fun getItemList() : ArrayList<RestaurantMenuItem>? {
