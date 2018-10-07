@@ -6,15 +6,12 @@ import android.app.ActivityManager
 import android.content.Context
 import android.graphics.Point
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.ScaleAnimation
 import android.widget.Toast
 import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.adapters.ItemCircleViewAdapter
@@ -62,10 +59,7 @@ class TestButtonARActivity : AppCompatActivity() {
 
     private var descriptionBubbleRenderable: ViewRenderable? = null
     private lateinit var descriptionBubble: DescriptionBubble
-    lateinit var anchorNode: AnchorNode
-    lateinit var transformableNode : TransformableNode
-    lateinit var rotatingNode : RotatingNode
-    lateinit var animatedNode: AnimatedNode
+
     private lateinit var bubbleNode : Node
     private lateinit var mAdapter: ItemCircleViewAdapter
     private lateinit var mHandler: Handler
@@ -79,8 +73,16 @@ class TestButtonARActivity : AppCompatActivity() {
     private val scaleMin : Float = 0.0f
     private val scaleMax : Float = 1.0f
     private var currentScale: Float = 0.0f
+    private var oldScale: Float = 1.0f
 
     private lateinit var currentAnchor : Anchor
+
+    lateinit var oldAnchorNode: AnchorNode
+    lateinit var anchorNode: AnchorNode
+    lateinit var oldAnimatedNode : AnimatedNode
+    lateinit var animatedNode: AnimatedNode
+    lateinit var transformableNode : TransformableNode
+    lateinit var rotatingNode : RotatingNode
 
 //    ArSceneView directly. That one behaves like a default Android
 //    View so you can use an onTouchListener and use a GestureDetector to
@@ -118,6 +120,7 @@ class TestButtonARActivity : AppCompatActivity() {
         // Initialize
         mHandler = Handler()
         bubbleNode = Node()
+        oldAnimatedNode = AnimatedNode() //fake init
 
         title_text_ar.text = restaurantMenuItem?.name
         item_cost_ar.text = "$${restaurantMenuItem?.cost}"
@@ -189,10 +192,8 @@ class TestButtonARActivity : AppCompatActivity() {
                 //Idk if we need this variable? it might be good enough to use curreentItem idk
                 if(animatedNode.isSelected)
                 {
-                    //if animation has not finished , despite it being selected, continue !
-                    if(!animatedNode.isFullSizeAnimationDone)
-                    {
-                        Log.d(TAG, "SCALING FUN: $currentScale")
+                    //if animation has not finished , despite it being selected, continue,
+                    if(!animatedNode.isFullSizeAnimationDone) {
                         //Want animation to last for .4 seconds. //1f(second) == 30frames
                         currentScale = currentScale + (1f/12f)
 
@@ -204,17 +205,26 @@ class TestButtonARActivity : AppCompatActivity() {
                             animatedNode.localScale = Vector3(currentScale, currentScale, currentScale)
                         }
                     }
+                    else if(oldAnimatedNode.isRemoving) { minimizeItem() }
                 }
-                else if (!animatedNode.isSelected)
-                {
-                    // in this flow, we would deal with minimizing the node animation before removing and going to next node
+                else if(!animatedNode.isSelected) {
+                    if(!oldAnimatedNode.isRemoveAnimationDone) {
+                        oldAnimatedNode.isRemoving = true
+                        minimizeItem()
+                    }
+                }
+            }
+            else //node NOT allocated, meaning, new item was picked !!!
+            {
+                if(oldAnimatedNode.isInitialized && !oldAnimatedNode.isRemoveAnimationDone) {
+                    oldAnimatedNode.isRemoving = true
+                    minimizeItem()
                 }
             }
 
             //whenever there is a transformation happening, disable rotation
             if (!firstTimeWinkyFace && nodeAllocated)
             {
-
                 if(transformableNode.isTransforming) {
                     rotatingNode.onPauseAnimation()
                 }
@@ -223,8 +233,24 @@ class TestButtonARActivity : AppCompatActivity() {
                     arFragment.transformationSystem.selectionVisualizer.removeSelectionVisual(transformableNode)
                 }
             }
+        }
+    }
 
+    private fun minimizeItem() {
+        oldScale = oldScale - (1f/9f) //.3 seconds
 
+        if (oldScale <= scaleMin)
+        {
+            oldAnimatedNode.localScale = Vector3(scaleMin,scaleMin,scaleMin)
+            arFragment.arSceneView.scene.removeChild(oldAnchorNode)
+            oldAnimatedNode.isRemoveAnimationDone = true
+            oldAnimatedNode.isRemoving = false
+            oldScale = scaleMax
+            placeObject(arFragment, currentAnchor,Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
+        }
+        else if(oldScale > scaleMin)
+        {
+            animatedNode.localScale = Vector3(oldScale,oldScale,oldScale)
         }
     }
 
@@ -277,13 +303,13 @@ class TestButtonARActivity : AppCompatActivity() {
         //replace with new restaurant menu item selected
         Log.d("MAGIC SPEAKER", "${restaurantMenuItem?.name} =?= ")
 
-        if (restaurantMenuItem?.name != anchorNode.name)
-        {
+        if (restaurantMenuItem?.name != anchorNode.name) {
+            oldAnchorNode = anchorNode
+            animatedNode.isSelected = false
+            oldAnimatedNode = animatedNode
+            oldAnimatedNode.isInitialized = true
             currentAnchor = anchorNode.anchor
             nodeAllocated = false
-            arFragment.arSceneView.scene.removeChild(anchorNode)
-            placeObject(arFragment, currentAnchor,Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
-           // addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
         }
     }
 
@@ -406,13 +432,10 @@ class TestButtonARActivity : AppCompatActivity() {
 //        });
 //        return
 
-
         bubbleNode.setEnabled(true)
 
-        //transformableNode.scaleController.isEnabled = false
         transformableNode.setParent(anchorNode)
 
-        //rotatingNode.renderable = renDerable
         rotatingNode.setParent(transformableNode)
 
         animatedNode.renderable = renDerable
@@ -425,9 +448,6 @@ class TestButtonARActivity : AppCompatActivity() {
         this.transformableNode = transformableNode
 
         fragment.arSceneView.scene.addChild(anchorNode)
-        //val animation = ScaleAnimation(0f, 1f, 0f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
-
-
 
         //set Transparency of model
 
@@ -452,10 +472,8 @@ class TestButtonARActivity : AppCompatActivity() {
 
         var id : Long = 112
 
-        for(item in itemList!!)
-        {
+        for(item in itemList!!) {
             testData.add(ItemCircle(id,item))
-
             if (id == currentIndex)
                 restaurantMenuItem = item
 

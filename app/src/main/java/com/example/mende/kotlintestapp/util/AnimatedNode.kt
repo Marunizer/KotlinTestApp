@@ -12,7 +12,9 @@ class AnimatedNode : Node(), Node.OnTapListener {
 
     var isFullSizeAnimationDone : Boolean = false
     var isRemoveAnimationDone: Boolean = false
+    var isRemoving: Boolean = false
     var isSelected: Boolean = true
+    var isInitialized: Boolean = false
 
 
     override fun onUpdate(frameTime: FrameTime?) {
