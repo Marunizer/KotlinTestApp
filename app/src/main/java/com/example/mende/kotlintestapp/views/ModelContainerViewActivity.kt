@@ -130,9 +130,8 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
 
     private fun setFragmentView() {
 
-        //currentFragment = TestButtonARActivity.newInstance()
         currentFragment = ModelSceneViewFragment.newInstance()
-        //SAMPLE CODE
+
         supportFragmentManager
                 .beginTransaction()
                 //Possible to add a ( , "text"   ) after second parameter, maybe passes in content

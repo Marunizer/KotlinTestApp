@@ -13,11 +13,14 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.ScaleAnimation
 import android.widget.Toast
 import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.adapters.ItemCircleViewAdapter
 import com.example.mende.kotlintestapp.objects.ItemCircle
 import com.example.mende.kotlintestapp.objects.RestaurantMenuItem
+import com.example.mende.kotlintestapp.util.AnimatedNode
 import com.example.mende.kotlintestapp.util.MenuListHolder
 import com.example.mende.kotlintestapp.util.RotatingNode
 import com.example.mende.kotlintestapp.util.toast
@@ -62,6 +65,7 @@ class TestButtonARActivity : AppCompatActivity() {
     lateinit var anchorNode: AnchorNode
     lateinit var transformableNode : TransformableNode
     lateinit var rotatingNode : RotatingNode
+    lateinit var animatedNode: AnimatedNode
     private lateinit var bubbleNode : Node
     private lateinit var mAdapter: ItemCircleViewAdapter
     private lateinit var mHandler: Handler
@@ -71,6 +75,10 @@ class TestButtonARActivity : AppCompatActivity() {
     private lateinit var restaurantKey: String
     private var currentIndex : Long = 0
     private val MIN_OPENGL_VERSION = 3.0
+
+    private val scaleMin : Float = 0.0f
+    private val scaleMax : Float = 1.0f
+    private var currentScale: Float = 0.0f
 
 //    ArSceneView directly. That one behaves like a default Android
 //    View so you can use an onTouchListener and use a GestureDetector to
@@ -157,10 +165,14 @@ class TestButtonARActivity : AppCompatActivity() {
         // Check if the devices gaze is hitting a plane detected by ARCore
         if (isTracking) {
             val hitTestChanged = updateHitTest()
+            //onStart up, show or remove floating button that allocates model
             if (hitTestChanged) {
                 if(firstTimeWinkyFace)
                     showFab(isHitting)
             }
+
+
+            //Make the description bubble always face the camera
             if(bubbleNode.isEnabled)
             {
                 val cameraPosition = arFragment.arSceneView.scene.camera.worldPosition
@@ -170,6 +182,34 @@ class TestButtonARActivity : AppCompatActivity() {
                 bubbleNode.setWorldRotation(lookRotation)
             }
 
+            if(nodeAllocated)
+            {
+                //Idk if we need this variable? it might be good enough to use curreentItem idk
+                if(animatedNode.isSelected)
+                {
+                    //if animation has not finished , despite it being selected, continue !
+                    if(!animatedNode.isFullSizeAnimationDone)
+                    {
+                        Log.d(TAG, "SCALING FUN: $currentScale")
+                        //Want animation to last for .4 seconds. //1f(second) == 30frames
+                        currentScale = currentScale + (1f/12f)
+
+                        if(currentScale >= scaleMax) {
+                            animatedNode.localScale = Vector3(scaleMax, scaleMax, scaleMax)
+                            animatedNode.isFullSizeAnimationDone = true
+                        }
+                        else if(currentScale < scaleMax) {
+                            animatedNode.localScale = Vector3(currentScale, currentScale, currentScale)
+                        }
+                    }
+                }
+                else if (!animatedNode.isSelected)
+                {
+                    // in this flow, we would deal with minimizing the node animation before removing and going to next node
+                }
+            }
+
+            //whenever there is a transformation happening, disable rotation
             if (!firstTimeWinkyFace && nodeAllocated)
             {
 
@@ -181,6 +221,8 @@ class TestButtonARActivity : AppCompatActivity() {
                     arFragment.transformationSystem.selectionVisualizer.removeSelectionVisual(transformableNode)
                 }
             }
+
+
         }
     }
 
@@ -317,6 +359,7 @@ class TestButtonARActivity : AppCompatActivity() {
 
         anchorNode = AnchorNode(anchor)
         val rotatingNode = RotatingNode()
+        val animatedNode = AnimatedNode()
         val transformableNode = TransformableNode(fragment.transformationSystem)
 
         // TransformableNode means the user to move, scale and rotate the model
@@ -361,16 +404,25 @@ class TestButtonARActivity : AppCompatActivity() {
 
         bubbleNode.setEnabled(true)
 
-        transformableNode.scaleController.isEnabled = false
+        //transformableNode.scaleController.isEnabled = false
         transformableNode.setParent(anchorNode)
 
-        rotatingNode.renderable = renDerable
+        //rotatingNode.renderable = renDerable
         rotatingNode.setParent(transformableNode)
 
+        animatedNode.renderable = renDerable
+        animatedNode.setParent(rotatingNode)
+        animatedNode.localScale = Vector3(scaleMin, scaleMin, scaleMin)
+        currentScale = scaleMin
+
+        this.animatedNode = animatedNode
         this.rotatingNode = rotatingNode
         this.transformableNode = transformableNode
 
         fragment.arSceneView.scene.addChild(anchorNode)
+        //val animation = ScaleAnimation(0f, 1f, 0f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
+
+
 
         //set Transparency of model
 
@@ -384,6 +436,7 @@ class TestButtonARActivity : AppCompatActivity() {
             firstTimeWinkyFace = false
         }
     }
+
 
     //fake function for sample item data
     fun getItemList() : ArrayList<RestaurantMenuItem>? {
@@ -400,7 +453,6 @@ class TestButtonARActivity : AppCompatActivity() {
 
             if (id == currentIndex)
                 restaurantMenuItem = item
-
 
             id++
         }

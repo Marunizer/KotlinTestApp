@@ -105,8 +105,6 @@ class ModelSceneViewFragment : Fragment() {
 //        arSceneView.getScene().addOnUpdateListener(this)
 
 
-
-     //   renderObject(Uri.parse("Cupcake.sfb")) // Render the object
     }
 
     /**
@@ -172,6 +170,12 @@ class ModelSceneViewFragment : Fragment() {
 
             scene.addChild(itemModelNode)
         }
+    }
+
+    fun animatePlacement(model : TransformableNode) {
+
+
+
     }
 
     override fun onPause() {
