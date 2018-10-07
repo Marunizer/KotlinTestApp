@@ -80,6 +80,8 @@ class TestButtonARActivity : AppCompatActivity() {
     private val scaleMax : Float = 1.0f
     private var currentScale: Float = 0.0f
 
+    private lateinit var currentAnchor : Anchor
+
 //    ArSceneView directly. That one behaves like a default Android
 //    View so you can use an onTouchListener and use a GestureDetector to
 //    detect the gestures. But in this case you have to do rotation and
@@ -277,9 +279,11 @@ class TestButtonARActivity : AppCompatActivity() {
 
         if (restaurantMenuItem?.name != anchorNode.name)
         {
+            currentAnchor = anchorNode.anchor
             nodeAllocated = false
             arFragment.arSceneView.scene.removeChild(anchorNode)
-            addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
+            placeObject(arFragment, currentAnchor,Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
+           // addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
         }
     }
 
@@ -357,6 +361,7 @@ class TestButtonARActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun addNodeToScene(fragment: ArFragment, anchor: Anchor, renDerable: ModelRenderable, name : String?) {
 
+        this.currentAnchor = anchor
         anchorNode = AnchorNode(anchor)
         val rotatingNode = RotatingNode()
         val animatedNode = AnimatedNode()
@@ -458,13 +463,7 @@ class TestButtonARActivity : AppCompatActivity() {
         }
     }
 
-    fun checkIsSupportedDeviceOrFinish(activity: Activity): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            Log.e(TAG, "Sceneform requires Android N or later")
-            Toast.makeText(activity, "Sceneform requires Android N or later", Toast.LENGTH_LONG).show()
-            activity.finish()
-            return false
-        }
+    private fun checkIsSupportedDeviceOrFinish(activity: Activity): Boolean {
         val openGlVersionString = (activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager)
                 .deviceConfigurationInfo
                 .glEsVersion
