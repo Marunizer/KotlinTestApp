@@ -48,6 +48,7 @@ import kotlinx.android.synthetic.main.model_description_view.view.*
  * Concerns:
  *  - Activity maybe is kinda heavy to re-create whenever needed. But fragments are not necessarily the better option. Investigate.
  *
+ * TODO: Gotta take out some of the onUpdate() logic from the activity to the individual node classes
  */
 class ModelARViewActivity : AppCompatActivity() {
 
@@ -123,12 +124,12 @@ class ModelARViewActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     private fun initResources() {
 
-        addTestData(getItemList())
-
         // Initialize
         mHandler = Handler()
         bubbleNode = Node()
         oldAnimatedNode = AnimatedNode() //fake init
+
+        addTestData(getItemList())
 
         item_text_ar.text = restaurantMenuItem?.name
         item_cost_ar.text = "$${restaurantMenuItem?.cost}"
@@ -186,6 +187,19 @@ class ModelARViewActivity : AppCompatActivity() {
 
             if(nodeAllocated)
             {
+                //TODO: To have bubbleNode follow transformableNode in real time, make transformableNode.class - > have these updates happen during its frame updates!
+//                //they are not at the same x coordiante, then they are not aligned, update position
+//                if(transformableNode.worldPosition.x != bubbleNode.worldPosition.x ||transformableNode.worldPosition.z != bubbleNode.worldPosition.z ) {
+//                    bubbleNode.worldPosition.set(Vector3(transformableNode.worldPosition.x,
+//                            transformableNode.worldPosition.y,
+//                            transformableNode.worldPosition.z))
+//                }else if(transformableNode.localPosition.x != bubbleNode.localPosition.x ||transformableNode.localPosition.z != bubbleNode.localPosition.z ) {
+//                bubbleNode.localPosition.set(Vector3(transformableNode.localPosition.x,
+//                        transformableNode.localPosition.y + .3f,
+//                        transformableNode.localPosition.z))
+//                }
+
+
 
                 //Re-sets expected view after objected is presented
                 if(instructions_bubble.visibility == View.VISIBLE ) {
@@ -194,7 +208,6 @@ class ModelARViewActivity : AppCompatActivity() {
                     item_cost_ar.visibility = View.VISIBLE
                     order_ar_button.visibility = View.VISIBLE
                     share_ar_button.visibility = View.VISIBLE
-                    floating_back_ar_button.visibility = View.VISIBLE
                 }
 
 
@@ -470,16 +483,19 @@ class ModelARViewActivity : AppCompatActivity() {
 
     private fun handleOnTouch(hitTestResults: HitTestResult, motionEvent: MotionEvent){
 
-        arFragment.onPeekTouch(hitTestResults, motionEvent)
+        if(nodeAllocated)
+        {
+            arFragment.onPeekTouch(hitTestResults, motionEvent)
 
-        //check for touching a Animated Node
-        if ( hitTestResults.node != animatedNode){
-            Log.d(TAG, "if animatedNode was not hit, then don't worry about it")
-            return
+            //check for touching a Animated Node
+            if ( hitTestResults.node != animatedNode){
+                Log.d(TAG, "if animatedNode was not hit, then don't worry about it")
+                return
+            }
+
+            //Otherwise call gesture detector
+            trackableGestureDetector.onTouchEvent(motionEvent)
         }
-
-        //Otherwise call gesture detector
-        trackableGestureDetector.onTouchEvent(motionEvent)
     }
 
     private fun onSingleTap(motionEvent: MotionEvent) {
@@ -556,6 +572,7 @@ class ModelARViewActivity : AppCompatActivity() {
     }
 
     fun onBackClick(v: View){
+        //TODO: Replace this by initiating a completely new SceneViewActivity instead, rather than going back to last session, This way there isnt an entire activity paused. if it doesnt matter, then instead just set new current model on the conainer Activty! and update model
         onBackPressed()
     }
 }

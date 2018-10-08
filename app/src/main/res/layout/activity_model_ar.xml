@@ -29,7 +29,6 @@
         tools:fabSize="auto"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"
         android:onClick="onBackClick"/>
 
 

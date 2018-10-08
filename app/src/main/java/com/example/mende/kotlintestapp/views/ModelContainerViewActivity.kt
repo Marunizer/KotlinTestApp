@@ -125,7 +125,7 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
         i.putExtra("card_key",restaurantKey)
         i.putExtra("current_index", currentIndex )
         startActivity(i)
-        finish()
+       // finish()
     }
 
     private fun setFragmentView() {
