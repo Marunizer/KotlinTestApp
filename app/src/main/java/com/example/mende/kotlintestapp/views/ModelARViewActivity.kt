@@ -185,6 +185,7 @@ class ModelARViewActivity : AppCompatActivity() {
                 bubbleNode.setWorldRotation(lookRotation)
             }
 
+            //nodeIsDown, safe to continue
             if(nodeAllocated)
             {
                 //TODO: To have bubbleNode follow transformableNode in real time, make transformableNode.class - > have these updates happen during its frame updates!

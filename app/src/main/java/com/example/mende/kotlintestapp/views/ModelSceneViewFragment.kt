@@ -20,6 +20,7 @@ import com.google.ar.sceneform.ux.*
 import kotlinx.android.synthetic.main.activity_model_scene.*
 import com.example.mende.kotlintestapp.objects.RestaurantMenuItem
 import com.example.mende.kotlintestapp.util.RotatingNode
+import com.google.ar.sceneform.FrameTime
 
 
 /**
@@ -83,6 +84,9 @@ class ModelSceneViewFragment : Fragment() {
 //        camera.localRotation = Quaternion.axisAngle(Vector3.right(), -30.0f)
 
         scene = sceneView.scene // get current scene
+        scene.addOnUpdateListener { frameTime ->
+            onUpdate(frameTime)
+        }
 
         val container : ModelContainerViewActivity  = activity as ModelContainerViewActivity
         container.begin()
@@ -107,6 +111,63 @@ class ModelSceneViewFragment : Fragment() {
 
 
     }
+
+    private fun onUpdate(frameTime: FrameTime) {
+//TODO: Deconstruct to have same animation effect in this sceneview
+//        //nodeIsDown, safe to continue
+//        if(nodeAllocated)
+//        {
+//            //Idk if we need this variable? it might be good enough to use curreentItem idk
+//            if(animatedNode.isSelected)
+//            {
+//                //if animation has not finished , despite it being selected, continue,
+//                if(!animatedNode.isFullSizeAnimationDone) {
+//                    //Want animation to last for .4 seconds. //1f(second) == 30frames
+//                    currentScale = currentScale + (1f/12f)
+//
+//                    if(currentScale >= scaleMax) {
+//                        animatedNode.localScale = Vector3(scaleMax, scaleMax, scaleMax)
+//                        animatedNode.isFullSizeAnimationDone = true
+//                    }
+//                    else if(currentScale < scaleMax) {
+//                        animatedNode.localScale = Vector3(currentScale, currentScale, currentScale)
+//                    }
+//                }
+//                else if(oldAnimatedNode.isRemoving) { minimizeItem() }
+//            }
+//            else if(!animatedNode.isSelected) {
+//                if(!oldAnimatedNode.isRemoveAnimationDone) {
+//                    oldAnimatedNode.isRemoving = true
+//                    minimizeItem()
+//                }
+//            }
+//        }
+//        else //node NOT allocated, meaning, new item was picked !!!
+//        {
+//            if(oldAnimatedNode.isInitialized && !oldAnimatedNode.isRemoveAnimationDone) {
+//                oldAnimatedNode.isRemoving = true
+//                minimizeItem()
+//            }
+//        }
+    }
+
+//    private fun minimizeItem() {
+//        oldScale = oldScale - (1f/9f) //.3 seconds
+//
+//        if (oldScale <= scaleMin)
+//        {
+//            oldAnimatedNode.localScale = Vector3(scaleMin,scaleMin,scaleMin)
+//            arFragment.arSceneView.scene.removeChild(oldAnchorNode)
+//            oldAnimatedNode.isRemoveAnimationDone = true
+//            oldAnimatedNode.isRemoving = false
+//            oldScale = scaleMax
+//            placeObject(arFragment, currentAnchor,Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
+//        }
+//        else if(oldScale > scaleMin)
+//        {
+//            animatedNode.localScale = Vector3(oldScale,oldScale,oldScale)
+//        }
+//    }
 
     /**
      * load the 3D model in the space
