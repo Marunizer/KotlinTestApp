@@ -52,13 +52,9 @@
 
         <activity
             android:name=".views.ModelARViewActivity"
-            android:label="Model"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".views.TestButtonARActivity"
             android:label="@string/title_activity_model"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait" />
 
         <service android:name=".services.OnClearFromRecentService" />
         <service

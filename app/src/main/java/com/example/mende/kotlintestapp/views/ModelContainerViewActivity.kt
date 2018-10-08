@@ -121,7 +121,7 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
     }
 
     private fun onMagicClick() {
-        val i = Intent(this@ModelContainerViewActivity, TestButtonARActivity::class.java)
+        val i = Intent(this@ModelContainerViewActivity, ModelARViewActivity::class.java)
         i.putExtra("card_key",restaurantKey)
         i.putExtra("current_index", currentIndex )
         startActivity(i)
@@ -184,5 +184,9 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
                     or View.SYSTEM_UI_FLAG_FULLSCREEN
                     or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
         }
+    }
+
+    fun onBackClick(v: View){
+        onBackPressed()
     }
 }

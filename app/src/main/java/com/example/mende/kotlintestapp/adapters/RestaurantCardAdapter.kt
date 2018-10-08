@@ -120,7 +120,7 @@ class RestaurantCardAdapter(recyclerView: RecyclerView,
             }
             holder.bind(item, clickListener)
             holder.restaurantName?.text = item?.restaurant?.name
-            holder.restaurantDistance?.text = "2.0 miles away"
+            holder.restaurantDistance?.text = "2.0 mi. away"
             holder.restaurantEmoji?.text = item?.restaurant?.streetAddress//"emoji_area"
 
             if (item?.restaurant?.generalCost == 5)

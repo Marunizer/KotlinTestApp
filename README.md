@@ -2,22 +2,20 @@
 Trial Run on Noni 2.0, This time, it's Personal. >:) - Subtitled in Kotlin this time
 
 ------------------------------------------------------------------------------
-Fully Operational on Run? : true //probably, unless I forgot to include a resource file directly.
+Fully Operational on Run? : true //probably, unless it's initial build related, just clean and try again probably(I'll find out in like Oct-22ish)
+
 Done? : False
 
 ------------------------------------------------------------------------------
 
-Still need (not necassarily in order, but kind of in order)
+Tasks needed (not necessarily in order, but kind of in order)
 
 - To figure out what file format black magic I have to do for sceneform and hopefully draco
 - Build model at runtime by manually adding files to the phones storage.
-- Setup a download System, prefereabbly after database type is known.
+- Setup a download System, preferably after database type is known.
 - Add gesture controller to Scene View for touch functionality
-- Add intro instructions + better button to beginning of AR Activity
-- Pre-render transparant model node at beginning of AR Activity
-- Make Bubble only appear after model has been touched.
+- Pre-render transparent model node at beginning of AR Activity
 - If obj or ply becomes my final format method, setup draco
-- Make backround of SceneView Pure white, for some reason, not allowing through normal methods
 - Add orientation/Permission Activity screens to make it a journey for the user
 - When location method is found out, implement showing restaurants by distance from user
 - Finalize look of HomeScreen
@@ -25,7 +23,7 @@ Still need (not necassarily in order, but kind of in order)
 - Setup a MemoryDumpSystem to get rid of files when no longer probably needed
 - Replace poly models with real models, ->Optimize time it takes to present model
 - Add an animated to stall the user as a model needs to be downloaded and rendered
-- Split up the exessive code in ARActivity to different classes as needed
+- Split up the excessive code in ARActivity to different classes as needed
 - have selected itemCircle glow Pink if is currently selected.
 - Add a backTab/button to model views that shows name of restaurant
 - Final Cleanup()
