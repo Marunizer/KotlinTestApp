@@ -69,9 +69,9 @@ class ModelSceneViewFragment : Fragment() {
     private lateinit var scaleGestureDetector : ScaleGestureDetector
 
     private val scaleMin : Float = 0.0f
-    private val scaleMax : Float = 1.5f
+    private val scaleMax : Float = 1.25f
     private var currentScale: Float = 0.0f
-    private var oldScale: Float = 1.5f
+    private var oldScale: Float = 1.25f
 
     lateinit var oldAnimatedNode : AnimatedNode
     lateinit var animatedNode: AnimatedNode
@@ -153,13 +153,13 @@ class ModelSceneViewFragment : Fragment() {
         if(nodeAllocated)
         {
             //Idk if we need this variable? it might be good enough to use curreentItem idk
-            if(animatedNode.isSelected)
+            if(animatedNode.isInitialized)
             {
 
                 //if animation has not finished , despite it being selected, continue,
                 if(!animatedNode.isFullSizeAnimationDone) {
                     //Want animation to last for .4 seconds. //1f(second) == 30frames
-                    currentScale = currentScale + (1f/30f)
+                    currentScale = currentScale + (1f/15f)
 
                     if(currentScale >= scaleMax) {
                         animatedNode.localScale = Vector3(scaleMax, scaleMax, scaleMax)
@@ -173,7 +173,7 @@ class ModelSceneViewFragment : Fragment() {
                     Log.d("MAGIC SPEAKER:e", "still removing?")
                     minimizeItem() }
             }
-            else if(!animatedNode.isSelected) {
+            else if(!animatedNode.isInitialized) {
                 if(!oldAnimatedNode.isRemoveAnimationDone) {
                     oldAnimatedNode.isRemoving = true
                     minimizeItem()
@@ -270,6 +270,9 @@ class ModelSceneViewFragment : Fragment() {
 
             animatedNode.renderable = model
             animatedNode.setParent(rotatingNode)
+            animatedNode.isInitialized = true
+            animatedNode.localScale = Vector3(scaleMin, scaleMin, scaleMin)
+            currentScale = scaleMin
 
             animatedNode.setOnTouchListener { hitTestResult, motionEvent ->
                 scaleGestureDetector.onTouchEvent(motionEvent)
