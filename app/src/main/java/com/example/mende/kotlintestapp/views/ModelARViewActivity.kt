@@ -88,10 +88,6 @@ class ModelARViewActivity : AppCompatActivity() {
 
     private lateinit var trackableGestureDetector: GestureDetector
 
-//    ArSceneView directly. That one behaves like a default Android
-//    View so you can use an onTouchListener and use a GestureDetector to
-//    detect the gestures. But in this case you have to do rotation and
-//    translation of your objects on your own.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

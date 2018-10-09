@@ -8,9 +8,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AlertDialog
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.example.mende.kotlintestapp.R
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.Scene
@@ -19,8 +17,15 @@ import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.*
 import kotlinx.android.synthetic.main.activity_model_scene.*
 import com.example.mende.kotlintestapp.objects.RestaurantMenuItem
+import com.example.mende.kotlintestapp.util.AnimatedNode
 import com.example.mende.kotlintestapp.util.RotatingNode
+import com.google.ar.core.Plane
+import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.FrameTime
+import com.google.ar.sceneform.HitTestResult
+import android.view.ScaleGestureDetector
+
+
 
 
 /**
@@ -50,12 +55,26 @@ import com.google.ar.sceneform.FrameTime
 
 class ModelSceneViewFragment : Fragment() {
 
+    private val TAG = ModelSceneViewFragment::class.java.simpleName
+
     var containerActivity : FragmentActivity? = null
     lateinit var sceneContext : Context
     lateinit var scene: Scene
     var firstTimeWinkyFace : Boolean = true
+    private var nodeAllocated : Boolean = false
 
     lateinit var itemModelNode: Node
+    private lateinit var trackableGestureDetector: GestureDetector
+    private lateinit var scaleGestureDetector : ScaleGestureDetector
+
+    private val scaleMin : Float = 0.0f
+    private val scaleMax : Float = 1.0f
+    private var currentScale: Float = 0.0f
+    private var oldScale: Float = 1.0f
+
+    lateinit var oldAnimatedNode : AnimatedNode
+    lateinit var animatedNode: AnimatedNode
+
     companion object {
 
         fun newInstance(): ModelSceneViewFragment {
@@ -84,90 +103,104 @@ class ModelSceneViewFragment : Fragment() {
 //        camera.localRotation = Quaternion.axisAngle(Vector3.right(), -30.0f)
 
         scene = sceneView.scene // get current scene
+        scene.sunlight.onDeactivate()
         scene.addOnUpdateListener { frameTime ->
-            onUpdate(frameTime)
-        }
+            onUpdate(frameTime) }
+
+
+
+        scaleGestureDetector = ScaleGestureDetector(context, object : ScaleGestureDetector.OnScaleGestureListener {
+            override fun onScale(detector: ScaleGestureDetector): Boolean {
+                Log.d("TEST_SCALE", "Scale Span: " + scaleGestureDetector.getCurrentSpan())
+                return true
+            }
+
+            override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
+
+                return true
+            }
+
+            override fun onScaleEnd(detector: ScaleGestureDetector) {
+                itemModelNode.localScale = Vector3(detector.scaleFactor,detector.scaleFactor,detector.scaleFactor)
+            }
+        })
+
+        animatedNode = AnimatedNode() //fake init
+
+
+        // this.trackableGestureDetector = GestureDetector(activity, MyGestureDetector())
+
+//        scene.addOnPeekTouchListener { hitTestResult, motionEvent ->
+//            scaleGestureDetector.onTouchEvent(motionEvent)
+//            MyGestureDetector().onSingleTapUp(motionEvent) }
+
+        // scene.addOnPeekTouchListener(this::handleOnTouch)
+
+
 
         val container : ModelContainerViewActivity  = activity as ModelContainerViewActivity
         container.begin()
 
-//        transformationSystem = makeTransformationSystem()
-//
-//        gestureDetector = GestureDetector(
-//                context,
-//                object : GestureDetector.SimpleOnGestureListener() {
-//                    override fun onSingleTapUp(e: MotionEvent): Boolean {
-//                        onSingleTap(e)
-//                        return true
-//                    }
-//
-//                    override fun onDown(e: MotionEvent): Boolean {
-//                        return true
-//                    }
-//                })
-//
-//        scene.addOnPeekTouchListener(this)
-//        arSceneView.getScene().addOnUpdateListener(this)
 
 
     }
 
     private fun onUpdate(frameTime: FrameTime) {
 //TODO: Deconstruct to have same animation effect in this sceneview
-//        //nodeIsDown, safe to continue
-//        if(nodeAllocated)
-//        {
-//            //Idk if we need this variable? it might be good enough to use curreentItem idk
-//            if(animatedNode.isSelected)
-//            {
-//                //if animation has not finished , despite it being selected, continue,
-//                if(!animatedNode.isFullSizeAnimationDone) {
-//                    //Want animation to last for .4 seconds. //1f(second) == 30frames
-//                    currentScale = currentScale + (1f/12f)
-//
-//                    if(currentScale >= scaleMax) {
-//                        animatedNode.localScale = Vector3(scaleMax, scaleMax, scaleMax)
-//                        animatedNode.isFullSizeAnimationDone = true
-//                    }
-//                    else if(currentScale < scaleMax) {
-//                        animatedNode.localScale = Vector3(currentScale, currentScale, currentScale)
-//                    }
-//                }
-//                else if(oldAnimatedNode.isRemoving) { minimizeItem() }
-//            }
-//            else if(!animatedNode.isSelected) {
-//                if(!oldAnimatedNode.isRemoveAnimationDone) {
-//                    oldAnimatedNode.isRemoving = true
-//                    minimizeItem()
-//                }
-//            }
-//        }
-//        else //node NOT allocated, meaning, new item was picked !!!
-//        {
-//            if(oldAnimatedNode.isInitialized && !oldAnimatedNode.isRemoveAnimationDone) {
-//                oldAnimatedNode.isRemoving = true
-//                minimizeItem()
-//            }
-//        }
+        //nodeIsDown, safe to continue
+        if(nodeAllocated)
+        {
+            //Idk if we need this variable? it might be good enough to use curreentItem idk
+            if(animatedNode.isInitialized)
+            {
+                //if animation has not finished , despite it being selected, continue,
+                if(!animatedNode.isFullSizeAnimationDone) {
+                    //Want animation to last for .4 seconds. //1f(second) == 30frames
+                    currentScale = currentScale + (1f/12f)
+
+                    if(currentScale >= scaleMax) {
+                        animatedNode.localScale = Vector3(scaleMax, scaleMax, scaleMax)
+                        animatedNode.isFullSizeAnimationDone = true
+                    }
+                    else if(currentScale < scaleMax) {
+                        animatedNode.localScale = Vector3(currentScale, currentScale, currentScale)
+                    }
+                }
+                else if(oldAnimatedNode.isRemoving) { minimizeItem() }
+            }
+            else if(!animatedNode.isInitialized) {
+                if(!oldAnimatedNode.isRemoveAnimationDone) {
+                    oldAnimatedNode.isRemoving = true
+                    minimizeItem()
+                }
+            }
+        }
+        else //node NOT allocated, meaning, new item was picked !!!
+        {
+            if(oldAnimatedNode.isInitialized && !oldAnimatedNode.isRemoveAnimationDone) {
+                oldAnimatedNode.isRemoving = true
+                minimizeItem()
+            }
+        }
     }
 
-//    private fun minimizeItem() {
-//        oldScale = oldScale - (1f/9f) //.3 seconds
-//
-//        if (oldScale <= scaleMin)
-//        {
-//            oldAnimatedNode.localScale = Vector3(scaleMin,scaleMin,scaleMin)
-//            arFragment.arSceneView.scene.removeChild(oldAnchorNode)
-//            oldAnimatedNode.isRemoveAnimationDone = true
-//            oldAnimatedNode.isRemoving = false
-//            oldScale = scaleMax
-//            placeObject(arFragment, currentAnchor,Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
-//        }
-//        else if(oldScale > scaleMin)
-//        {
-//            animatedNode.localScale = Vector3(oldScale,oldScale,oldScale)
-//        }
-//    }
+    private fun minimizeItem() {
+        oldScale = oldScale - (1f/9f) //.3 seconds
+
+        if (oldScale <= scaleMin)
+        {
+            oldAnimatedNode.localScale = Vector3(scaleMin,scaleMin,scaleMin)
+            arFragment.arSceneView.scene.removeChild(oldAnchorNode)
+            oldAnimatedNode.isRemoveAnimationDone = true
+            oldAnimatedNode.isRemoving = false
+            oldScale = scaleMax
+            placeObject(arFragment, currentAnchor,Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
+        }
+        else if(oldScale > scaleMin)
+        {
+            animatedNode.localScale = Vector3(oldScale,oldScale,oldScale)
+        }
+    }
 
     /**
      * load the 3D model in the space
@@ -209,9 +242,7 @@ class ModelSceneViewFragment : Fragment() {
 //                        //do stuff
 //
 //                    })
-//            // Create the transformable andy and add it to the anchor.
-            //val fragment = ArFragment()
-            //fragment.transformationSystem
+
 
             val dm = resources.displayMetrics
             val sv = FootprintSelectionVisualizer()
@@ -227,17 +258,87 @@ class ModelSceneViewFragment : Fragment() {
             transformableNode.scaleController.maxScale = 5f
             transformableNode.setParent(itemModelNode) //could make this main node later
 
-            rotatingNode.renderable = model
             rotatingNode.setParent(transformableNode)
 
+            animatedNode.renderable = model
+            animatedNode.setParent(rotatingNode)
+
+            animatedNode.setOnTouchListener { hitTestResult, motionEvent ->
+                scaleGestureDetector.onTouchEvent(motionEvent)
+            }
+
+
             scene.addChild(itemModelNode)
+            nodeAllocated = true
+            animatedNode.isInitialized = true
         }
     }
 
-    fun animatePlacement(model : TransformableNode) {
+    inner class MyGestureDetector : GestureDetector.SimpleOnGestureListener() {
+        private var mLastOnDownEvent: MotionEvent? = null
+
+        override fun onSingleTapUp(e: MotionEvent): Boolean {
+            onSingleTap(e)
+            return true
+        }
+
+        override fun onDown(e: MotionEvent): Boolean {
+            //Android 4.0 bug means e1 in onFling may be NULL due to onLongPress eating it.
+            mLastOnDownEvent = e
+            return super.onDown(e)
+        }
+    }
+
+//    private fun handleOnTouch(hitTestResults: HitTestResult, motionEvent: MotionEvent){
+//
+//        if(nodeAllocated)
+//        {
+//            scene.hit
+//
+//
+//
+//
+//
+//
+//
+//             sceneView.onPeekTouch(hitTestResults, motionEvent)
+//
+//            //check for touching a Animated Node
+//            if ( hitTestResults.node != animatedNode){
+//                Log.d(TAG, "if animatedNode was not hit, then don't worry about it")
+//                return
+//            }
+//
+//            //Otherwise call gesture detector
+//            trackableGestureDetector.onTouchEvent(motionEvent)
+//        }
+//    }
+
+    private fun onSingleTap(motionEvent: MotionEvent) {
 
 
-
+        if(motionEvent != null ){
+//            for( hit in frame.hitTest(motionEvent)) {
+//
+//              var trackable = hit.trackable
+//
+//                if(trackable is Plane && trackable.isPoseInPolygon(hit.hitPose)){
+//                    var plane = trackable
+//                    //Handle Plane hits if we want to in the future
+//                }
+//                else if(trackable is com.google.ar.core.Point) {
+//
+//                    val point = trackable
+//
+//                    if (!bubbleNode.isEnabled)
+//                        addDescriptionBubble()
+//                    else {
+//                        anchorNode.removeChild(bubbleNode)
+//                        bubbleNode.isEnabled = false
+//                    }
+//                }
+//            }
+        }
     }
 
     override fun onPause() {
@@ -266,7 +367,6 @@ class ModelSceneViewFragment : Fragment() {
             scene.removeChild(itemModelNode)
             renderObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
         }
-
     }
 
 
