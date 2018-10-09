@@ -63,14 +63,15 @@ class ModelSceneViewFragment : Fragment() {
     var firstTimeWinkyFace : Boolean = true
     private var nodeAllocated : Boolean = false
 
-    lateinit var itemModelNode: Node
+    private lateinit var oldItemModelNode: Node
+    private lateinit var itemModelNode: Node
     private lateinit var trackableGestureDetector: GestureDetector
     private lateinit var scaleGestureDetector : ScaleGestureDetector
 
     private val scaleMin : Float = 0.0f
-    private val scaleMax : Float = 1.0f
+    private val scaleMax : Float = 1.5f
     private var currentScale: Float = 0.0f
-    private var oldScale: Float = 1.0f
+    private var oldScale: Float = 1.5f
 
     lateinit var oldAnimatedNode : AnimatedNode
     lateinit var animatedNode: AnimatedNode
@@ -126,6 +127,7 @@ class ModelSceneViewFragment : Fragment() {
         })
 
         animatedNode = AnimatedNode() //fake init
+        oldAnimatedNode = AnimatedNode() //fake init
 
 
         // this.trackableGestureDetector = GestureDetector(activity, MyGestureDetector())
@@ -146,17 +148,18 @@ class ModelSceneViewFragment : Fragment() {
     }
 
     private fun onUpdate(frameTime: FrameTime) {
-//TODO: Deconstruct to have same animation effect in this sceneview
+
         //nodeIsDown, safe to continue
         if(nodeAllocated)
         {
             //Idk if we need this variable? it might be good enough to use curreentItem idk
-            if(animatedNode.isInitialized)
+            if(animatedNode.isSelected)
             {
+
                 //if animation has not finished , despite it being selected, continue,
                 if(!animatedNode.isFullSizeAnimationDone) {
                     //Want animation to last for .4 seconds. //1f(second) == 30frames
-                    currentScale = currentScale + (1f/12f)
+                    currentScale = currentScale + (1f/30f)
 
                     if(currentScale >= scaleMax) {
                         animatedNode.localScale = Vector3(scaleMax, scaleMax, scaleMax)
@@ -166,9 +169,11 @@ class ModelSceneViewFragment : Fragment() {
                         animatedNode.localScale = Vector3(currentScale, currentScale, currentScale)
                     }
                 }
-                else if(oldAnimatedNode.isRemoving) { minimizeItem() }
+                else if(oldAnimatedNode.isRemoving) {
+                    Log.d("MAGIC SPEAKER:e", "still removing?")
+                    minimizeItem() }
             }
-            else if(!animatedNode.isInitialized) {
+            else if(!animatedNode.isSelected) {
                 if(!oldAnimatedNode.isRemoveAnimationDone) {
                     oldAnimatedNode.isRemoving = true
                     minimizeItem()
@@ -177,24 +182,26 @@ class ModelSceneViewFragment : Fragment() {
         }
         else //node NOT allocated, meaning, new item was picked !!!
         {
+            Log.d("MAGIC SPEAKER:e", " node allocated: false ")
             if(oldAnimatedNode.isInitialized && !oldAnimatedNode.isRemoveAnimationDone) {
                 oldAnimatedNode.isRemoving = true
                 minimizeItem()
             }
         }
     }
-
     private fun minimizeItem() {
         oldScale = oldScale - (1f/9f) //.3 seconds
 
         if (oldScale <= scaleMin)
         {
             oldAnimatedNode.localScale = Vector3(scaleMin,scaleMin,scaleMin)
-            arFragment.arSceneView.scene.removeChild(oldAnchorNode)
+            scene.removeChild(oldItemModelNode)
             oldAnimatedNode.isRemoveAnimationDone = true
             oldAnimatedNode.isRemoving = false
             oldScale = scaleMax
-            placeObject(arFragment, currentAnchor,Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
+
+            Log.d("MAGIC SPEAKER: Finished minimizing animatednode", "${itemModelNode.name} should now be displayed ")
+            renderObject(Uri.parse("${itemModelNode.name}.sfb"), itemModelNode.name)
         }
         else if(oldScale > scaleMin)
         {
@@ -243,6 +250,7 @@ class ModelSceneViewFragment : Fragment() {
 //
 //                    })
 
+            val animatedNode = AnimatedNode()
 
             val dm = resources.displayMetrics
             val sv = FootprintSelectionVisualizer()
@@ -267,10 +275,11 @@ class ModelSceneViewFragment : Fragment() {
                 scaleGestureDetector.onTouchEvent(motionEvent)
             }
 
+            this.animatedNode = animatedNode
 
             scene.addChild(itemModelNode)
             nodeAllocated = true
-            animatedNode.isInitialized = true
+
         }
     }
 
@@ -355,7 +364,6 @@ class ModelSceneViewFragment : Fragment() {
     //the lambda way
     fun passData(restaurantMenuItem: RestaurantMenuItem?) {
 
-
         Log.d("MAGIC SPEAKER", "${restaurantMenuItem?.name} =?= ")
 
         if (firstTimeWinkyFace) {
@@ -364,8 +372,13 @@ class ModelSceneViewFragment : Fragment() {
         }
         else if (restaurantMenuItem?.name != itemModelNode.name)
         {
-            scene.removeChild(itemModelNode)
-            renderObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
+            oldItemModelNode = itemModelNode
+            itemModelNode = Node()
+            itemModelNode.name = restaurantMenuItem?.name
+            animatedNode.isSelected = false
+            oldAnimatedNode = animatedNode
+            oldAnimatedNode.isInitialized = true
+            nodeAllocated = false
         }
     }
 
