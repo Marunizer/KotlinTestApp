@@ -159,7 +159,7 @@ class ModelSceneViewFragment : Fragment() {
                 //if animation has not finished , despite it being selected, continue,
                 if(!animatedNode.isFullSizeAnimationDone) {
                     //Want animation to last for .4 seconds. //1f(second) == 30frames
-                    currentScale = currentScale + (1f/18f) //.6
+                    currentScale = currentScale + (1f/15f) //.5r
 
                     if(currentScale >= scaleMax) {
                         animatedNode.localScale = Vector3(scaleMax, scaleMax, scaleMax)
@@ -190,7 +190,7 @@ class ModelSceneViewFragment : Fragment() {
         }
     }
     private fun minimizeItem() {
-        oldScale = oldScale - (1f/9f) //.3 seconds
+        oldScale = oldScale - (1f/15f) //.5 seconds
 
         if (oldScale <= scaleMin)
         {

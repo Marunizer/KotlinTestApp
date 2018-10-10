@@ -414,7 +414,7 @@ class ModelARViewActivity : AppCompatActivity() {
         val transformableNode = TransformableNode(fragment.transformationSystem)
 
         bubbleNode.setEnabled(false)
-        bubbleNode.setLocalPosition(Vector3(0f, .3f, 0f))
+        bubbleNode.setLocalPosition(Vector3(0f, .24f, 0f))
 
         transformableNode.setParent(anchorNode)
         transformableNode.scaleController.isEnabled = false
