@@ -1,7 +1,6 @@
 package com.example.mende.kotlintestapp.views
 
 import android.content.Context
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -10,22 +9,14 @@ import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.*
 import com.example.mende.kotlintestapp.R
-import com.google.ar.sceneform.Node
-import com.google.ar.sceneform.Scene
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
-import com.google.ar.sceneform.ux.*
 import kotlinx.android.synthetic.main.activity_model_scene.*
 import com.example.mende.kotlintestapp.objects.RestaurantMenuItem
 import com.example.mende.kotlintestapp.util.AnimatedNode
 import com.example.mende.kotlintestapp.util.RotatingNode
-import com.google.ar.core.Plane
-import com.google.ar.core.TrackingState
-import com.google.ar.sceneform.FrameTime
-import com.google.ar.sceneform.HitTestResult
 import android.view.ScaleGestureDetector
-
-
+import com.google.ar.sceneform.*
 
 
 /**
@@ -60,6 +51,7 @@ class ModelSceneViewFragment : Fragment() {
     var containerActivity : FragmentActivity? = null
     lateinit var sceneContext : Context
     lateinit var scene: Scene
+    lateinit var sceneView : SceneView
     var firstTimeWinkyFace : Boolean = true
     private var nodeAllocated : Boolean = false
 
@@ -72,6 +64,7 @@ class ModelSceneViewFragment : Fragment() {
     private val scaleMax : Float = 1.25f
     private var currentScale: Float = 0.0f
     private var oldScale: Float = 1.25f
+    private var scale: Float = 1.5f
 
     lateinit var oldAnimatedNode : AnimatedNode
     lateinit var animatedNode: AnimatedNode
@@ -103,16 +96,19 @@ class ModelSceneViewFragment : Fragment() {
 //        val camera = sceneView.scene.camera
 //        camera.localRotation = Quaternion.axisAngle(Vector3.right(), -30.0f)
 
+        sceneView = scene_view
         scene = sceneView.scene // get current scene
-        scene.sunlight.onDeactivate()
+       // scene.sunlight.onDeactivate()//this way there isn't a shadow in a particular direction
         scene.addOnUpdateListener { frameTime ->
             onUpdate(frameTime) }
-
 
 
         scaleGestureDetector = ScaleGestureDetector(context, object : ScaleGestureDetector.OnScaleGestureListener {
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 Log.d("TEST_SCALE", "Scale Span: " + scaleGestureDetector.getCurrentSpan())
+                scale = scale * detector.scaleFactor
+                scale = Math.max(0.1f,Math.min(scale,2.5f)) // like how many xTimes the ratio
+                animatedNode.localScale = Vector3(scale,scale,scale)
                 return true
             }
 
@@ -122,9 +118,13 @@ class ModelSceneViewFragment : Fragment() {
             }
 
             override fun onScaleEnd(detector: ScaleGestureDetector) {
-                itemModelNode.localScale = Vector3(detector.scaleFactor,detector.scaleFactor,detector.scaleFactor)
+
             }
         })
+
+        scene.addOnPeekTouchListener { hitTestResult, motionEvent ->
+            scaleGestureDetector.onTouchEvent(motionEvent)
+        }
 
         animatedNode = AnimatedNode() //fake init
         oldAnimatedNode = AnimatedNode() //fake init
@@ -159,7 +159,7 @@ class ModelSceneViewFragment : Fragment() {
                 //if animation has not finished , despite it being selected, continue,
                 if(!animatedNode.isFullSizeAnimationDone) {
                     //Want animation to last for .4 seconds. //1f(second) == 30frames
-                    currentScale = currentScale + (1f/15f)
+                    currentScale = currentScale + (1f/18f) //.6
 
                     if(currentScale >= scaleMax) {
                         animatedNode.localScale = Vector3(scaleMax, scaleMax, scaleMax)
@@ -243,40 +243,18 @@ class ModelSceneViewFragment : Fragment() {
                 localScale = Vector3(3f, 3f, 3f)
                 name = modelName
             }
-//            scene.addOnPeekTouchListener()
-//            scene.addOnPeekTouchListener(
-//                    { hitResult: HitResult, motionEvent: MotionEvent ->
-//                        //do stuff
-//
-//                    })
 
             val animatedNode = AnimatedNode()
-
-            val dm = resources.displayMetrics
-            val sv = FootprintSelectionVisualizer()
-
-            val transformationSystem =  TransformationSystem(dm,sv)
-            //transformationSystem.addGestureRecognizer()
-            val transformableNode = TransformableNode(transformationSystem)
             val rotatingNode = RotatingNode()
 
-            //transformableNode.renderable = cupCakeNode.renderable
-            transformableNode.localScale = itemModelNode.localScale
-            transformableNode.localPosition = itemModelNode.localPosition
-            transformableNode.scaleController.maxScale = 5f
-            transformableNode.setParent(itemModelNode) //could make this main node later
 
-            rotatingNode.setParent(transformableNode)
+            rotatingNode.setParent(itemModelNode)
 
             animatedNode.renderable = model
             animatedNode.setParent(rotatingNode)
             animatedNode.isInitialized = true
             animatedNode.localScale = Vector3(scaleMin, scaleMin, scaleMin)
             currentScale = scaleMin
-
-            animatedNode.setOnTouchListener { hitTestResult, motionEvent ->
-                scaleGestureDetector.onTouchEvent(motionEvent)
-            }
 
             this.animatedNode = animatedNode
 
