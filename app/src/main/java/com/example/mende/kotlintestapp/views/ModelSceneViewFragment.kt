@@ -17,6 +17,11 @@ import com.example.mende.kotlintestapp.util.AnimatedNode
 import com.example.mende.kotlintestapp.util.RotatingNode
 import android.view.ScaleGestureDetector
 import com.google.ar.sceneform.*
+import android.text.method.Touch.onTouchEvent
+import android.view.MotionEvent
+import com.example.mende.kotlintestapp.util.RotationGestureDetector
+import android.text.method.Touch.onTouchEvent
+import com.google.ar.sceneform.math.Quaternion
 
 
 /**
@@ -34,9 +39,18 @@ import com.google.ar.sceneform.*
  *  https://www.raywenderlich.com/361-android-fragments-tutorial-an-introduction-with-kotlin
  *          -- Can learn how to interact with Activity from this link later
  *
+ *  https://www.youtube.com/watch?v=t8TU1ZB_MfQ
+ *          -- Pinch to zoom
+ *
+ *  https://ryanharter.com/blog/2014/10/08/using-gestures/
+ *          -- I think I looked at this for scale detection and Gesture Detection in general
+ *
  * -------------------------------------------------------------------------------------------------
  * CONCERNS:
- * -
+ *
+ * - TODO It appears that when the user has left the screen and comes back app either crashes or 2nd model on top of first is created
+ *  - Prediction: maybe when the user has left the activity for a long period of time, the onStop() function of the fragment is evoked
+ *  so then when user comes back, it's not just onResume() that's happening, but onStart() !!!
  *
  * -------------------------------------------------------------------------------------------------
  * Notes from Original Noni:  (Could still be applicable, must review and move up if so)
@@ -44,7 +58,17 @@ import com.google.ar.sceneform.*
  *
  * */
 
-class ModelSceneViewFragment : Fragment() {
+class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGestureListener {
+
+    override fun onRotation(rotationDetector: RotationGestureDetector?) {
+       rotationAngle = rotationDetector?.angle
+    }
+
+
+//    fun onTouchEvent(event: MotionEvent): Boolean {
+//        rotatingGestureDetector.onTouchEvent(event)
+//        return super.onTouchEvent(event)
+//    }
 
     private val TAG = ModelSceneViewFragment::class.java.simpleName
 
@@ -54,17 +78,23 @@ class ModelSceneViewFragment : Fragment() {
     lateinit var sceneView : SceneView
     var firstTimeWinkyFace : Boolean = true
     private var nodeAllocated : Boolean = false
+    private var inSession : Boolean = false
 
     private lateinit var oldItemModelNode: Node
     private lateinit var itemModelNode: Node
     private lateinit var trackableGestureDetector: GestureDetector
     private lateinit var scaleGestureDetector : ScaleGestureDetector
+    private lateinit var rotatingGestureDetector: RotationGestureDetector
+    private var rotationAngle : Float? = null
 
     private val scaleMin : Float = 0.0f
     private val scaleMax : Float = 1.25f
     private var currentScale: Float = 0.0f
     private var oldScale: Float = 1.25f
-    private var scale: Float = 1.5f
+    private var scale: Float = 1f //maybe this should stay 1? nopt sure
+
+    private var oldAngle: Float = 1.0f
+    private var currentAngle: Float = 0.0f
 
     lateinit var oldAnimatedNode : AnimatedNode
     lateinit var animatedNode: AnimatedNode
@@ -93,6 +123,12 @@ class ModelSceneViewFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
+        if(inSession)
+        {
+            return
+        }
+        inSession = true
+
 //        val camera = sceneView.scene.camera
 //        camera.localRotation = Quaternion.axisAngle(Vector3.right(), -30.0f)
 
@@ -107,7 +143,7 @@ class ModelSceneViewFragment : Fragment() {
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 Log.d("TEST_SCALE", "Scale Span: " + scaleGestureDetector.getCurrentSpan())
                 scale = scale * detector.scaleFactor
-                scale = Math.max(0.1f,Math.min(scale,2.5f)) // like how many xTimes the ratio
+                scale = Math.max(0.5f,Math.min(scale,2.25f)) // like how many xTimes the ratio
                 animatedNode.localScale = Vector3(scale,scale,scale)
                 return true
             }
@@ -120,10 +156,15 @@ class ModelSceneViewFragment : Fragment() {
             override fun onScaleEnd(detector: ScaleGestureDetector) {
 
             }
+
+
         })
+
+        rotatingGestureDetector = RotationGestureDetector(this,this.sceneView)
 
         scene.addOnPeekTouchListener { hitTestResult, motionEvent ->
             scaleGestureDetector.onTouchEvent(motionEvent)
+           // rotatingGestureDetector.onTouchEvent(motionEvent)
         }
 
         animatedNode = AnimatedNode() //fake init
@@ -150,8 +191,37 @@ class ModelSceneViewFragment : Fragment() {
     private fun onUpdate(frameTime: FrameTime) {
 
         //nodeIsDown, safe to continue
-        if(nodeAllocated)
-        {
+        if (nodeAllocated) {
+
+            if (rotationAngle != null) {
+
+                if (oldAngle != currentAngle) {
+
+                    oldAngle = currentAngle
+
+                    if (rotationAngle!! > currentAngle)
+                    {
+                        currentAngle = currentAngle + ((1f/15f)% 360)
+
+                        animatedNode.localRotation = Quaternion.lookRotation(
+                                Vector3(currentAngle, currentAngle, currentAngle), Vector3.up())
+
+                    }
+                    else if (rotationAngle!! < currentAngle)
+                    {
+                        currentAngle = currentAngle -((1f/15f)% 360)
+
+                        animatedNode.localRotation = Quaternion.lookRotation(
+                                Vector3(currentAngle, currentAngle, currentAngle), Vector3.up())
+                }
+            }
+        }
+//                lookRotation(
+//                        animatedNode.forward,
+//                        Vector3(rotationAngle!!, rotationAngle!!, rotationAngle!!))
+//            }
+
+
             //Idk if we need this variable? it might be good enough to use curreentItem idk
             if(animatedNode.isInitialized)
             {
@@ -239,7 +309,7 @@ class ModelSceneViewFragment : Fragment() {
         model?.let {
             itemModelNode = Node().apply {
                 //setParent(scene)
-                localPosition = Vector3(0f, -.4f, -1f)
+                localPosition = Vector3(0f, -.335f, -1f)
                 localScale = Vector3(3f, 3f, 3f)
                 name = modelName
             }
@@ -339,6 +409,10 @@ class ModelSceneViewFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         sceneView.resume()
+        if(scene.children.isEmpty())
+        {
+            onStart()
+        }
     }
 
     //should instead implement a listener that knows when a different circle item has been selected.

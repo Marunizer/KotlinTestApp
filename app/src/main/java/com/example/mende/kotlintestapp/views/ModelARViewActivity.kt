@@ -218,11 +218,13 @@ class ModelARViewActivity : AppCompatActivity() {
 
                         if(currentScale >= scaleMax) {
                             animatedNode.localScale = Vector3(scaleMax, scaleMax, scaleMax)
+                            transformableNode.localScale = Vector3(scaleMax, scaleMax, scaleMax)
                             animatedNode.isFullSizeAnimationDone = true
                             descriptionBubble.xml_btn.text = restaurantMenuItem?.description
                         }
                         else if(currentScale < scaleMax) {
                             animatedNode.localScale = Vector3(currentScale, currentScale, currentScale)
+                            transformableNode.localScale = Vector3(currentScale, currentScale, currentScale)
                         }
                     }
                     else if(oldAnimatedNode.isRemoving) { minimizeItem() }
@@ -245,12 +247,15 @@ class ModelARViewActivity : AppCompatActivity() {
             //whenever there is a transformation happening, disable rotation
             if (!firstTimeWinkyFace && nodeAllocated)
             {
-                if(transformableNode.isTransforming) {
-                    rotatingNode.onPauseAnimation()
-                }
-                else if (!rotatingNode.isAnimated()){
-                    rotatingNode.onResumeAnimation()
-                    arFragment.transformationSystem.selectionVisualizer.removeSelectionVisual(transformableNode)
+                if(rotatingNode.isAnimatedByUser())
+                {
+                    if(transformableNode.isTransforming) {
+                        rotatingNode.onPauseAnimation()
+                    }
+                    else if (!rotatingNode.isAnimated()){
+                        rotatingNode.onResumeAnimation()
+                        arFragment.transformationSystem.selectionVisualizer.removeSelectionVisual(transformableNode)
+                    }
                 }
             }
         }
@@ -271,6 +276,7 @@ class ModelARViewActivity : AppCompatActivity() {
         else if(oldScale > scaleMin)
         {
             animatedNode.localScale = Vector3(oldScale,oldScale,oldScale)
+            transformableNode.localScale = Vector3(oldScale,oldScale,oldScale)
         }
     }
 
@@ -423,6 +429,7 @@ class ModelARViewActivity : AppCompatActivity() {
         animatedNode.renderable = renDerable
         animatedNode.setParent(rotatingNode)
         animatedNode.localScale = Vector3(scaleMin, scaleMin, scaleMin)
+        transformableNode.localScale = Vector3(scaleMin, scaleMin, scaleMin)
         currentScale = scaleMin
 
         this.animatedNode = animatedNode
@@ -469,6 +476,24 @@ class ModelARViewActivity : AppCompatActivity() {
         override fun onSingleTapUp(e: MotionEvent): Boolean {
             onSingleTap(e)
             return true
+        }
+
+        override fun onDoubleTap(e: MotionEvent?): Boolean {
+
+            if (rotatingNode.isAnimatedByUser() && rotatingNode.isAnimated())
+            {
+                rotatingNode.onPauseAnimation()
+                rotatingNode.setAnimated(false)
+            }
+
+            else if (!rotatingNode.isAnimatedByUser() && !rotatingNode.isAnimated())
+            {
+                rotatingNode.onResumeAnimation()
+                rotatingNode.setAnimated(true)
+            }
+
+
+            return super.onDoubleTap(e)
         }
 
         override fun onDown(e: MotionEvent): Boolean {
