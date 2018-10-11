@@ -98,6 +98,7 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
 
     lateinit var oldAnimatedNode : AnimatedNode
     lateinit var animatedNode: AnimatedNode
+    lateinit var rotatingNode: RotatingNode
 
     companion object {
 
@@ -320,6 +321,8 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
 
             rotatingNode.setParent(itemModelNode)
 
+            this.rotatingNode = rotatingNode
+
             animatedNode.renderable = model
             animatedNode.setParent(rotatingNode)
             animatedNode.isInitialized = true
@@ -346,6 +349,23 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
             //Android 4.0 bug means e1 in onFling may be NULL due to onLongPress eating it.
             mLastOnDownEvent = e
             return super.onDown(e)
+        }
+
+        override fun onDoubleTap(e: MotionEvent?): Boolean {
+
+            if (rotatingNode.isAnimatedByUser() && rotatingNode.isAnimated())
+            {
+                rotatingNode.onPauseAnimation()
+                rotatingNode.setAnimated(false)
+            }
+
+            else if (!rotatingNode.isAnimatedByUser() && !rotatingNode.isAnimated())
+            {
+                rotatingNode.onResumeAnimation()
+                rotatingNode.setAnimated(true)
+            }
+
+            return super.onDoubleTap(e)
         }
     }
 
