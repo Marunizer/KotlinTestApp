@@ -18,12 +18,11 @@ Tasks needed (not necessarily in order, but kind of in order)
 - If obj or ply becomes my final format method, setup draco
 - Add orientation/Permission Activity screens to make it a journey for the user
 - When location method is found out, implement showing restaurants by distance from user
-- Finalize look of HomeScreen
 - Add animations to recyclerCardview to make it smooth
 - Setup a MemoryDumpSystem to get rid of files when no longer probably needed
 - Replace poly models with real models, ->Optimize time it takes to present model
 - Add an animated to stall the user as a model needs to be downloaded and rendered
-- Split up the excessive code in ARActivity to different classes as needed
+- Split up the excessive code in Activities&Fragments to classes to different classes as needed
 - have selected itemCircle glow Pink if is currently selected.
 - Add a backTab/button to model views that shows name of restaurant
 - Final Cleanup()

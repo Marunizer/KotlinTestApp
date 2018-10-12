@@ -64,12 +64,6 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
        rotationAngle = rotationDetector?.angle
     }
 
-
-//    fun onTouchEvent(event: MotionEvent): Boolean {
-//        rotatingGestureDetector.onTouchEvent(event)
-//        return super.onTouchEvent(event)
-//    }
-
     private val TAG = ModelSceneViewFragment::class.java.simpleName
 
     var containerActivity : FragmentActivity? = null
@@ -95,6 +89,11 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
 
     private var oldAngle: Float = 1.0f
     private var currentAngle: Float = 0.0f
+
+    private var nodeW : Float = 0f
+    private var nodeX : Float = 0f
+    private var nodeY : Float = 0f
+    private var nodeZ : Float = 0f
 
     lateinit var oldAnimatedNode : AnimatedNode
     lateinit var animatedNode: AnimatedNode
@@ -157,28 +156,22 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
             override fun onScaleEnd(detector: ScaleGestureDetector) {
 
             }
-
-
         })
 
         rotatingGestureDetector = RotationGestureDetector(this,this.sceneView)
 
+        this.trackableGestureDetector = GestureDetector(activity, MyGestureDetector())
+
+
         scene.addOnPeekTouchListener { hitTestResult, motionEvent ->
             scaleGestureDetector.onTouchEvent(motionEvent)
+            MyGestureDetector().onSingleTapUp(motionEvent)
            // rotatingGestureDetector.onTouchEvent(motionEvent)
         }
 
         animatedNode = AnimatedNode() //fake init
         oldAnimatedNode = AnimatedNode() //fake init
 
-
-        // this.trackableGestureDetector = GestureDetector(activity, MyGestureDetector())
-
-//        scene.addOnPeekTouchListener { hitTestResult, motionEvent ->
-//            scaleGestureDetector.onTouchEvent(motionEvent)
-//            MyGestureDetector().onSingleTapUp(motionEvent) }
-
-        // scene.addOnPeekTouchListener(this::handleOnTouch)
 
 
 
@@ -193,6 +186,13 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
 
         //nodeIsDown, safe to continue
         if (nodeAllocated) {
+
+           // itemModelNode.localRotation = Quaternion.axisAngle(Vector3(nodeX, nodeY+.5f, nodeZ), nodeW)
+            //nodeY = nodeY+.5f
+//            nodeW = itemModelNode.localRotation.w
+//            nodeX = itemModelNode.localRotation.x
+//            nodeY = itemModelNode.localRotation.y
+//            nodeZ = itemModelNode.localRotation.z
 
             if (rotationAngle != null) {
 
@@ -315,8 +315,15 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
                 name = modelName
             }
 
+
             val animatedNode = AnimatedNode()
             val rotatingNode = RotatingNode()
+
+
+
+            animatedNode.setOnTouchListener { hitTestResult, motionEvent ->
+                MyGestureDetector().onDoubleTap(motionEvent)
+            }
 
 
             rotatingNode.setParent(itemModelNode)
@@ -333,6 +340,11 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
 
             scene.addChild(itemModelNode)
             nodeAllocated = true
+            
+            nodeW = itemModelNode.localRotation.w
+            nodeX = itemModelNode.localRotation.x
+            nodeY = itemModelNode.localRotation.y
+            nodeZ = itemModelNode.localRotation.z
 
         }
     }
@@ -346,12 +358,11 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
         }
 
         override fun onDown(e: MotionEvent): Boolean {
-            //Android 4.0 bug means e1 in onFling may be NULL due to onLongPress eating it.
             mLastOnDownEvent = e
             return super.onDown(e)
         }
 
-        override fun onDoubleTap(e: MotionEvent?): Boolean {
+        override fun onDoubleTap(e: MotionEvent?): Boolean {//actually only takes one tap
 
             if (rotatingNode.isAnimatedByUser() && rotatingNode.isAnimated())
             {
@@ -364,7 +375,6 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
                 rotatingNode.onResumeAnimation()
                 rotatingNode.setAnimated(true)
             }
-
             return super.onDoubleTap(e)
         }
     }

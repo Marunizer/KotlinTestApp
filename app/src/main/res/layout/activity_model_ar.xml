@@ -45,12 +45,18 @@
         android:id="@+id/item_text_ar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:shadowColor="#7F000000"
+        android:shadowDx="1.5"
+        android:shadowDy="1.5"
+        android:shadowRadius="4"
+        android:textStyle="bold"
         android:gravity="end"
         android:visibility="gone"
         android:textColor="@android:color/white"
         android:textSize="22sp"
         android:layout_marginStart="16dp"
-        android:layoutDirection="rtl" />
+        android:layoutDirection="rtl"
+        android:elevation="8dp"/>
 
     </LinearLayout>
 
@@ -66,7 +72,12 @@
         <TextView
             android:id="@+id/item_cost_ar"
             android:visibility="gone"
-            android:layout_width="70dp"
+            android:layout_width="65dp"
+            android:shadowColor="#7F000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="4"
+            android:textStyle="bold"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:textColor="@android:color/white"
@@ -116,8 +127,8 @@
     <LinearLayout
         android:id="@+id/select_item_ar_layout"
         android:layout_width="match_parent"
-        android:layout_height="92dp"
-        android:layout_marginBottom="12dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:orientation="horizontal">
@@ -127,7 +138,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:scrollbars="horizontal">
+            android:scrollbars="none">
 
         </android.support.v7.widget.RecyclerView>
 

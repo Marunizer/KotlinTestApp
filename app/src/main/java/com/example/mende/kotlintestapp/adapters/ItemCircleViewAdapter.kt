@@ -1,6 +1,5 @@
 package com.example.mende.kotlintestapp.adapters
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Color
 import android.support.v7.widget.LinearLayoutManager
@@ -37,7 +36,12 @@ class ItemCircleViewAdapter(recyclerView: RecyclerView,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
-        val view = LayoutInflater.from(activity).inflate(R.layout.circle_menu_item, parent, false)
+        lateinit var view : View
+
+        if (arMode)
+            view = LayoutInflater.from(activity).inflate(R.layout.circle_menu_item_ar, parent, false)
+        else
+            view = LayoutInflater.from(activity).inflate(R.layout.circle_menu_item, parent, false)
         return ItemViewHolder(view)
     }
 
