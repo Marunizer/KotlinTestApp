@@ -340,7 +340,7 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
 
             scene.addChild(itemModelNode)
             nodeAllocated = true
-            
+
             nodeW = itemModelNode.localRotation.w
             nodeX = itemModelNode.localRotation.x
             nodeY = itemModelNode.localRotation.y

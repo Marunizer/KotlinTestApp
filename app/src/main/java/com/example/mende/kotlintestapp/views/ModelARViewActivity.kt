@@ -19,10 +19,7 @@ import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.adapters.ItemCircleViewAdapter
 import com.example.mende.kotlintestapp.objects.ItemCircle
 import com.example.mende.kotlintestapp.objects.RestaurantMenuItem
-import com.example.mende.kotlintestapp.util.AnimatedNode
-import com.example.mende.kotlintestapp.util.MenuListHolder
-import com.example.mende.kotlintestapp.util.RotatingNode
-import com.example.mende.kotlintestapp.util.toast
+import com.example.mende.kotlintestapp.util.*
 import com.google.ar.core.*
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.FrameTime
@@ -30,13 +27,11 @@ import com.google.ar.sceneform.HitTestResult
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
-import com.google.ar.sceneform.rendering.ModelRenderable
-import com.google.ar.sceneform.rendering.ViewRenderable
+import com.google.ar.sceneform.rendering.*
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import kotlinx.android.synthetic.main.activity_model_ar.*
 import kotlinx.android.synthetic.main.model_description_view.view.*
-
 
 /**
  * references:
@@ -85,6 +80,8 @@ class ModelARViewActivity : AppCompatActivity() {
     lateinit var animatedNode: AnimatedNode
     lateinit var transformableNode : TransformableNode
     lateinit var rotatingNode : RotatingNode
+    lateinit var transparentNode : Node
+    var isTransparentNodePlaced : Boolean = false
 
     private lateinit var trackableGestureDetector: GestureDetector
 
@@ -110,9 +107,12 @@ class ModelARViewActivity : AppCompatActivity() {
         arFragment.arSceneView.scene.addOnPeekTouchListener(this::handleOnTouch)
                 this.trackableGestureDetector = GestureDetector(this, MyGestureDetector())
 
+        arFragment.transformationSystem.selectionVisualizer = BlanckSelectionVisualizer()
 
         floatingActionButton.setOnClickListener { addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"),restaurantMenuItem?.name) }
         showFab(false)
+
+        addTransparentObject(Uri.parse("${restaurantMenuItem?.name}.sfb"),restaurantMenuItem?.name)
     }
 
 
@@ -124,6 +124,8 @@ class ModelARViewActivity : AppCompatActivity() {
         mHandler = Handler()
         bubbleNode = Node()
         oldAnimatedNode = AnimatedNode() //fake init
+        transparentNode = Node()
+        transparentNode.isEnabled = false
 
         addTestData(getItemList())
 
@@ -151,9 +153,56 @@ class ModelARViewActivity : AppCompatActivity() {
         if (enabled) {
             floatingActionButton.isEnabled = true
             floatingActionButton.visibility = View.VISIBLE
+
         } else {
             floatingActionButton.isEnabled = false
             floatingActionButton.visibility = View.GONE
+        }
+    }
+
+    private fun showModel(enabled: Boolean) {
+
+        if(transparentNode.isEnabled){
+
+            if (enabled) {
+
+                val frame = arFragment.arSceneView.arFrame
+                val point = getScreenCenter()
+                if (frame != null) {
+                    val hits = frame.hitTest(point.x.toFloat(), point.y.toFloat())
+                    for (hit in hits) {
+                        val trackable = hit.trackable
+                        if (trackable is Plane && trackable.isPoseInPolygon(hit.hitPose)) {
+
+                            val tempAnchorNode = AnchorNode(hit.createAnchor())
+
+                            transparentNode.localPosition = tempAnchorNode.localPosition
+                            break
+                        }
+                    }
+                }
+
+//                val cameraPos = arFragment.arSceneView.scene.camera.worldPosition
+//                val cameraForward = arFragment.arSceneView.scene.camera.forward
+//                val position = Vector3.add(cameraPos, cameraForward.scaled(1.0f))
+//
+//                // Create an ARCore Anchor at the position.
+//                Pose pose = Pose.makeTranslation(position.x, position.y, position.z);
+//                Anchor anchor = arSceneView.getSession().createAnchor(pose);
+//
+//                mAnchorNode = new AnchorNode(anchor);
+//                mAnchorNode.setParent(arSceneView.getScene());
+
+
+                //transparentNode.worldPosition
+
+                arFragment.arSceneView.scene.addChild(transparentNode)
+                isTransparentNodePlaced = true
+
+            } else {
+                arFragment.arSceneView.scene.removeChild(transparentNode)
+                isTransparentNodePlaced = false
+            }
         }
     }
 
@@ -167,7 +216,29 @@ class ModelARViewActivity : AppCompatActivity() {
             //onStart up, show or remove floating button that allocates model
             if (hitTestChanged) {
                 if(firstTimeWinkyFace)
+                {
                     showFab(isHitting)
+                    showModel(isHitting)
+                }
+            }
+
+            //move around node
+            if(isTransparentNodePlaced){
+                val frame = arFragment.arSceneView.arFrame
+                val point = getScreenCenter()
+                if (frame != null) {
+                    val hits = frame.hitTest(point.x.toFloat(), point.y.toFloat())
+                    for (hit in hits) {
+                        val trackable = hit.trackable
+                        if (trackable is Plane && trackable.isPoseInPolygon(hit.hitPose)) {
+
+                            val tempAnchorNode = AnchorNode(hit.createAnchor())
+
+                            transparentNode.localPosition = tempAnchorNode.localPosition
+                            break
+                        }
+                    }
+                }
             }
 
 
@@ -181,23 +252,10 @@ class ModelARViewActivity : AppCompatActivity() {
                 bubbleNode.setWorldRotation(lookRotation)
             }
 
+
             //nodeIsDown, safe to continue
             if(nodeAllocated)
             {
-                //TODO: To have bubbleNode follow transformableNode in real time, make transformableNode.class - > have these updates happen during its frame updates!
-//                //they are not at the same x coordiante, then they are not aligned, update position
-//                if(transformableNode.worldPosition.x != bubbleNode.worldPosition.x ||transformableNode.worldPosition.z != bubbleNode.worldPosition.z ) {
-//                    bubbleNode.worldPosition.set(Vector3(transformableNode.worldPosition.x,
-//                            transformableNode.worldPosition.y,
-//                            transformableNode.worldPosition.z))
-//                }else if(transformableNode.localPosition.x != bubbleNode.localPosition.x ||transformableNode.localPosition.z != bubbleNode.localPosition.z ) {
-//                bubbleNode.localPosition.set(Vector3(transformableNode.localPosition.x,
-//                        transformableNode.localPosition.y + .3f,
-//                        transformableNode.localPosition.z))
-//                }
-
-
-
                 //Re-sets expected view after objected is presented
                 if(instructions_bubble.visibility == View.VISIBLE ) {
                     instructions_bubble.visibility = View.GONE
@@ -254,7 +312,6 @@ class ModelARViewActivity : AppCompatActivity() {
                     }
                     else if (!rotatingNode.isAnimated()){
                         rotatingNode.onResumeAnimation()
-                        arFragment.transformationSystem.selectionVisualizer.removeSelectionVisual(transformableNode)
                     }
                 }
             }
@@ -359,6 +416,47 @@ class ModelARViewActivity : AppCompatActivity() {
         }
     }
 
+    // Good starting point if want to try making object transparent again
+    //currently changing the material only changes the bottom few places... not good enough, need whole model
+    private fun addTransparentObject(model: Uri, name: String?) {
+
+        ModelRenderable.builder()
+                .setSource(arFragment.context, model)
+                .build()
+                .thenAccept {
+
+                    transparentNode.renderable = it
+                    transparentNode.isEnabled = true
+                }
+                .exceptionally {
+                    Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
+                    return@exceptionally null
+                }
+
+
+//        //Would want to replace this with a solid gray/white color
+//        val newTexture : CompletableFuture<Texture> = Texture.builder().setSource(this, R.drawable.transparant_plane).build()
+//
+//        ModelRenderable.builder()
+//                .setSource(arFragment.context, model)
+//                .build()
+//                .thenAccept {
+//
+//                    var newRenderable = it.makeCopy()
+//
+//                    MaterialFactory.makeTransparentWithTexture(this, newTexture.get())
+//                            .thenAccept {
+//                                newRenderable.material = it
+//                                transparentNode.renderable = newRenderable
+//                                transparentNode.isEnabled = true
+//                            }
+//                }
+//                .exceptionally {
+//                    Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
+//                    return@exceptionally null
+//                }
+    }
+
     /**
      * @param fragment our fragment
      * @param anchor ARCore anchor from the hit test
@@ -444,6 +542,7 @@ class ModelARViewActivity : AppCompatActivity() {
 
         if(firstTimeWinkyFace) {
             showFab(false)
+            showModel(false)
             floatingActionButton.background = null
             if(circle_item_ar_recycler_view.visibility == View.GONE || circle_item_ar_recycler_view.visibility == View.INVISIBLE)
                 circle_item_ar_recycler_view.visibility = View.VISIBLE
@@ -466,7 +565,7 @@ class ModelARViewActivity : AppCompatActivity() {
                 .exceptionally { //TODO: delete on release
                     it.toast(this) }
 
-        bubbleNode.setParent(anchorNode)
+        bubbleNode.setParent(transformableNode)
         bubbleNode.isEnabled = true
     }
 
