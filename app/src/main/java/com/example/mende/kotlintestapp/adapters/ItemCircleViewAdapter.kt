@@ -63,10 +63,12 @@ class ItemCircleViewAdapter(recyclerView: RecyclerView,
     fun bind(circle : ItemCircle?, clickListener: (ItemCircle?) -> Unit)
     {
         itemView.setOnClickListener {clickListener(circle)}
+
     }
 
     var itemName = view.circle_text
     var itemImage = view.circle_image
+  //  var borderColor = view.ci
 
 }
 

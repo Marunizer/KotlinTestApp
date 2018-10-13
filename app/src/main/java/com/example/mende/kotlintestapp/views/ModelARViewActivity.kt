@@ -83,6 +83,9 @@ class ModelARViewActivity : AppCompatActivity() {
     lateinit var transparentNode : Node
     var isTransparentNodePlaced : Boolean = false
 
+//    lateinit var itemCircle : ItemCircle
+//    var oldItemCircle : ItemCircle? = null
+
     private lateinit var trackableGestureDetector: GestureDetector
 
 
@@ -372,6 +375,12 @@ class ModelARViewActivity : AppCompatActivity() {
     }
 
     private fun onCircleClick(circleView : ItemCircle?) {
+
+//        oldItemCircle = circleView
+//        itemCircle = circleView
+//
+//        itemCircle
+
 
         Log.d(TAG, "CLICKED: circleView = text: ${circleView?.restaurantMenuItem?.name}")
         item_text_ar.text = circleView?.restaurantMenuItem?.name
