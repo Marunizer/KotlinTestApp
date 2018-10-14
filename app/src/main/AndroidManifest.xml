@@ -46,6 +46,10 @@
             android:label="Home"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".views.DownloadTestActivity"
+            android:label="Home"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".views.ModelContainerViewActivity"
             android:label="Home"
             android:screenOrientation="portrait" />
