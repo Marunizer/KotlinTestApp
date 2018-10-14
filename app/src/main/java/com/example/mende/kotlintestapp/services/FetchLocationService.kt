@@ -41,11 +41,10 @@ class FetchLocationService : IntentService("FETCH_LOCATION_SERVICE") {
     // The receiver where results are forwarded from this service.
     private var receiver: ResultReceiver? = null
 
-
     /**
-    * This service calls this method from the default worker thread with the intent that started
-    * the service. When this method returns, the service automatically stops.
-    */
+     * This service calls this method from the default worker thread with the intent that started
+     * the service. When this method returns, the service automatically stops.
+     */
     override fun onHandleIntent(intent: Intent?) {
 
         receiver = intent?.getParcelableExtra(LocationConstants.RECEIVER)

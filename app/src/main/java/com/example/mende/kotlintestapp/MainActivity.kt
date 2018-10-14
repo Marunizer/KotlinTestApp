@@ -61,8 +61,8 @@ class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.simpleName
     private val ZIP_LENGTH = 5
-    private var lastLocation : Location? = null
-    private var lastZipCode : String? = null
+    private var lastLocation: Location? = null
+    private var lastZipCode: String? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var resultReceiver: AddressResultReceiver
     private var locationServiceRequest = ""
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
 
     // Visible while the address is being fetched.
     private lateinit var progressBar: ProgressBar
-    private lateinit var alert : AlertDialog
+    private lateinit var alert: AlertDialog
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,12 +118,12 @@ class MainActivity : AppCompatActivity() {
 
     //Initiate first steps in application
     @SuppressLint("MissingPermission") //Reason: Permissions are being handled
-    private fun gatherLocationData(){
+    private fun gatherLocationData() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         fusedLocationClient.lastLocation
-                .addOnSuccessListener { location : Location? ->
+                .addOnSuccessListener { location: Location? ->
                     // Got last known location. In some rare situations this can be null.
                     if (location != null) {
                         Log.d(TAG, "Location Granted: $location")
@@ -139,14 +139,12 @@ class MainActivity : AppCompatActivity() {
                         SharedPref().write(SharedPref().LOCATION_CHOSEN, "true")
                         startLocationIntentService()
                         addressRequested = true
-                    }
-                    else{
+                    } else {
                         if (zipCodeExists()) {
                             Log.d(TAG, "Location : NULL ... Sadface ... Luckily Zip-code info exists!...Proceed")
                             SharedPref().write(SharedPref().LOCATION_CHOSEN, "false")
                             nextActivtiy()
-                        }
-                        else{
+                        } else {
                             Log.d(TAG, "Location : NULL ... Sadface ... Opening Dialog requesting zip code")
                             showZipCodeRequestDialog()
                         }
@@ -196,8 +194,7 @@ class MainActivity : AppCompatActivity() {
 
                         Log.d(TAG, "storage & location services permission granted")
                         gatherLocationData()
-                    }
-                    else if (perms[Manifest.permission.WRITE_EXTERNAL_STORAGE] == PackageManager.PERMISSION_GRANTED
+                    } else if (perms[Manifest.permission.WRITE_EXTERNAL_STORAGE] == PackageManager.PERMISSION_GRANTED
                             && perms[Manifest.permission.ACCESS_FINE_LOCATION] == PackageManager.PERMISSION_DENIED) {
 
                         if (zipCodeExists()) {
@@ -227,7 +224,7 @@ class MainActivity : AppCompatActivity() {
                                     })
                         } else {
                             explain("You need to give some mandatory permissions to continue. Do you want to go to app settings?")
-                                        //proceed with logic by disabling the related features or quit the app.
+                            //proceed with logic by disabling the related features or quit the app.
                         }//permission is denied (and never ask again is  checked)
                         //shouldShowRequestPermissionRationale will return false
                     }
@@ -285,9 +282,8 @@ class MainActivity : AppCompatActivity() {
                     startZipCodeIntentService()
                     addressRequested = true
                     updateUIWidgets()
-                }
-                else{
-                    Toast.makeText(this,"Zip code is not valid, Please try again", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Zip code is not valid, Please try again", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -322,20 +318,17 @@ class MainActivity : AppCompatActivity() {
     //If user has no strict radius in place, set radius to default + check if a radius is mismatched
     private fun checkRadius() {
         //TODO: Not sure if we want this !! for turning a String into a float
-        val radiusKM  = SharedPref().read(SharedPref().RADIUS_KM, EMPTY)
-        val radiusMiles  = SharedPref().read(SharedPref().RADIUS_MILES, EMPTY)
+        val radiusKM = SharedPref().read(SharedPref().RADIUS_KM, EMPTY)
+        val radiusMiles = SharedPref().read(SharedPref().RADIUS_MILES, EMPTY)
 
-        if (radiusKM.isNullOrBlank() && radiusMiles.isNullOrBlank())
-        {
+        if (radiusKM.isNullOrBlank() && radiusMiles.isNullOrBlank()) {
             SharedPref().write(SharedPref().RADIUS_KM, SharedPref().DEFAULT_RADIUS_KM.toString())
             SharedPref().write(SharedPref().RADIUS_MILES, SharedPref().DEFAULT_RADIUS_MILES.toFloat().toString())
-        }
-        else if (radiusKM.isNullOrBlank() && !radiusMiles.isNullOrBlank()) {
-            val newKM : Float = radiusMiles!!.toFloat() * SharedPref().MILES_TO_KILOMETERS.toFloat()
+        } else if (radiusKM.isNullOrBlank() && !radiusMiles.isNullOrBlank()) {
+            val newKM: Float = radiusMiles!!.toFloat() * SharedPref().MILES_TO_KILOMETERS.toFloat()
             SharedPref().write(SharedPref().RADIUS_KM, newKM.toString())
-        }
-        else if (!radiusKM.isNullOrBlank() && radiusMiles.isNullOrBlank()) {
-            val newMiles : Float = radiusKM!!.toFloat() / SharedPref().MILES_TO_KILOMETERS.toFloat()
+        } else if (!radiusKM.isNullOrBlank() && radiusMiles.isNullOrBlank()) {
+            val newMiles: Float = radiusKM!!.toFloat() / SharedPref().MILES_TO_KILOMETERS.toFloat()
             SharedPref().write(SharedPref().RADIUS_MILES, newMiles.toString())
         }
     }
@@ -356,9 +349,9 @@ class MainActivity : AppCompatActivity() {
         startService(intent)
     }
 
-    private fun nextActivtiy(){
+    private fun nextActivtiy() {
 
-        if(this::alert.isInitialized)
+        if (this::alert.isInitialized)
             alert.dismiss()
 
         val i = Intent(this@MainActivity, HomeActivity::class.java)
@@ -369,7 +362,7 @@ class MainActivity : AppCompatActivity() {
     //make sure if by chance, an alert is leaked made after activity is destroyed, get rid of it
     override fun onDestroy() {
         super.onDestroy()
-        if(this::alert.isInitialized)
+        if (this::alert.isInitialized)
             alert.dismiss()
     }
 
@@ -403,16 +396,15 @@ class MainActivity : AppCompatActivity() {
 
             // Display the address string or an error message sent from the intent service.
             locationServiceRequest = resultData.getBoolean(LocationConstants.RESULT_DATA_KEY).toString()
-           // displayAddressOutput()
+            // displayAddressOutput()
 
             // Show a toast message if an address was found.
             if (resultCode == LocationConstants.SUCCESS_RESULT) {
-                Toast.makeText(this@MainActivity,"address found", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "address found", Toast.LENGTH_SHORT).show()
                 nextActivtiy()
                 updateUIWidgets()
-            }
-            else {
-                Toast.makeText(this@MainActivity,"service failed _ Try again later", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this@MainActivity, "service failed _ Try again later", Toast.LENGTH_SHORT).show()
                 finish()
             }
 

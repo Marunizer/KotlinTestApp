@@ -51,37 +51,37 @@ class ModelARViewActivity : AppCompatActivity() {
     private lateinit var arFragment: ArFragment
     private var isTracking: Boolean = false
     private var isHitting: Boolean = false
-    private var firstTimeWinkyFace : Boolean = true
-    private var nodeAllocated : Boolean = false
+    private var firstTimeWinkyFace: Boolean = true
+    private var nodeAllocated: Boolean = false
 
     private var descriptionBubbleRenderable: ViewRenderable? = null
     private lateinit var descriptionBubble: DescriptionBubble
 
-    private lateinit var bubbleNode : Node
+    private lateinit var bubbleNode: Node
     private lateinit var mAdapter: ItemCircleViewAdapter
     private lateinit var mHandler: Handler
-    private var restaurantMenuItem : RestaurantMenuItem? = null
+    private var restaurantMenuItem: RestaurantMenuItem? = null
     private var testData: ArrayList<ItemCircle?> = ArrayList()
 
     private lateinit var restaurantKey: String
-    private var currentIndex : Long = 0
+    private var currentIndex: Long = 0
     private val MIN_OPENGL_VERSION = 3.0
 
-    private val scaleMin : Float = 0.0f
-    private val scaleMax : Float = 1.0f
+    private val scaleMin: Float = 0.0f
+    private val scaleMax: Float = 1.0f
     private var currentScale: Float = 0.0f
     private var oldScale: Float = 1.0f
 
-    private lateinit var currentAnchor : Anchor
+    private lateinit var currentAnchor: Anchor
 
     lateinit var oldAnchorNode: AnchorNode
     lateinit var anchorNode: AnchorNode
-    lateinit var oldAnimatedNode : AnimatedNode
+    lateinit var oldAnimatedNode: AnimatedNode
     lateinit var animatedNode: AnimatedNode
-    lateinit var transformableNode : TransformableNode
-    lateinit var rotatingNode : RotatingNode
-    lateinit var transparentNode : Node
-    var isTransparentNodePlaced : Boolean = false
+    lateinit var transformableNode: TransformableNode
+    lateinit var rotatingNode: RotatingNode
+    lateinit var transparentNode: Node
+    var isTransparentNodePlaced: Boolean = false
 
 //    lateinit var itemCircle : ItemCircle
 //    var oldItemCircle : ItemCircle? = null
@@ -93,7 +93,9 @@ class ModelARViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_model_ar)
 
-        if (!checkIsSupportedDeviceOrFinish(this)) { return }
+        if (!checkIsSupportedDeviceOrFinish(this)) {
+            return
+        }
 
         arFragment = sceneform_button_fragment as ArFragment
         restaurantKey = intent.getStringExtra("card_key")
@@ -102,20 +104,20 @@ class ModelARViewActivity : AppCompatActivity() {
         initResources()
 
         arFragment.arSceneView.scene.addOnUpdateListener { frameTime ->
-           arFragment.onUpdate(frameTime)
-          onUpdate(frameTime)
-         }
+            arFragment.onUpdate(frameTime)
+            onUpdate(frameTime)
+        }
 
         //set special listener for adding/removing description bubble
         arFragment.arSceneView.scene.addOnPeekTouchListener(this::handleOnTouch)
-                this.trackableGestureDetector = GestureDetector(this, MyGestureDetector())
+        this.trackableGestureDetector = GestureDetector(this, MyGestureDetector())
 
         arFragment.transformationSystem.selectionVisualizer = BlanckSelectionVisualizer()
 
-        floatingActionButton.setOnClickListener { addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"),restaurantMenuItem?.name) }
+        floatingActionButton.setOnClickListener { addObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name) }
         showFab(false)
 
-        addTransparentObject(Uri.parse("${restaurantMenuItem?.name}.sfb"),restaurantMenuItem?.name)
+        addTransparentObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
     }
 
 
@@ -145,7 +147,7 @@ class ModelARViewActivity : AppCompatActivity() {
         // Access the RecyclerView Adapter and load the data into it
         circle_item_ar_recycler_view.visibility = View.INVISIBLE
         mAdapter = ItemCircleViewAdapter(circle_item_ar_recycler_view, this, testData, true)
-        { itemCircle : ItemCircle?-> onCircleClick(itemCircle) }
+        { itemCircle: ItemCircle? -> onCircleClick(itemCircle) }
         circle_item_ar_recycler_view.adapter = mAdapter
 
     }
@@ -165,12 +167,13 @@ class ModelARViewActivity : AppCompatActivity() {
 
     private fun showModel(enabled: Boolean) {
 
-        if(transparentNode.isEnabled){
+        if (transparentNode.isEnabled) {
 
             if (enabled) {
 
                 val frame = arFragment.arSceneView.arFrame
                 val point = getScreenCenter()
+
                 if (frame != null) {
                     val hits = frame.hitTest(point.x.toFloat(), point.y.toFloat())
                     for (hit in hits) {
@@ -184,20 +187,6 @@ class ModelARViewActivity : AppCompatActivity() {
                         }
                     }
                 }
-
-//                val cameraPos = arFragment.arSceneView.scene.camera.worldPosition
-//                val cameraForward = arFragment.arSceneView.scene.camera.forward
-//                val position = Vector3.add(cameraPos, cameraForward.scaled(1.0f))
-//
-//                // Create an ARCore Anchor at the position.
-//                Pose pose = Pose.makeTranslation(position.x, position.y, position.z);
-//                Anchor anchor = arSceneView.getSession().createAnchor(pose);
-//
-//                mAnchorNode = new AnchorNode(anchor);
-//                mAnchorNode.setParent(arSceneView.getScene());
-
-
-                //transparentNode.worldPosition
 
                 arFragment.arSceneView.scene.addChild(transparentNode)
                 isTransparentNodePlaced = true
@@ -212,109 +201,100 @@ class ModelARViewActivity : AppCompatActivity() {
     // Updates the tracking state
     @SuppressLint("RestrictedApi")
     private fun onUpdate(frameTime: FrameTime) {
+
         updateTracking()
+
         // Check if the devices gaze is hitting a plane detected by ARCore
         if (isTracking) {
+
             val hitTestChanged = updateHitTest()
             //onStart up, show or remove floating button that allocates model
             if (hitTestChanged) {
-                if(firstTimeWinkyFace)
-                {
+                if (firstTimeWinkyFace) {
                     showFab(isHitting)
                     showModel(isHitting)
                 }
             }
 
             //move around node
-            if(isTransparentNodePlaced){
-                val frame = arFragment.arSceneView.arFrame
-                val point = getScreenCenter()
-                if (frame != null) {
-                    val hits = frame.hitTest(point.x.toFloat(), point.y.toFloat())
-                    for (hit in hits) {
-                        val trackable = hit.trackable
-                        if (trackable is Plane && trackable.isPoseInPolygon(hit.hitPose)) {
-
-                            val tempAnchorNode = AnchorNode(hit.createAnchor())
-
-                            transparentNode.localPosition = tempAnchorNode.localPosition
-                            break
-                        }
-                    }
-                }
-            }
-
+            handleTransparentNodePlacement()
 
             //Make the description bubble always face the camera
-            if(bubbleNode.isEnabled)
-            {
-                val cameraPosition = arFragment.arSceneView.scene.camera.worldPosition
-                val cardPosition = bubbleNode.getWorldPosition()
-                val direction = Vector3.subtract(cameraPosition, cardPosition)
-                val lookRotation = Quaternion.lookRotation(direction, Vector3.up())
-                bubbleNode.setWorldRotation(lookRotation)
-            }
-
+            handleDescriptionBubbleDirection()
 
             //nodeIsDown, safe to continue
-            if(nodeAllocated)
-            {
+            if (nodeAllocated) {
+
                 //Re-sets expected view after objected is presented
-                if(instructions_bubble.visibility == View.VISIBLE ) {
-                    instructions_bubble.visibility = View.GONE
-                    item_text_ar.visibility = View.VISIBLE
-                    item_cost_ar.visibility = View.VISIBLE
-                    order_ar_button.visibility = View.VISIBLE
-                    share_ar_button.visibility = View.VISIBLE
-                }
+                updateNormalGUI()
 
 
                 //Idk if we need this variable? it might be good enough to use curreentItem idk
-                if(animatedNode.isSelected)
-                {
+                if (animatedNode.isSelected) {
                     //if animation has not finished , despite it being selected, continue,
-                    if(!animatedNode.isFullSizeAnimationDone) {
+                    if (!animatedNode.isFullSizeAnimationDone) {
                         //Want animation to last for .4 seconds. //1f(second) == 30frames
-                        currentScale = currentScale + (1f/12f)
+                        currentScale = currentScale + (1f / 12f)
 
-                        if(currentScale >= scaleMax) {
+                        if (currentScale >= scaleMax) {
                             animatedNode.localScale = Vector3(scaleMax, scaleMax, scaleMax)
                             transformableNode.localScale = Vector3(scaleMax, scaleMax, scaleMax)
                             animatedNode.isFullSizeAnimationDone = true
                             descriptionBubble.xml_btn.text = restaurantMenuItem?.description
-                        }
-                        else if(currentScale < scaleMax) {
+                        } else if (currentScale < scaleMax) {
                             animatedNode.localScale = Vector3(currentScale, currentScale, currentScale)
                             transformableNode.localScale = Vector3(currentScale, currentScale, currentScale)
                         }
+                    } else if (oldAnimatedNode.isRemoving) {
+                        minimizeItem()
                     }
-                    else if(oldAnimatedNode.isRemoving) { minimizeItem() }
-                }
-                else if(!animatedNode.isSelected) {
-                    if(!oldAnimatedNode.isRemoveAnimationDone) {
+                } else if (!animatedNode.isSelected) {
+                    if (!oldAnimatedNode.isRemoveAnimationDone) {
                         oldAnimatedNode.isRemoving = true
                         minimizeItem()
                     }
                 }
-            }
-            else //node NOT allocated, meaning, new item was picked !!!
+            } else //node NOT allocated, meaning, new item was picked !!!
             {
-                if(oldAnimatedNode.isInitialized && !oldAnimatedNode.isRemoveAnimationDone) {
+                if (oldAnimatedNode.isInitialized && !oldAnimatedNode.isRemoveAnimationDone) {
                     oldAnimatedNode.isRemoving = true
                     minimizeItem()
                 }
             }
 
             //whenever there is a transformation happening, disable rotation
-            if (!firstTimeWinkyFace && nodeAllocated)
-            {
-                if(rotatingNode.isAnimatedByUser())
-                {
-                    if(transformableNode.isTransforming) {
-                        rotatingNode.onPauseAnimation()
-                    }
-                    else if (!rotatingNode.isAnimated()){
-                        rotatingNode.onResumeAnimation()
+            handleRotationWhileTransforming()
+        }
+    }
+
+    private fun handleRotationWhileTransforming() {
+
+        if (!firstTimeWinkyFace && nodeAllocated) {
+            if (rotatingNode.isAnimatedByUser()) {
+                if (transformableNode.isTransforming) {
+                    rotatingNode.onPauseAnimation()
+                } else if (!rotatingNode.isAnimated()) {
+                    rotatingNode.onResumeAnimation()
+                }
+            }
+        }
+    }
+
+    private fun handleTransparentNodePlacement() {
+
+        if (isTransparentNodePlaced) {
+            val frame = arFragment.arSceneView.arFrame
+            val point = getScreenCenter()
+            if (frame != null) {
+                val hits = frame.hitTest(point.x.toFloat(), point.y.toFloat())
+                for (hit in hits) {
+                    val trackable = hit.trackable
+                    if (trackable is Plane && trackable.isPoseInPolygon(hit.hitPose)) {
+
+                        val tempAnchorNode = AnchorNode(hit.createAnchor())
+
+                        transparentNode.localPosition = tempAnchorNode.localPosition
+                        break
                     }
                 }
             }
@@ -322,21 +302,38 @@ class ModelARViewActivity : AppCompatActivity() {
     }
 
     private fun minimizeItem() {
-        oldScale = oldScale - (1f/9f) //.3 seconds
+        oldScale = oldScale - (1f / 9f) //.3 seconds
 
-        if (oldScale <= scaleMin)
-        {
-            oldAnimatedNode.localScale = Vector3(scaleMin,scaleMin,scaleMin)
+        if (oldScale <= scaleMin) {
+            oldAnimatedNode.localScale = Vector3(scaleMin, scaleMin, scaleMin)
             arFragment.arSceneView.scene.removeChild(oldAnchorNode)
             oldAnimatedNode.isRemoveAnimationDone = true
             oldAnimatedNode.isRemoving = false
             oldScale = scaleMax
-            placeObject(arFragment, currentAnchor,Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
+            placeObject(arFragment, currentAnchor, Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name)
+        } else if (oldScale > scaleMin) {
+            animatedNode.localScale = Vector3(oldScale, oldScale, oldScale)
+            transformableNode.localScale = Vector3(oldScale, oldScale, oldScale)
         }
-        else if(oldScale > scaleMin)
-        {
-            animatedNode.localScale = Vector3(oldScale,oldScale,oldScale)
-            transformableNode.localScale = Vector3(oldScale,oldScale,oldScale)
+    }
+
+    private fun handleDescriptionBubbleDirection() {
+        if (bubbleNode.isEnabled) {
+            val cameraPosition = arFragment.arSceneView.scene.camera.worldPosition
+            val cardPosition = bubbleNode.getWorldPosition()
+            val direction = Vector3.subtract(cameraPosition, cardPosition)
+            val lookRotation = Quaternion.lookRotation(direction, Vector3.up())
+            bubbleNode.setWorldRotation(lookRotation)
+        }
+    }
+
+    private fun updateNormalGUI() {
+        if (instructions_bubble.visibility == View.VISIBLE) {
+            instructions_bubble.visibility = View.GONE
+            item_text_ar.visibility = View.VISIBLE
+            item_cost_ar.visibility = View.VISIBLE
+            order_ar_button.visibility = View.VISIBLE
+            share_ar_button.visibility = View.VISIBLE
         }
     }
 
@@ -374,7 +371,7 @@ class ModelARViewActivity : AppCompatActivity() {
         return Point(view.width / 2, view.height / 2)
     }
 
-    private fun onCircleClick(circleView : ItemCircle?) {
+    private fun onCircleClick(circleView: ItemCircle?) {
 
 //        oldItemCircle = circleView
 //        itemCircle = circleView
@@ -391,7 +388,7 @@ class ModelARViewActivity : AppCompatActivity() {
         //TODO: try to make a model on the fly programmatically using obj,mtl,jpg, NOTE: gltf models are the best for sceneform
     }
 
-    private fun onChangeModel(restaurantMenuItem : RestaurantMenuItem?) {
+    private fun onChangeModel(restaurantMenuItem: RestaurantMenuItem?) {
         //replace with new restaurant menu item selected
         Log.d("MAGIC SPEAKER", "${restaurantMenuItem?.name} =?= ")
 
@@ -474,7 +471,7 @@ class ModelARViewActivity : AppCompatActivity() {
      * Uses the ARCore anchor from the hitTest result and builds the Sceneform nodes.
      * It starts the asynchronous loading of the 3D model using the ModelRenderable builder.
      */
-    private fun placeObject(fragment: ArFragment, anchor: Anchor, model: Uri, name :String?) {
+    private fun placeObject(fragment: ArFragment, anchor: Anchor, model: Uri, name: String?) {
         ModelRenderable.builder()
                 .setSource(fragment.context, model)
                 .build()
@@ -518,7 +515,7 @@ class ModelARViewActivity : AppCompatActivity() {
      * Once the nodes are connected we select the TransformableNode so it is available for interactions
      */
     @SuppressLint("SetTextI18n")
-    private fun addNodeToScene(fragment: ArFragment, anchor: Anchor, renDerable: ModelRenderable, name : String?) {
+    private fun addNodeToScene(fragment: ArFragment, anchor: Anchor, renDerable: ModelRenderable, name: String?) {
 
         this.currentAnchor = anchor
         anchorNode = AnchorNode(anchor)
@@ -549,11 +546,11 @@ class ModelARViewActivity : AppCompatActivity() {
 
         nodeAllocated = true
 
-        if(firstTimeWinkyFace) {
+        if (firstTimeWinkyFace) {
             showFab(false)
             showModel(false)
             floatingActionButton.background = null
-            if(circle_item_ar_recycler_view.visibility == View.GONE || circle_item_ar_recycler_view.visibility == View.INVISIBLE)
+            if (circle_item_ar_recycler_view.visibility == View.GONE || circle_item_ar_recycler_view.visibility == View.INVISIBLE)
                 circle_item_ar_recycler_view.visibility = View.VISIBLE
             firstTimeWinkyFace = false
         }
@@ -571,8 +568,10 @@ class ModelARViewActivity : AppCompatActivity() {
                     descriptionBubbleRenderable = it
                     bubbleNode.renderable = it
                 }
-                .exceptionally { //TODO: delete on release
-                    it.toast(this) }
+                .exceptionally {
+                    //TODO: delete on release
+                    it.toast(this)
+                }
 
         bubbleNode.setParent(transformableNode)
         bubbleNode.isEnabled = true
@@ -588,18 +587,13 @@ class ModelARViewActivity : AppCompatActivity() {
 
         override fun onDoubleTap(e: MotionEvent?): Boolean {
 
-            if (rotatingNode.isAnimatedByUser() && rotatingNode.isAnimated())
-            {
+            if (rotatingNode.isAnimatedByUser() && rotatingNode.isAnimated()) {
                 rotatingNode.onPauseAnimation()
                 rotatingNode.setAnimated(false)
-            }
-
-            else if (!rotatingNode.isAnimatedByUser() && !rotatingNode.isAnimated())
-            {
+            } else if (!rotatingNode.isAnimatedByUser() && !rotatingNode.isAnimated()) {
                 rotatingNode.onResumeAnimation()
                 rotatingNode.setAnimated(true)
             }
-
 
             return super.onDoubleTap(e)
         }
@@ -611,14 +605,13 @@ class ModelARViewActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleOnTouch(hitTestResults: HitTestResult, motionEvent: MotionEvent){
+    private fun handleOnTouch(hitTestResults: HitTestResult, motionEvent: MotionEvent) {
 
-        if(nodeAllocated)
-        {
+        if (nodeAllocated) {
             arFragment.onPeekTouch(hitTestResults, motionEvent)
 
             //check for touching a Animated Node
-            if ( hitTestResults.node != animatedNode){
+            if (hitTestResults.node != animatedNode) {
                 Log.d(TAG, "if animatedNode was not hit, then don't worry about it")
                 return
             }
@@ -632,17 +625,16 @@ class ModelARViewActivity : AppCompatActivity() {
         Log.d("GESTURE CONTROL : OnSingleTap", "${restaurantMenuItem?.name} ")
 
         val frame = arFragment.arSceneView.arFrame
-        if(frame != null && motionEvent != null && frame.camera.trackingState == TrackingState.TRACKING ){
-            for( hit in frame.hitTest(motionEvent)) {
+        if (frame != null && motionEvent != null && frame.camera.trackingState == TrackingState.TRACKING) {
+            for (hit in frame.hitTest(motionEvent)) {
 
                 Log.d("GESTURE CONTROL : OnSingleTap - in frame loop, trackable: ${hit.trackable}", "${restaurantMenuItem?.name} ")
                 var trackable = hit.trackable
 
-                if(trackable is Plane && trackable.isPoseInPolygon(hit.hitPose)){
+                if (trackable is Plane && trackable.isPoseInPolygon(hit.hitPose)) {
                     var plane = trackable
                     //Handle Plane hits if we want to in the future
-                }
-                else if(trackable is com.google.ar.core.Point) {
+                } else if (trackable is com.google.ar.core.Point) {
 
                     val point = trackable
 
@@ -658,16 +650,16 @@ class ModelARViewActivity : AppCompatActivity() {
     }
 
     //fake function for sample item data
-    fun getItemList() : ArrayList<RestaurantMenuItem>? {
+    fun getItemList(): ArrayList<RestaurantMenuItem>? {
         return MenuListHolder().getList(restaurantKey)
     }
 
     fun addTestData(itemList: ArrayList<RestaurantMenuItem>?) {
 
-        var id : Long = 112
+        var id: Long = 112
 
-        for(item in itemList!!) {
-            testData.add(ItemCircle(id,item))
+        for (item in itemList!!) {
+            testData.add(ItemCircle(id, item))
             if (id == currentIndex)
                 restaurantMenuItem = item
 
@@ -692,16 +684,16 @@ class ModelARViewActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         if (arFragment != null)
-             arFragment.onPause()
+            arFragment.onPause()
     }
 
     override fun onResume() {
         super.onResume()
-        if(arFragment != null)
-             arFragment.onResume()
+        if (arFragment != null)
+            arFragment.onResume()
     }
 
-    fun onBackClick(v: View){
+    fun onBackClick(v: View) {
         //TODO: Replace this by initiating a completely new SceneViewActivity instead, rather than going back to last session, This way there isnt an entire activity paused. if it doesnt matter, then instead just set new current model on the conainer Activty! and update model
         onBackPressed()
     }

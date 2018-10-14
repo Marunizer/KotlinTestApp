@@ -34,8 +34,7 @@ data class RestaurantMenuItem(
         //val jpgPath: String,
         //val iconPath: String,
         //val listOfCategory : ArrayList<String> //To hold the categories one item can be a part of
-)
-{
+) {
     var isDownloaded: Boolean = false //This is declared and initialized
     lateinit var renderReference: Renderable
     var isDrcDownloaded: Boolean = false

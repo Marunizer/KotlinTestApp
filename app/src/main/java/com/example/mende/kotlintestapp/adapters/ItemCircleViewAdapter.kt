@@ -11,12 +11,12 @@ import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.objects.ItemCircle
 import kotlinx.android.synthetic.main.circle_menu_item.view.*
 
-internal var lastVisibleItem : Int = 0
-internal var totalItemCount : Int = 0
+internal var lastVisibleItem: Int = 0
+internal var totalItemCount: Int = 0
 
 class ItemCircleViewAdapter(recyclerView: RecyclerView,
                             internal var activity: Activity,
-                            internal var items : ArrayList<ItemCircle?>,
+                            internal var items: ArrayList<ItemCircle?>,
                             val arMode: Boolean,
                             val clickListener: (ItemCircle?) -> Unit) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -30,13 +30,14 @@ class ItemCircleViewAdapter(recyclerView: RecyclerView,
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 totalItemCount = linearLayoutManager.itemCount
-                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition()            }
+                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition()
+            }
         })
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
-        lateinit var view : View
+        lateinit var view: View
 
         if (arMode)
             view = LayoutInflater.from(activity).inflate(R.layout.circle_menu_item_ar, parent, false)
@@ -47,30 +48,28 @@ class ItemCircleViewAdapter(recyclerView: RecyclerView,
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
-        if(holder is ItemViewHolder) {
+        if (holder is ItemViewHolder) {
             val item = items[position]
 
             holder.bind(item, clickListener)
             holder.itemName?.text = item?.restaurantMenuItem?.name
-            if(arMode)
+            if (arMode)
                 holder.itemName?.setTextColor(Color.parseColor("#ffffff"))
 //            holder.itemImage.background = getItemViewType(R.drawable.abc_btn_check_material)
         }
     }
 
-    class ItemViewHolder(view : View) : RecyclerView.ViewHolder(view)
-{
-    fun bind(circle : ItemCircle?, clickListener: (ItemCircle?) -> Unit)
-    {
-        itemView.setOnClickListener {clickListener(circle)}
+    class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        fun bind(circle: ItemCircle?, clickListener: (ItemCircle?) -> Unit) {
+            itemView.setOnClickListener { clickListener(circle) }
+
+        }
+
+        var itemName = view.circle_text
+        var itemImage = view.circle_image
+        //  var borderColor = view.ci
 
     }
-
-    var itemName = view.circle_text
-    var itemImage = view.circle_image
-  //  var borderColor = view.ci
-
-}
 
     override fun getItemCount(): Int {
         return items.size

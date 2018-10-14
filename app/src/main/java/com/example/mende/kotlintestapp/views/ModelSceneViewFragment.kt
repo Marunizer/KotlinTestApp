@@ -61,28 +61,28 @@ import com.google.ar.sceneform.math.Quaternion
 class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGestureListener {
 
     override fun onRotation(rotationDetector: RotationGestureDetector?) {
-       rotationAngle = rotationDetector?.angle
+        rotationAngle = rotationDetector?.angle
     }
 
     private val TAG = ModelSceneViewFragment::class.java.simpleName
 
-    var containerActivity : FragmentActivity? = null
-    lateinit var sceneContext : Context
+    var containerActivity: FragmentActivity? = null
+    lateinit var sceneContext: Context
     lateinit var scene: Scene
-    lateinit var sceneView : SceneView
-    var firstTimeWinkyFace : Boolean = true
-    private var nodeAllocated : Boolean = false
-    private var inSession : Boolean = false
+    lateinit var sceneView: SceneView
+    var firstTimeWinkyFace: Boolean = true
+    private var nodeAllocated: Boolean = false
+    private var inSession: Boolean = false
 
     private lateinit var oldItemModelNode: Node
     private lateinit var itemModelNode: Node
     private lateinit var trackableGestureDetector: GestureDetector
-    private lateinit var scaleGestureDetector : ScaleGestureDetector
+    private lateinit var scaleGestureDetector: ScaleGestureDetector
     private lateinit var rotatingGestureDetector: RotationGestureDetector
-    private var rotationAngle : Float? = null
+    private var rotationAngle: Float? = null
 
-    private val scaleMin : Float = 0.0f
-    private val scaleMax : Float = 1.25f
+    private val scaleMin: Float = 0.0f
+    private val scaleMax: Float = 1.25f
     private var currentScale: Float = 0.0f
     private var oldScale: Float = 1.25f
     private var scale: Float = 1f //maybe this should stay 1? nopt sure
@@ -90,12 +90,12 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
     private var oldAngle: Float = 1.0f
     private var currentAngle: Float = 0.0f
 
-    private var nodeW : Float = 0f
-    private var nodeX : Float = 0f
-    private var nodeY : Float = 0f
-    private var nodeZ : Float = 0f
+    private var nodeW: Float = 0f
+    private var nodeX: Float = 0f
+    private var nodeY: Float = 0f
+    private var nodeZ: Float = 0f
 
-    lateinit var oldAnimatedNode : AnimatedNode
+    lateinit var oldAnimatedNode: AnimatedNode
     lateinit var animatedNode: AnimatedNode
     lateinit var rotatingNode: RotatingNode
 
@@ -123,8 +123,7 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
     override fun onStart() {
         super.onStart()
 
-        if(inSession)
-        {
+        if (inSession) {
             return
         }
         inSession = true
@@ -134,17 +133,18 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
 
         sceneView = scene_view
         scene = sceneView.scene // get current scene
-       // scene.sunlight.onDeactivate()//this way there isn't a shadow in a particular direction
+        // scene.sunlight.onDeactivate()//this way there isn't a shadow in a particular direction
         scene.addOnUpdateListener { frameTime ->
-            onUpdate(frameTime) }
+            onUpdate(frameTime)
+        }
 
 
         scaleGestureDetector = ScaleGestureDetector(context, object : ScaleGestureDetector.OnScaleGestureListener {
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 Log.d("TEST_SCALE", "Scale Span: " + scaleGestureDetector.getCurrentSpan())
                 scale = scale * detector.scaleFactor
-                scale = Math.max(0.5f,Math.min(scale,2.25f)) // like how many xTimes the ratio
-                animatedNode.localScale = Vector3(scale,scale,scale)
+                scale = Math.max(0.5f, Math.min(scale, 2.25f)) // like how many xTimes the ratio
+                animatedNode.localScale = Vector3(scale, scale, scale)
                 return true
             }
 
@@ -158,7 +158,7 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
             }
         })
 
-        rotatingGestureDetector = RotationGestureDetector(this,this.sceneView)
+        rotatingGestureDetector = RotationGestureDetector(this, this.sceneView)
 
         this.trackableGestureDetector = GestureDetector(activity, MyGestureDetector())
 
@@ -166,18 +166,15 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
         scene.addOnPeekTouchListener { hitTestResult, motionEvent ->
             scaleGestureDetector.onTouchEvent(motionEvent)
             MyGestureDetector().onSingleTapUp(motionEvent)
-           // rotatingGestureDetector.onTouchEvent(motionEvent)
+            // rotatingGestureDetector.onTouchEvent(motionEvent)
         }
 
         animatedNode = AnimatedNode() //fake init
         oldAnimatedNode = AnimatedNode() //fake init
 
 
-
-
-        val container : ModelContainerViewActivity  = activity as ModelContainerViewActivity
+        val container: ModelContainerViewActivity = activity as ModelContainerViewActivity
         container.begin()
-
 
 
     }
@@ -187,7 +184,7 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
         //nodeIsDown, safe to continue
         if (nodeAllocated) {
 
-           // itemModelNode.localRotation = Quaternion.axisAngle(Vector3(nodeX, nodeY+.5f, nodeZ), nodeW)
+            // itemModelNode.localRotation = Quaternion.axisAngle(Vector3(nodeX, nodeY+.5f, nodeZ), nodeW)
             //nodeY = nodeY+.5f
 //            nodeW = itemModelNode.localRotation.w
 //            nodeX = itemModelNode.localRotation.x
@@ -200,23 +197,20 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
 
                     oldAngle = currentAngle
 
-                    if (rotationAngle!! > currentAngle)
-                    {
-                        currentAngle = currentAngle + ((1f/15f)% 360)
+                    if (rotationAngle!! > currentAngle) {
+                        currentAngle = currentAngle + ((1f / 15f) % 360)
 
                         animatedNode.localRotation = Quaternion.lookRotation(
                                 Vector3(currentAngle, currentAngle, currentAngle), Vector3.up())
 
+                    } else if (rotationAngle!! < currentAngle) {
+                        currentAngle = currentAngle - ((1f / 15f) % 360)
+
+                        animatedNode.localRotation = Quaternion.lookRotation(
+                                Vector3(currentAngle, currentAngle, currentAngle), Vector3.up())
                     }
-                    else if (rotationAngle!! < currentAngle)
-                    {
-                        currentAngle = currentAngle -((1f/15f)% 360)
-
-                        animatedNode.localRotation = Quaternion.lookRotation(
-                                Vector3(currentAngle, currentAngle, currentAngle), Vector3.up())
                 }
             }
-        }
 //                lookRotation(
 //                        animatedNode.forward,
 //                        Vector3(rotationAngle!!, rotationAngle!!, rotationAngle!!))
@@ -224,48 +218,44 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
 
 
             //Idk if we need this variable? it might be good enough to use curreentItem idk
-            if(animatedNode.isInitialized)
-            {
+            if (animatedNode.isInitialized) {
 
                 //if animation has not finished , despite it being selected, continue,
-                if(!animatedNode.isFullSizeAnimationDone) {
+                if (!animatedNode.isFullSizeAnimationDone) {
                     //Want animation to last for .4 seconds. //1f(second) == 30frames
-                    currentScale = currentScale + (1f/15f) //.5r
+                    currentScale = currentScale + (1f / 15f) //.5r
 
-                    if(currentScale >= scaleMax) {
+                    if (currentScale >= scaleMax) {
                         animatedNode.localScale = Vector3(scaleMax, scaleMax, scaleMax)
                         animatedNode.isFullSizeAnimationDone = true
-                    }
-                    else if(currentScale < scaleMax) {
+                    } else if (currentScale < scaleMax) {
                         animatedNode.localScale = Vector3(currentScale, currentScale, currentScale)
                     }
-                }
-                else if(oldAnimatedNode.isRemoving) {
+                } else if (oldAnimatedNode.isRemoving) {
                     Log.d("MAGIC SPEAKER:e", "still removing?")
-                    minimizeItem() }
-            }
-            else if(!animatedNode.isInitialized) {
-                if(!oldAnimatedNode.isRemoveAnimationDone) {
+                    minimizeItem()
+                }
+            } else if (!animatedNode.isInitialized) {
+                if (!oldAnimatedNode.isRemoveAnimationDone) {
                     oldAnimatedNode.isRemoving = true
                     minimizeItem()
                 }
             }
-        }
-        else //node NOT allocated, meaning, new item was picked !!!
+        } else //node NOT allocated, meaning, new item was picked !!!
         {
             Log.d("MAGIC SPEAKER:e", " node allocated: false ")
-            if(oldAnimatedNode.isInitialized && !oldAnimatedNode.isRemoveAnimationDone) {
+            if (oldAnimatedNode.isInitialized && !oldAnimatedNode.isRemoveAnimationDone) {
                 oldAnimatedNode.isRemoving = true
                 minimizeItem()
             }
         }
     }
-    private fun minimizeItem() {
-        oldScale = oldScale - (1f/15f) //.5 seconds
 
-        if (oldScale <= scaleMin)
-        {
-            oldAnimatedNode.localScale = Vector3(scaleMin,scaleMin,scaleMin)
+    private fun minimizeItem() {
+        oldScale = oldScale - (1f / 15f) //.5 seconds
+
+        if (oldScale <= scaleMin) {
+            oldAnimatedNode.localScale = Vector3(scaleMin, scaleMin, scaleMin)
             scene.removeChild(oldItemModelNode)
             oldAnimatedNode.isRemoveAnimationDone = true
             oldAnimatedNode.isRemoving = false
@@ -273,10 +263,8 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
 
             Log.d("MAGIC SPEAKER: Finished minimizing animatednode", "${itemModelNode.name} should now be displayed ")
             renderObject(Uri.parse("${itemModelNode.name}.sfb"), itemModelNode.name)
-        }
-        else if(oldScale > scaleMin)
-        {
-            animatedNode.localScale = Vector3(oldScale,oldScale,oldScale)
+        } else if (oldScale > scaleMin) {
+            animatedNode.localScale = Vector3(oldScale, oldScale, oldScale)
         }
     }
 
@@ -289,7 +277,7 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
                 .setSource(sceneContext, parse)
                 .build()
                 .thenAccept {
-                    addNodeToScene(it,name)
+                    addNodeToScene(it, name)
                 }
                 .exceptionally {
                     val builder = AlertDialog.Builder(sceneContext)
@@ -305,7 +293,7 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
      * Adds a node to the current scene
      * @param model - rendered model
      */
-    private fun addNodeToScene(model: ModelRenderable?, modelName : String?) {
+    private fun addNodeToScene(model: ModelRenderable?, modelName: String?) {
 
         model?.let {
             itemModelNode = Node().apply {
@@ -319,12 +307,9 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
             val animatedNode = AnimatedNode()
             val rotatingNode = RotatingNode()
 
-
-
             animatedNode.setOnTouchListener { hitTestResult, motionEvent ->
                 MyGestureDetector().onDoubleTap(motionEvent)
             }
-
 
             rotatingNode.setParent(itemModelNode)
 
@@ -364,14 +349,10 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
 
         override fun onDoubleTap(e: MotionEvent?): Boolean {//actually only takes one tap
 
-            if (rotatingNode.isAnimatedByUser() && rotatingNode.isAnimated())
-            {
+            if (rotatingNode.isAnimatedByUser() && rotatingNode.isAnimated()) {
                 rotatingNode.onPauseAnimation()
                 rotatingNode.setAnimated(false)
-            }
-
-            else if (!rotatingNode.isAnimatedByUser() && !rotatingNode.isAnimated())
-            {
+            } else if (!rotatingNode.isAnimatedByUser() && !rotatingNode.isAnimated()) {
                 rotatingNode.onResumeAnimation()
                 rotatingNode.setAnimated(true)
             }
@@ -407,7 +388,7 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
     private fun onSingleTap(motionEvent: MotionEvent) {
 
 
-        if(motionEvent != null ){
+        if (motionEvent != null) {
 //            for( hit in frame.hitTest(motionEvent)) {
 //
 //              var trackable = hit.trackable
@@ -439,8 +420,7 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
     override fun onResume() {
         super.onResume()
         sceneView.resume()
-        if(scene.children.isEmpty())
-        {
+        if (scene.children.isEmpty()) {
             onStart()
         }
     }
@@ -454,9 +434,7 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
         if (firstTimeWinkyFace) {
             renderObject(Uri.parse("${restaurantMenuItem?.name}.sfb"), restaurantMenuItem?.name) // Render the object
             firstTimeWinkyFace = false
-        }
-        else if (restaurantMenuItem?.name != itemModelNode.name)
-        {
+        } else if (restaurantMenuItem?.name != itemModelNode.name) {
             oldItemModelNode = itemModelNode
             itemModelNode = Node()
             itemModelNode.name = restaurantMenuItem?.name

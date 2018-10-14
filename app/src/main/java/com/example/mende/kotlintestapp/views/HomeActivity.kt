@@ -52,10 +52,10 @@ class HomeActivity : AppCompatActivity(), LoadMore {
 
     private lateinit var mAdapter: RestaurantCardAdapter
     private lateinit var mHandler: Handler
-    private lateinit var mRunnable:Runnable
+    private lateinit var mRunnable: Runnable
     private var testData: ArrayList<RestaurantCard?> = ArrayList()
     private var testDataImages: ArrayList<Int> = ArrayList()
-    private var restaurantDataList : ArrayList<Restaurant> = ArrayList()
+    private var restaurantDataList: ArrayList<Restaurant> = ArrayList()
 
     //TODO: REMOVE IF NEVER USE, AFTER FINISHED
     private var mRecyclerView: RecyclerView? = null
@@ -80,7 +80,7 @@ class HomeActivity : AppCompatActivity(), LoadMore {
 
     private fun onInit() {
 
-        val tempString  = SharedPref().read(SharedPref().CITY, EMPTY)
+        val tempString = SharedPref().read(SharedPref().CITY, EMPTY)
         val appBarText = text_bar
         appBarText.text = tempString
 
@@ -89,7 +89,7 @@ class HomeActivity : AppCompatActivity(), LoadMore {
 
         // Access the RecyclerView Adapter and load the data into it
         mAdapter = RestaurantCardAdapter(restaurant_recycler_view, this, testData, testDataImages)
-            { card : RestaurantCard?-> onCardClick(card) }
+        { card: RestaurantCard? -> onCardClick(card) }
         restaurant_recycler_view.adapter = mAdapter
         mAdapter.setLoadedMore(this)
 
@@ -101,7 +101,7 @@ class HomeActivity : AppCompatActivity(), LoadMore {
                 Toast.makeText(applicationContext, "Refreshing", Toast.LENGTH_SHORT).show()
 
                 val temp = Restaurant("refreshAddition", 1, "test")
-                MenuListHolder().addList(temp.name+temp.streetAddress, getItemList())
+                MenuListHolder().addList(temp.name + temp.streetAddress, getItemList())
                 testData.add(RestaurantCard(111, temp)) //TODO: <-- Only here to test if refresh works, delete  later, delete toast as well
 
 
@@ -120,42 +120,41 @@ class HomeActivity : AppCompatActivity(), LoadMore {
     }
 
     override fun onLoadMore() {
-            //run on thread
-            Handler().postDelayed({
+        //run on thread
+        Handler().postDelayed({
 
-                if(testData.size < 25) {//Max size =  25 restaurants near you
-                    testData.add(null)
-                    mAdapter.notifyItemInserted(testData.size - 1)
+            if (testData.size < 25) {//Max size =  25 restaurants near you
+                testData.add(null)
+                mAdapter.notifyItemInserted(testData.size - 1)
 
-                    testData.removeAt(testData.size - 1)//remove null item
-                    mAdapter.notifyItemRemoved(testData.size)
+                testData.removeAt(testData.size - 1)//remove null item
+                mAdapter.notifyItemRemoved(testData.size)
 
-                    //random new data?
-                    val index = testData.size
-                    val end = index + 10
+                //random new data?
+                val index = testData.size
+                val end = index + 10
 
-                    for (i in index until end) {
-                        val temp = Restaurant("generated Store", 4, "test")
-                        MenuListHolder().addList(temp.name+temp.streetAddress, getItemList())
-                        testData.add(RestaurantCard(111, temp))
-                    }
-
-                    mAdapter.notifyDataSetChanged()
-                    mAdapter.setLoaded()
-                }else
-                {
-                    Toast.makeText(applicationContext, "Max Search Results near you", Toast.LENGTH_SHORT).show()
+                for (i in index until end) {
+                    val temp = Restaurant("generated Store", 4, "test")
+                    MenuListHolder().addList(temp.name + temp.streetAddress, getItemList())
+                    testData.add(RestaurantCard(111, temp))
                 }
 
-            },2000)//delay 3 seconds TODO: Text if we want 3... maybe 2?1? MAKE DYNAMIC, WHEN READY
+                mAdapter.notifyDataSetChanged()
+                mAdapter.setLoaded()
+            } else {
+                Toast.makeText(applicationContext, "Max Search Results near you", Toast.LENGTH_SHORT).show()
+            }
+
+        }, 2000)//delay 3 seconds TODO: Text if we want 3... maybe 2?1? MAKE DYNAMIC, WHEN READY
     }
 
-    private fun onCardClick(card : RestaurantCard?) {
+    private fun onCardClick(card: RestaurantCard?) {
 
         Log.d(TAG, "Card = text: ${card?.restaurant?.name}")
 
         val i = Intent(this@HomeActivity, ModelContainerViewActivity::class.java)
-        i.putExtra("card_key",card?.restaurant?.name+card?.restaurant?.streetAddress)
+        i.putExtra("card_key", card?.restaurant?.name + card?.restaurant?.streetAddress)
         startActivity(i)
         //finish()
 
@@ -165,10 +164,9 @@ class HomeActivity : AppCompatActivity(), LoadMore {
     //TODO:Remove, only here to test sample data
     fun addTestData(restaurantList: ArrayList<Restaurant>) {
 
-        var id : Long = 112
-        for(item in restaurantList)
-        {
-            testData.add(RestaurantCard(112,item))
+        var id: Long = 112
+        for (item in restaurantList) {
+            testData.add(RestaurantCard(112, item))
             id++
         }
     }
@@ -178,43 +176,43 @@ class HomeActivity : AppCompatActivity(), LoadMore {
 
         var tempRestaurantReference: Restaurant
 
-        tempRestaurantReference = Restaurant("Weenie Hut Juniors",3,"Bikini Bottom")
+        tempRestaurantReference = Restaurant("Weenie Hut Juniors", 3, "Bikini Bottom")
         restaurantDataList.add(tempRestaurantReference)
-        MenuListHolder().addList(tempRestaurantReference.name+tempRestaurantReference.streetAddress, getItemList())
+        MenuListHolder().addList(tempRestaurantReference.name + tempRestaurantReference.streetAddress, getItemList())
 
 
-        tempRestaurantReference = Restaurant("Super Weenie Hut Juniors",4,"MORDOR")
+        tempRestaurantReference = Restaurant("Super Weenie Hut Juniors", 4, "MORDOR")
         restaurantDataList.add(tempRestaurantReference)
-        MenuListHolder().addList(tempRestaurantReference.name+tempRestaurantReference.streetAddress, getItemList())
+        MenuListHolder().addList(tempRestaurantReference.name + tempRestaurantReference.streetAddress, getItemList())
 
 
-        tempRestaurantReference = Restaurant("Weenie Hut General",5,"Pacific Ocean")
+        tempRestaurantReference = Restaurant("Weenie Hut General", 5, "Pacific Ocean")
         restaurantDataList.add(tempRestaurantReference)
-        MenuListHolder().addList(tempRestaurantReference.name+tempRestaurantReference.streetAddress, getItemList())
+        MenuListHolder().addList(tempRestaurantReference.name + tempRestaurantReference.streetAddress, getItemList())
 
 
-        tempRestaurantReference = Restaurant("The Krusty Krab",2,"831 Bottom Feeder Lane")
+        tempRestaurantReference = Restaurant("The Krusty Krab", 2, "831 Bottom Feeder Lane")
         restaurantDataList.add(tempRestaurantReference)
-        MenuListHolder().addList(tempRestaurantReference.name+tempRestaurantReference.streetAddress, getItemList())
+        MenuListHolder().addList(tempRestaurantReference.name + tempRestaurantReference.streetAddress, getItemList())
 
 
-        tempRestaurantReference = Restaurant("The Chum Bucket",1,"832 Bottom Feeder Lane")
+        tempRestaurantReference = Restaurant("The Chum Bucket", 1, "832 Bottom Feeder Lane")
         restaurantDataList.add(tempRestaurantReference)
-        MenuListHolder().addList(tempRestaurantReference.name+tempRestaurantReference.streetAddress, getItemList())
+        MenuListHolder().addList(tempRestaurantReference.name + tempRestaurantReference.streetAddress, getItemList())
 
         //this will not return anything
     }
 
     //fake function for sample item data
-    fun getItemList() : ArrayList<RestaurantMenuItem> {
-        val restaurantMenuItemList : ArrayList<RestaurantMenuItem> = ArrayList()
+    fun getItemList(): ArrayList<RestaurantMenuItem> {
+        val restaurantMenuItemList: ArrayList<RestaurantMenuItem> = ArrayList()
 
-        restaurantMenuItemList.add(RestaurantMenuItem("Cupcake","5.00","hyperbolic space cupcake of time"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Hamburger","6.00","hyperbolic space Hamburger of timex2"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Heart","7.00","hyperbolic space Heart of timex4"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Cupcake","8.00","hyperbolic space Cupcake of timex6"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Hamburger","9.00","hyperbolic space Hamburger of timex8"))
-        restaurantMenuItemList.add(RestaurantMenuItem("Heart","10.00","hyperbolic space Heart of timex10"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Cupcake", "5.00", "hyperbolic space cupcake of time"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Hamburger", "6.00", "hyperbolic space Hamburger of timex2"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Heart", "7.00", "hyperbolic space Heart of timex4"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Cupcake", "8.00", "hyperbolic space Cupcake of timex6"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Hamburger", "9.00", "hyperbolic space Hamburger of timex8"))
+        restaurantMenuItemList.add(RestaurantMenuItem("Heart", "10.00", "hyperbolic space Heart of timex10"))
         return restaurantMenuItemList
     }
 

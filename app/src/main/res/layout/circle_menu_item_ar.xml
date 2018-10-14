@@ -9,11 +9,11 @@
 
     <com.joooonho.SelectableRoundedImageView
         android:id="@+id/circle_image"
-        android:src="@drawable/noni_icon"
         android:layout_width="86dp"
         android:layout_height="86dp"
         android:layout_gravity="center"
         android:scaleType="centerCrop"
+        android:src="@drawable/noni_icon"
         app:sriv_border_color="@android:color/white"
         app:sriv_border_width="2dp"
         app:sriv_oval="true" />
@@ -21,18 +21,18 @@
 
     <TextView
         android:id="@+id/circle_text"
+        android:layout_width="86dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginTop="2dp"
+        android:gravity="center"
+        android:maxLines="2"
         android:shadowColor="#7F000000"
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="4"
-        android:textStyle="bold"
-        android:layout_width="86dp"
-        android:gravity="center"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:maxLines="2"
         android:textColor="@android:color/white"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:textStyle="bold" />
 
 </LinearLayout>

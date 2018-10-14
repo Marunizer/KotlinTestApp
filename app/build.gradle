@@ -65,7 +65,6 @@ sceneform.asset('sampledata/Heart.obj',
         'sampledata/Heart.sfa',
         'src/main/assets/Heart')
 
-
 sceneform.asset('sampledata/Hamburger.obj',
         'default',
         'sampledata/Hamburger.sfa',

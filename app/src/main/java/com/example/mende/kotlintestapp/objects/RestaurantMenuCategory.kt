@@ -13,11 +13,9 @@ package com.example.mende.kotlintestapp.objects
  *  - using val within a real time database
  */
 
+//TODO Currently unused, category purposes, might need to delete later
 data class RestaurantMenuCategory(
         val categoryName: String,
         val iconPath: String,      // name of string will match up with icon image to be downloaded in storage.
         val listOfItems : ArrayList<String> //TODO: Find out if we need to remove this, or keep (Should only hold names)
 )
-{
-
-}

@@ -22,11 +22,11 @@
             android:id="@+id/restaurant_image"
             android:layout_width="match_parent"
             android:layout_height="250dp"
-            android:layout_marginTop="4dp"
             android:layout_alignParentTop="true"
-            android:scaleType="centerCrop"
+            android:layout_marginTop="4dp"
             android:background="@color/noni_theme"
-            android:src="@drawable/noni_splash"/>
+            android:scaleType="centerCrop"
+            android:src="@drawable/noni_splash" />
 
         <LinearLayout
 
@@ -62,11 +62,11 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="2dp"
             android:id="@+id/bottom_card_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/top_card_row"
+            android:layout_marginTop="2dp"
             android:orientation="horizontal">
 
             <RelativeLayout
@@ -90,13 +90,13 @@
                     android:textSize="18sp" />
             </RelativeLayout>
         </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginStart="24dp"
-            android:background="@color/app_bar_theme"
             android:layout_below="@id/bottom_card_row"
-            />
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="6dp"
+            android:background="@color/app_bar_theme" />
     </RelativeLayout>
 </android.support.v7.widget.CardView>

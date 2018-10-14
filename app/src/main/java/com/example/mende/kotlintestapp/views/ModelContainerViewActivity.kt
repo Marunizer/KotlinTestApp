@@ -31,6 +31,9 @@ import kotlinx.android.synthetic.main.activity_model_container.*
  *  #2 https://medium.com/thoughts-overflow/how-to-add-a-fragment-in-kotlin-way-73203c5a450b
  *          - for lambda expression on changing fragment, not yet used
  *
+ *          TODO: Possibly could just have ContainerActivity also act as the container for the AR Activity,
+ *          would have to redistribute functionality in separate classes to keep things clean
+ *
  * -------------------------------------------------------------------------------------------------
  * CONCERNS:
  * - not using AppCompacActivity, instead using FragmentActivity, should be fine
@@ -43,22 +46,22 @@ import kotlinx.android.synthetic.main.activity_model_container.*
  * */
 
 
-class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.AdapterCallback, CategoryPickerAdapter.AdapterCallbackCategory {
- //eventually try to have deeper levels of control, but for now one folder for all works
+class ModelContainerViewActivity : FragmentActivity() {//, MyCircleAdapter.AdapterCallback, CategoryPickerAdapter.AdapterCallbackCategory {
+    //eventually try to have deeper levels of control, but for now one folder for all works
 
 
 //    private var storageFile: File? = null
 //private var externalFile:File? = null
 
-    private lateinit var currentFragment : Fragment
+    private lateinit var currentFragment: Fragment
     private lateinit var mAdapter: ItemCircleViewAdapter
     private lateinit var mHandler: Handler
     private val TAG = ModelContainerViewActivity::class.java.simpleName
     private var testData: ArrayList<ItemCircle?> = ArrayList()
-    private lateinit var restaurantKey : String
-    private  var currentIndex : Long = 112
+    private lateinit var restaurantKey: String
+    private var currentIndex: Long = 112
 
-    lateinit var currentSelectedItem : RestaurantMenuItem
+    lateinit var currentSelectedItem: RestaurantMenuItem
 
     //Consider doing this in a service instead since it is a task of decoding a file
 //    external fun stringFromJNI(dracoFile: String, objFile: String)
@@ -73,18 +76,16 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
 
         restaurantKey = intent.getStringExtra("card_key")
 
-
-
         addTestData(getItemList())
 
         // Initialize the handler instance
         mHandler = Handler()
 
         setUpGUI()
-}
+    }
 
     @SuppressLint("SetTextI18n")
-    fun setUpGUI(){
+    fun setUpGUI() {
 
         title_text.text = currentSelectedItem.name
         item_cost.text = "$${currentSelectedItem.cost}"
@@ -93,20 +94,20 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
         circle_item_recycler_view.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         switch_button.text = "Magic " + EmojiObjects.CAMERA
-        switch_button.setOnClickListener { onMagicClick()}
+        switch_button.setOnClickListener { onMagicClick() }
         order_button.text = "Order Now"
 
 
         // Access the RecyclerView Adapter and load the data into it
         mAdapter = ItemCircleViewAdapter(circle_item_recycler_view, this, testData, false)
-            { itemCircle : ItemCircle?-> onCircleClick(itemCircle) }
+        { itemCircle: ItemCircle? -> onCircleClick(itemCircle) }
         circle_item_recycler_view.adapter = mAdapter
 
 
         setFragmentView()
     }
 
-    private fun onCircleClick(circleView : ItemCircle?) {
+    private fun onCircleClick(circleView: ItemCircle?) {
 
         Log.d(TAG, "CLICKED: circleView = text: ${circleView?.restaurantMenuItem?.name}")
         title_text.text = circleView?.restaurantMenuItem?.name
@@ -115,15 +116,15 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
         onChangeModel(circleView?.restaurantMenuItem)
     }
 
-    private fun onChangeModel(restaurantMenuItem : RestaurantMenuItem?) {
+    private fun onChangeModel(restaurantMenuItem: RestaurantMenuItem?) {
         (currentFragment as ModelSceneViewFragment).passData(restaurantMenuItem)
         currentSelectedItem = restaurantMenuItem!!
     }
 
     private fun onMagicClick() {
         val i = Intent(this@ModelContainerViewActivity, ModelARViewActivity::class.java)
-        i.putExtra("card_key",restaurantKey)
-        i.putExtra("current_index", currentIndex )
+        i.putExtra("card_key", restaurantKey)
+        i.putExtra("current_index", currentIndex)
         startActivity(i)
         finish()
     }
@@ -152,19 +153,18 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
 //    }
 
     //fake function for sample item data
-    fun getItemList() : ArrayList<RestaurantMenuItem>? {
+    fun getItemList(): ArrayList<RestaurantMenuItem>? {
         return MenuListHolder().getList(restaurantKey)
     }
 
     fun addTestData(itemList: ArrayList<RestaurantMenuItem>?) {
 
-        var id : Long = 112
+        var id: Long = 112
 
         currentSelectedItem = itemList!![0]
 
-        for(item in itemList)
-        {
-            testData.add(ItemCircle(id,item))
+        for (item in itemList) {
+            testData.add(ItemCircle(id, item))
             id++
         }
     }
@@ -186,7 +186,7 @@ class ModelContainerViewActivity: FragmentActivity(){//, MyCircleAdapter.Adapter
         }
     }
 
-    fun onBackClick(v: View){
+    fun onBackClick(v: View) {
         onBackPressed()
     }
 }

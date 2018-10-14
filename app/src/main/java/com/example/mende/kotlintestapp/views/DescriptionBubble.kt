@@ -14,17 +14,17 @@ import kotlinx.android.synthetic.main.model_description_view.view.*
  */
 
 class DescriptionBubble(context: Context, attrs: AttributeSet? = null, defStyle: Int = -1)
-  : FrameLayout(context, attrs, defStyle) {
+    : FrameLayout(context, attrs, defStyle) {
 
-  init {
-    inflate(context, R.layout.model_description_view, this)
+    init {
+        inflate(context, R.layout.model_description_view, this)
 
-    xml_btn.setOnClickListener {
-      it.isEnabled = false
-      onStartTapped?.invoke()
+        xml_btn.setOnClickListener {
+            it.isEnabled = false
+            onStartTapped?.invoke()
+        }
     }
-  }
 
-  var onStartTapped: (() -> Unit)? = null
+    var onStartTapped: (() -> Unit)? = null
 
 }

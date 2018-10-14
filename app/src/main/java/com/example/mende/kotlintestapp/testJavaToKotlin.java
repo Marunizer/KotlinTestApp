@@ -11,6 +11,7 @@ import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.ux.ArFragment;
 
+//TOOD: Delete for release, this is just here to help me manually convert Java to Kotlin
 public class testJavaToKotlin extends AppCompatActivity {
 
     static void doThis(RecyclerView recyclerView, Context app){

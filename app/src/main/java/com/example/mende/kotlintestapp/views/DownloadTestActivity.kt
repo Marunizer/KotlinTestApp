@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.example.mende.kotlintestapp.R
 
-class DownloadTestActivity: AppCompatActivity(){
+//TODO: Purpose is undecided, may remove in future, currently just here to be a sandbox activity
+class DownloadTestActivity : AppCompatActivity() {
 
     private val TAG = HomeActivity::class.java.simpleName
     private var EMPTY = ""
@@ -18,14 +19,6 @@ class DownloadTestActivity: AppCompatActivity(){
     }
 
     private fun onInit() {
-
-
-
-
-
-
-
-
 
 
     }
