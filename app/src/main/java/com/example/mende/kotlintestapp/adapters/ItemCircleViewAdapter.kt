@@ -18,7 +18,7 @@ class ItemCircleViewAdapter(recyclerView: RecyclerView,
                             internal var activity: Activity,
                             internal var items: ArrayList<ItemCircle?>,
                             val arMode: Boolean,
-                            val clickListener: (ItemCircle?) -> Unit) :
+                            val clickListener: (ItemCircle?, ItemViewHolder) -> Unit) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     init {
@@ -51,28 +51,54 @@ class ItemCircleViewAdapter(recyclerView: RecyclerView,
         if (holder is ItemViewHolder) {
             val item = items[position]
 
-            holder.bind(item, clickListener)
+            if (position == 112)
+            {
+                holder.itemImage.borderColor = Color.CYAN
+                holder.itemImage.setBorderWidthDP(13f)
+            }
+
+            holder.bind(item, holder, clickListener)
             holder.itemName?.text = item?.restaurantMenuItem?.name
             if (arMode)
                 holder.itemName?.setTextColor(Color.parseColor("#ffffff"))
-//            holder.itemImage.background = getItemViewType(R.drawable.abc_btn_check_material)
+
         }
     }
 
     class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(circle: ItemCircle?, clickListener: (ItemCircle?) -> Unit) {
-            itemView.setOnClickListener { clickListener(circle) }
+        fun bind(circle: ItemCircle?, lilHolder: ItemViewHolder, clickListener: (ItemCircle?, ItemViewHolder) -> Unit) {
+            itemView.setOnClickListener {
+                clickListener(circle, lilHolder)
+            }
 
         }
 
         var itemName = view.circle_text
         var itemImage = view.circle_image
-        //  var borderColor = view.ci
 
     }
 
     override fun getItemCount(): Int {
         return items.size
+    }
+
+    fun updateCircle(oldHolder : ItemViewHolder?, newHolder: ItemViewHolder) {
+
+        if (oldHolder == null)
+        {
+            newHolder.itemImage.borderColor = R.color.noni_theme
+        }
+        else
+        {
+            oldHolder.itemImage.borderColor = Color.WHITE
+            newHolder.itemImage.borderColor = Color.CYAN
+        }
+
+        oldHolder!!.itemImage.isOval =  true
+        oldHolder.itemImage.setBorderWidthDP(08f)
+        newHolder.itemImage.isOval = true
+        newHolder.itemImage.setBorderWidthDP(13f)
+
     }
 
 }

@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -83,8 +85,9 @@ class ModelARViewActivity : AppCompatActivity() {
     lateinit var transparentNode: Node
     var isTransparentNodePlaced: Boolean = false
 
-//    lateinit var itemCircle : ItemCircle
-//    var oldItemCircle : ItemCircle? = null
+    var circle: ItemCircleViewAdapter.ItemViewHolder? = null
+    var oldCircle: ItemCircleViewAdapter.ItemViewHolder? = null
+
 
     private lateinit var trackableGestureDetector: GestureDetector
 
@@ -147,7 +150,7 @@ class ModelARViewActivity : AppCompatActivity() {
         // Access the RecyclerView Adapter and load the data into it
         circle_item_ar_recycler_view.visibility = View.INVISIBLE
         mAdapter = ItemCircleViewAdapter(circle_item_ar_recycler_view, this, testData, true)
-        { itemCircle: ItemCircle? -> onCircleClick(itemCircle) }
+        { itemCircle: ItemCircle?, viewHolder: ItemCircleViewAdapter.ItemViewHolder -> onCircleClick(itemCircle, viewHolder) }
         circle_item_ar_recycler_view.adapter = mAdapter
 
     }
@@ -371,13 +374,14 @@ class ModelARViewActivity : AppCompatActivity() {
         return Point(view.width / 2, view.height / 2)
     }
 
-    private fun onCircleClick(circleView: ItemCircle?) {
+    private fun onCircleClick(circleView: ItemCircle?, viewHolder: ItemCircleViewAdapter.ItemViewHolder) {
 
-//        oldItemCircle = circleView
-//        itemCircle = circleView
-//
-//        itemCircle
+        if (circle == null)
+            circle = viewHolder
 
+        oldCircle = circle
+        circle = viewHolder
+        mAdapter.updateCircle(oldCircle, circle!!)
 
         Log.d(TAG, "CLICKED: circleView = text: ${circleView?.restaurantMenuItem?.name}")
         item_text_ar.text = circleView?.restaurantMenuItem?.name

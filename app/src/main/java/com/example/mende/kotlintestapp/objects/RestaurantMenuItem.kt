@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 //TODO:Consider extending class to node, so we can make the node model reference and build the description bubble for it here instead
 data class RestaurantMenuItem(
-        val name: String,
+        var name: String,
         val cost: String,
         val description: String
         //val path?

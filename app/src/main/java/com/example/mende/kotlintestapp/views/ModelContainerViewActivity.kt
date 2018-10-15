@@ -7,6 +7,7 @@ import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import com.example.mende.kotlintestapp.R
@@ -63,6 +64,9 @@ class ModelContainerViewActivity : FragmentActivity() {//, MyCircleAdapter.Adapt
 
     lateinit var currentSelectedItem: RestaurantMenuItem
 
+    var circle: ItemCircleViewAdapter.ItemViewHolder? = null
+    var oldCircle: ItemCircleViewAdapter.ItemViewHolder? = null
+
     //Consider doing this in a service instead since it is a task of decoding a file
 //    external fun stringFromJNI(dracoFile: String, objFile: String)
 //    static
@@ -100,14 +104,21 @@ class ModelContainerViewActivity : FragmentActivity() {//, MyCircleAdapter.Adapt
 
         // Access the RecyclerView Adapter and load the data into it
         mAdapter = ItemCircleViewAdapter(circle_item_recycler_view, this, testData, false)
-        { itemCircle: ItemCircle? -> onCircleClick(itemCircle) }
+        { itemCircle: ItemCircle?, viewHolder: ItemCircleViewAdapter.ItemViewHolder -> onCircleClick(itemCircle, viewHolder) }
         circle_item_recycler_view.adapter = mAdapter
 
 
         setFragmentView()
     }
 
-    private fun onCircleClick(circleView: ItemCircle?) {
+    private fun onCircleClick(circleView: ItemCircle?, viewHolder: ItemCircleViewAdapter.ItemViewHolder) {
+
+        if (circle == null)
+            circle = viewHolder
+
+        oldCircle = circle
+        circle = viewHolder
+        mAdapter.updateCircle(oldCircle, circle!!)
 
         Log.d(TAG, "CLICKED: circleView = text: ${circleView?.restaurantMenuItem?.name}")
         title_text.text = circleView?.restaurantMenuItem?.name
