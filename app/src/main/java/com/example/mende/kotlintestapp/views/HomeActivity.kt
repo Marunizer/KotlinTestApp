@@ -153,7 +153,8 @@ class HomeActivity : AppCompatActivity(), LoadMore {
 
         Log.d(TAG, "Card = text: ${card?.restaurant?.name}")
 
-        val i = Intent(this@HomeActivity, ModelContainerViewActivity::class.java)
+        val i = Intent(this@HomeActivity, DownloadTestActivity::class.java)
+//        val i = Intent(this@HomeActivity, ModelContainerViewActivity::class.java)
         i.putExtra("card_key", card?.restaurant?.name + card?.restaurant?.streetAddress)
         startActivity(i)
         //finish()

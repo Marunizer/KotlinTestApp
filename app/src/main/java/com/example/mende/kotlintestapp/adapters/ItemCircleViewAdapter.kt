@@ -1,9 +1,11 @@
 package com.example.mende.kotlintestapp.adapters
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Color
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,12 +53,6 @@ class ItemCircleViewAdapter(recyclerView: RecyclerView,
         if (holder is ItemViewHolder) {
             val item = items[position]
 
-            if (position == 112)
-            {
-                holder.itemImage.borderColor = Color.CYAN
-                holder.itemImage.setBorderWidthDP(13f)
-            }
-
             holder.bind(item, holder, clickListener)
             holder.itemName?.text = item?.restaurantMenuItem?.name
             if (arMode)
@@ -84,12 +80,27 @@ class ItemCircleViewAdapter(recyclerView: RecyclerView,
 
     fun updateCircle(oldHolder : ItemViewHolder?, newHolder: ItemViewHolder) {
 
+//        if (firstItem == false)
+//        {
+//            firstItem = true
+//        }
         if (oldHolder == null)
         {
-            newHolder.itemImage.borderColor = R.color.noni_theme
+            Log.d("MAGIC SPEAKER", "first item set to true")
+                    //set first item blue
+        //    newHolder.itemImage.borderColor = R.color.noni_theme
         }
         else
         {
+//            if (firstItem)
+//            {
+//                Log.d("MAGIC SPEAKER", "First item hit ")
+//                firstHolder.itemImage.borderColor = Color.WHITE
+//                firstItem = false
+//            }
+//
+//            Log.d("MAGIC SPEAKER", "norm behavior ")
+
             oldHolder.itemImage.borderColor = Color.WHITE
             newHolder.itemImage.borderColor = Color.CYAN
         }

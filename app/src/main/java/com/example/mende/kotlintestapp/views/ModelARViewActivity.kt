@@ -381,7 +381,11 @@ class ModelARViewActivity : AppCompatActivity() {
 
         oldCircle = circle
         circle = viewHolder
-        mAdapter.updateCircle(oldCircle, circle!!)
+
+        if(!firstTimeWinkyFace)
+            mAdapter.updateCircle(oldCircle, circle!!)
+        else
+            mAdapter.updateCircle(null,circle!!)
 
         Log.d(TAG, "CLICKED: circleView = text: ${circleView?.restaurantMenuItem?.name}")
         item_text_ar.text = circleView?.restaurantMenuItem?.name
