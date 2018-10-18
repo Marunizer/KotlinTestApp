@@ -55,4 +55,11 @@ class VolleySingleton constructor(context: Context) { //cache: DiskBasedCache,ne
     fun <T> addToRequestQueue(req: Request<T>) {
         requestQueue.add(req)
     }
+
+    fun <T> cancelRequest(tag: Any)
+    {
+        if (requestQueue != null) {
+            requestQueue.cancelAll(tag)
+        }
+    }
 }
