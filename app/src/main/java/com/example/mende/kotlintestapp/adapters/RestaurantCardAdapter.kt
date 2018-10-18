@@ -119,15 +119,15 @@ class RestaurantCardAdapter(recyclerView: RecyclerView,
             holder.restaurantDistance?.text = "2.0 mi. away"
             holder.restaurantEmoji?.text = item?.restaurant?.streetAddress//"emoji_area"
 
-            if (item?.restaurant?.generalCost == 5) {
+            if (item?.restaurant?.priceLevel == 5) {
                 holder.restaurantCost?.text = "$$$$$"
-            } else if (item?.restaurant?.generalCost == 4) {
+            } else if (item?.restaurant?.priceLevel == 4) {
                 holder.restaurantCost?.text = "$$$$"
-            } else if (item?.restaurant?.generalCost == 3) {
+            } else if (item?.restaurant?.priceLevel == 3) {
                 holder.restaurantCost?.text = "$$$"
-            } else if (item?.restaurant?.generalCost == 2) {
+            } else if (item?.restaurant?.priceLevel == 2) {
                 holder.restaurantCost?.text = "$$"
-            } else if (item?.restaurant?.generalCost == 1) {
+            } else if (item?.restaurant?.priceLevel == 1) {
                 holder.restaurantCost?.text = "$"
             }
 

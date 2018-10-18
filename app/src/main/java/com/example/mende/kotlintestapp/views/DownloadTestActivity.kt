@@ -4,13 +4,11 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.android.volley.Request
-import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.*
 import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.util.VolleySingleton
 import kotlinx.android.synthetic.main.testing_layout.*
-import org.json.JSONArray
 import org.json.JSONObject
 
 //TODO: Purpose is undecided, may remove in future, currently just here to be a sandbox activity
@@ -19,22 +17,6 @@ class DownloadTestActivity : AppCompatActivity() {
     private val TAG = HomeActivity::class.java.simpleName
     private var EMPTY = ""
     private lateinit var testList : ArrayList<Any>
-
-
-//    lateinit var id : String
-//    lateinit var name : String
-//    lateinit var subtitle : String
-//    lateinit var description : String
-//    lateinit var type : String
-//    lateinit var webUrl: String
-//    var priceLevel : Int = 0
-//    var longitude : Double = 0.0
-//    var latitude : Double = 0.0
-//    var isLive : Boolean = false
-//    var types : ArrayList<String> = ArrayList()
-//    var bannerImages : ArrayList<String> = ArrayList()
-//    var deliveryLinks : ArrayList<String> = ArrayList()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +31,6 @@ class DownloadTestActivity : AppCompatActivity() {
 
         // Get a RequestQueue
         val queue = VolleySingleton.getInstance(this.applicationContext).requestQueue
-
 
         // Instantiate the RequestQueue.
         val url = "https://api.noni.menu/v1/restaurants?lat="+ 28.469953+ "&lng=" + -81.341406 + "&radius=" + 5000

@@ -1,6 +1,7 @@
 package com.example.mende.kotlintestapp.objects
 
 import com.example.mende.kotlintestapp.util.MenuListHolder
+import java.io.FileDescriptor
 import java.util.ArrayList
 
 /**
@@ -19,11 +20,47 @@ import java.util.ArrayList
  *    remaking the restaurant, in which case there should be no problem.
  */
 
+//data class Restaurant(
+//        val id : String,
+//        val name: String,
+//        val phone : String,
+//        val subtitle : String,
+//        val description: String,
+//        val webURL: String,
+//        val webSite: String,
+//        val priceLevel: Int,
+//        val isLive: Boolean,
+//        val type: String,
+//        val longitude: Double,
+//        val latitude: Double,
+//        val typesList: ArrayList<String>,
+//        val bannerImagesList: ArrayList<String>,
+//        val thumbNailImagesList: ArrayList<String>,
+//        val deliveryLinks: ArrayList<String>
+//
+//        //val streetAddress: String
+//        //val listOfItems : ArrayList<RestaurantMenuItem>
+//        //val userLocation: Location,  // TODO: value should taken from sharedPref in function calling this
+////  val distanceAway: Float -
+////    val restaurantMenu: RestaurantMenu //TODO: Find out if we need multiple menu's for one restaurant, or only 1 menu per restaurant(1 for now)
+//) {
+//    //  val distanceAway: Float //to be used when finally calculating distance from user
+//
+//    //Will hold keywords that will be used for emojis, Just text for now
+//    private val emojiList = ArrayList<String>()
+//    private val key: String = id
+//
+//    init {
+//
+//        // this.distanceAway = location.distanceTo(userLocation)
+//    }
+//}
+
 data class Restaurant(
         val name: String,
         //val location: Location,
         //val coordinateKey: String,
-        val generalCost: Int, //assigns number of '$'
+        val priceLevel: Int, //assigns number of '$'
         val streetAddress: String
         //val listOfItems : ArrayList<RestaurantMenuItem>
         //val userLocation: Location,  // TODO: value should taken from sharedPref in function calling this
