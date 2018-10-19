@@ -19,7 +19,7 @@ import android.view.ScaleGestureDetector
 import com.google.ar.sceneform.*
 import android.text.method.Touch.onTouchEvent
 import android.view.MotionEvent
-import com.example.mende.kotlintestapp.util.RotationGestureDetector
+//import com.example.mende.kotlintestapp.util.RotationGestureDetector
 import android.text.method.Touch.onTouchEvent
 import com.google.ar.sceneform.math.Quaternion
 
@@ -58,11 +58,11 @@ import com.google.ar.sceneform.math.Quaternion
  *
  * */
 
-class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGestureListener {
+class ModelSceneViewFragment : Fragment(){//, RotationGestureDetector.OnRotationGestureListener {
 
-    override fun onRotation(rotationDetector: RotationGestureDetector?) {
-        rotationAngle = rotationDetector?.angle
-    }
+//    override fun onRotation(rotationDetector: RotationGestureDetector?) {
+//        rotationAngle = rotationDetector?.angle
+//    }
 
     private val TAG = ModelSceneViewFragment::class.java.simpleName
 
@@ -78,7 +78,7 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
     private lateinit var itemModelNode: Node
     private lateinit var trackableGestureDetector: GestureDetector
     private lateinit var scaleGestureDetector: ScaleGestureDetector
-    private lateinit var rotatingGestureDetector: RotationGestureDetector
+ //   private lateinit var rotatingGestureDetector: RotationGestureDetector
     private var rotationAngle: Float? = null
 
     private val scaleMin: Float = 0.0f
@@ -133,7 +133,6 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
 
         sceneView = scene_view
         scene = sceneView.scene // get current scene
-        // scene.sunlight.onDeactivate()//this way there isn't a shadow in a particular direction
         scene.addOnUpdateListener { frameTime ->
             onUpdate(frameTime)
         }
@@ -158,7 +157,7 @@ class ModelSceneViewFragment : Fragment(), RotationGestureDetector.OnRotationGes
             }
         })
 
-        rotatingGestureDetector = RotationGestureDetector(this, this.sceneView)
+       // rotatingGestureDetector = RotationGestureDetector(this, this.sceneView)
 
         this.trackableGestureDetector = GestureDetector(activity, MyGestureDetector())
 

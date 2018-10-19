@@ -117,7 +117,7 @@ class RestaurantCardAdapter(recyclerView: RecyclerView,
             holder.bind(item, clickListener)
             holder.restaurantName?.text = item?.restaurant?.name
             holder.restaurantDistance?.text = "2.0 mi. away"
-            holder.restaurantEmoji?.text = item?.restaurant?.streetAddress//"emoji_area"
+            holder.restaurantEmoji?.text = item?.restaurant?.subtitle
 
             if (item?.restaurant?.priceLevel == 5) {
                 holder.restaurantCost?.text = "$$$$$"
@@ -130,6 +130,8 @@ class RestaurantCardAdapter(recyclerView: RecyclerView,
             } else if (item?.restaurant?.priceLevel == 1) {
                 holder.restaurantCost?.text = "$"
             }
+            else
+                holder.restaurantCost?.text = "?"
 
         } else if (holder is LoadingViewHolder) {
             holder.progressBar.isIndeterminate = true

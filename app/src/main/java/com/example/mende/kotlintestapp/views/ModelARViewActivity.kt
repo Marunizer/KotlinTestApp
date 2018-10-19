@@ -4,14 +4,12 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -264,7 +262,6 @@ class ModelARViewActivity : AppCompatActivity() {
                     minimizeItem()
                 }
             }
-
             //whenever there is a transformation happening, disable rotation
             handleRotationWhileTransforming()
         }
@@ -492,7 +489,7 @@ class ModelARViewActivity : AppCompatActivity() {
                     return@exceptionally null
                 }
 
-        //TODO: If using obj, must also download sfb file, which I think is pretty big, Possible I am wrong, and we only need to download an sfb file without needing obj,mtl,jpg, in which case need to find a way to compress that
+        //TODO: If using obj, must  download sfb file, which I think is pretty big, Possible I am wrong, and we only need to download an sfb file without , find a way to compress that
         //TODO: use this if planned to download a glTf, or glb on the fly, run time, if can compress, probably best option, Draco only does OBJ and PLY? I think
 //        ModelRenderable.builder()
 //                .setSource(fragment.context, RenderableSource.builder().setSource(

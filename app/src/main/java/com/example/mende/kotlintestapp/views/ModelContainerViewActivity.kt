@@ -7,7 +7,6 @@ import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
 import com.example.mende.kotlintestapp.R
@@ -17,7 +16,6 @@ import com.example.mende.kotlintestapp.objects.EmojiObjects
 import com.example.mende.kotlintestapp.objects.RestaurantMenuItem
 import com.example.mende.kotlintestapp.util.MenuListHolder
 import kotlinx.android.synthetic.main.activity_model_container.*
-
 
 /**
  * Created by Marunizer
@@ -63,9 +61,8 @@ class ModelContainerViewActivity : FragmentActivity() {//, MyCircleAdapter.Adapt
     private var currentIndex: Long = 112
 
     lateinit var currentSelectedItem: RestaurantMenuItem
-
-    var circle: ItemCircleViewAdapter.ItemViewHolder? = null
-    var oldCircle: ItemCircleViewAdapter.ItemViewHolder? = null
+    private var circle: ItemCircleViewAdapter.ItemViewHolder? = null
+    private var oldCircle: ItemCircleViewAdapter.ItemViewHolder? = null
 
     //Consider doing this in a service instead since it is a task of decoding a file
 //    external fun stringFromJNI(dracoFile: String, objFile: String)
@@ -93,20 +90,16 @@ class ModelContainerViewActivity : FragmentActivity() {//, MyCircleAdapter.Adapt
 
         title_text.text = currentSelectedItem.name
         item_cost.text = "$${currentSelectedItem.cost}"
-//        item_description.text = "Best Burger NA"
-
         circle_item_recycler_view.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         switch_button.text = "Magic " + EmojiObjects.CAMERA
         switch_button.setOnClickListener { onMagicClick() }
         order_button.text = "Order Now"
 
-
         // Access the RecyclerView Adapter and load the data into it
         mAdapter = ItemCircleViewAdapter(circle_item_recycler_view, this, testData, false)
         { itemCircle: ItemCircle?, viewHolder: ItemCircleViewAdapter.ItemViewHolder -> onCircleClick(itemCircle, viewHolder) }
         circle_item_recycler_view.adapter = mAdapter
-
 
         setFragmentView()
     }
@@ -171,7 +164,6 @@ class ModelContainerViewActivity : FragmentActivity() {//, MyCircleAdapter.Adapt
     fun addTestData(itemList: ArrayList<RestaurantMenuItem>?) {
 
         var id: Long = 112
-
         currentSelectedItem = itemList!![0]
 
         for (item in itemList) {

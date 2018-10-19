@@ -1,6 +1,5 @@
 package com.example.mende.kotlintestapp.adapters
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Color
 import android.support.v7.widget.LinearLayoutManager
@@ -111,5 +110,4 @@ class ItemCircleViewAdapter(recyclerView: RecyclerView,
         newHolder.itemImage.setBorderWidthDP(13f)
 
     }
-
 }
