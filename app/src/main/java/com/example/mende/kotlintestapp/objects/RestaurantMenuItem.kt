@@ -27,12 +27,12 @@ data class RestaurantMenuItem(
         var name: String,
         val cost: String,
         val description: String
+        //val iconPath: String,
         //val path?
         //val drcPath: String,
         //val objPath: String,
         //val mtlPath: String,
         //val jpgPath: String,
-        //val iconPath: String,
         //val listOfCategory : ArrayList<String> //To hold the categories one item can be a part of
 ) {
     var isDownloaded: Boolean = false //This is declared and initialized

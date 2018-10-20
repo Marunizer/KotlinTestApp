@@ -6,12 +6,19 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.android.volley.toolbox.NetworkImageView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.interfaces.LoadMore
 import com.example.mende.kotlintestapp.objects.RestaurantCard
+import com.example.mende.kotlintestapp.util.VolleySingleton
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.card_restaurant.view.*
+import java.net.URI
 import java.util.ArrayList
+
+internal lateinit var cardOptions : RequestOptions
 
 internal class LoadingViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val progressBar = view.progress_bar
@@ -28,7 +35,7 @@ internal class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     var restaurantDistance = view.restaurant_distance
     var restaurantEmoji = view.restaurant_emoji
     var restaurantCost = view.restaurant_cost
-    var restaurantImage = view.restaurant_image
+    var restaurantImage = view.restaurant_image as NetworkImageView
 }
 
 class RestaurantCardAdapter(recyclerView: RecyclerView,
@@ -48,6 +55,7 @@ class RestaurantCardAdapter(recyclerView: RecyclerView,
     internal var totalItemCount: Int = 0
 
     init {
+
         val linearLayoutManager = recyclerView.layoutManager as LinearLayoutManager
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -67,6 +75,11 @@ class RestaurantCardAdapter(recyclerView: RecyclerView,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
+        cardOptions = RequestOptions()
+                .centerCrop()
+                .placeholder(R.drawable.noni_icon)
+                .error(R.drawable.noni_icon)
+
         if (viewType == VIEW_TYPE_ITEM) {
             val view = LayoutInflater.from(activity).inflate(R.layout.card_restaurant, parent, false)
             return ItemViewHolder(view)
@@ -82,6 +95,31 @@ class RestaurantCardAdapter(recyclerView: RecyclerView,
         if (holder is ItemViewHolder) {
 
             val item = items[position]
+
+            //Prep for showing the proper restaurant image from storage
+
+            //get the norm location of storage, then
+            //use restaurant variables to find location of
+           // var chosenImage : String? = ""
+//            chosenImage = item?.restaurant?.bannerImagesList?.get(0)
+//
+//            //set up for when I check for screen sizes, and deliver the image best suited
+//            item?.restaurant?.bannerImagesList?.get(1)
+//            item?.restaurant?.bannerImagesList?.get(2)
+//
+         //   val uriForRestaurantBanner : String ="" + chosenImage
+//
+//            holder.restaurantImage.setImageUrl(
+//                    uriForRestaurantBanner, VolleySingleton(activity.applicationContext).imageLoader
+//            )
+
+            //first test Volley, then try glide
+//            Glide.with(activity.applicationContext)
+//                    .load(uriForRestaurantBanner).apply(cardOptions).into(holder.restaurantImage)
+
+
+
+
             if (position == 0) {
                 val picture = pictures[0]
                 holder.restaurantImage.setImageResource(picture)
@@ -116,22 +154,26 @@ class RestaurantCardAdapter(recyclerView: RecyclerView,
             }
             holder.bind(item, clickListener)
             holder.restaurantName?.text = item?.restaurant?.name
-            holder.restaurantDistance?.text = "2.0 mi. away"
             holder.restaurantEmoji?.text = item?.restaurant?.subtitle
 
-            if (item?.restaurant?.priceLevel == 5) {
-                holder.restaurantCost?.text = "$$$$$"
-            } else if (item?.restaurant?.priceLevel == 4) {
-                holder.restaurantCost?.text = "$$$$"
-            } else if (item?.restaurant?.priceLevel == 3) {
-                holder.restaurantCost?.text = "$$$"
-            } else if (item?.restaurant?.priceLevel == 2) {
-                holder.restaurantCost?.text = "$$"
-            } else if (item?.restaurant?.priceLevel == 1) {
-                holder.restaurantCost?.text = "$"
+            holder.restaurantDistance?.text = "2.0 mi. away"
+
+//            if (item?.restaurant?.distanceAway!! < 1.0)
+//                holder.restaurantDistance.text = "less than one mi."
+//            else if (item.restaurant.distanceAway >= 1.1)
+//                holder.restaurantDistance.text = "${item.restaurant.distanceAway} mi. away"
+
+
+            when (item!!.restaurant.priceLevel) {
+                1 -> holder.restaurantCost?.text = "$"
+                2 -> holder.restaurantCost?.text = "$$"
+                3 -> holder.restaurantCost?.text = "$$$"
+                4 -> holder.restaurantCost?.text = "$$$$"
+                5 -> holder.restaurantCost?.text = "$$$$$"
+                else -> {
+                    holder.restaurantCost?.text = "?"
+                }
             }
-            else
-                holder.restaurantCost?.text = "?"
 
         } else if (holder is LoadingViewHolder) {
             holder.progressBar.isIndeterminate = true

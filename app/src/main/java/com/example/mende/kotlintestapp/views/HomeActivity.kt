@@ -84,8 +84,11 @@ class HomeActivity : AppCompatActivity(), LoadMore {
     private fun requestRestaurants() {
         // Get a RequestQueue
         val queue = VolleySingleton.getInstance(this.applicationContext).requestQueue
-
+        val userLongitude = SharedPref().read(SharedPref().LOCATION_LON, EMPTY).toFloat()
+        val userLatitude = SharedPref().read(SharedPref().LOCATION_LAT, EMPTY).toFloat()
         // Instantiate the RequestQueue.
+
+                                                              //userLongitude       userLatitude
         val url = "https://api.noni.menu/v1/restaurants?lat="+ 28.469953+ "&lng=" + -81.341406 + "&radius=" + 5000
 
         val jsonArrayRequest = JsonArrayRequest(Request.Method.GET, url, null,

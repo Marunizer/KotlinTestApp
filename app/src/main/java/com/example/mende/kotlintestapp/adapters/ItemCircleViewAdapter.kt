@@ -8,12 +8,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.android.volley.toolbox.NetworkImageView
 import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.objects.ItemCircle
 import kotlinx.android.synthetic.main.circle_menu_item.view.*
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 
 internal var lastVisibleItem: Int = 0
 internal var totalItemCount: Int = 0
+internal lateinit var circleOptions : RequestOptions
 
 class ItemCircleViewAdapter(recyclerView: RecyclerView,
                             internal var activity: Activity,
@@ -39,6 +43,10 @@ class ItemCircleViewAdapter(recyclerView: RecyclerView,
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
         lateinit var view: View
+        circleOptions = RequestOptions()
+                .centerCrop()
+                .placeholder(R.drawable.noni_icon)
+                .error(R.drawable.noni_icon)
 
         if (arMode)
             view = LayoutInflater.from(activity).inflate(R.layout.circle_menu_item_ar, parent, false)
@@ -56,6 +64,25 @@ class ItemCircleViewAdapter(recyclerView: RecyclerView,
             holder.itemName?.text = item?.restaurantMenuItem?.name
             if (arMode)
                 holder.itemName?.setTextColor(Color.parseColor("#ffffff"))
+
+            //Prep for showing the proper item image from storage
+
+            //get the norm location of storage, then
+            //use restaurant variables to find location of
+             var chosenImage : String? = ""
+           // chosenImage = item?.restaurantMenuItem?.iconPath
+
+//            val uriForCircleImage : String ="" + chosenImage
+//
+            //TO DELETE
+//            holder.restaurantImage.setImageUrl(
+//                    uriForCircleImage, VolleySingleton(activity.applicationContext).imageLoader
+//            )
+
+            // load image from the internet using Glide
+//            Glide.with(activity.applicationContext)
+//                    .load(uriForCircleImage).apply(options).into(holder.itemImage)
+
 
         }
     }

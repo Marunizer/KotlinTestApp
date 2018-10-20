@@ -38,13 +38,12 @@ data class Restaurant(
 
         //val listOfItems : ArrayList<RestaurantMenuItem>
         //val userLocation: Location,  // TODO: value should taken from sharedPref in function calling this
-//  val distanceAway: Float -
 //    val restaurantMenu: RestaurantMenu //TODO: Find out if we need multiple menu's for one restaurant, or only 1 menu per restaurant(1 for now)
 ) {
     //  val distanceAway: Float //to be used when finally calculating distance from user
-
+    var distanceAway: Double = 0.0
     init {
 
-        // this.distanceAway = location.distanceTo(userLocation)
+        // this.distanceAway = //location.distanceTo(userLocation)
     }
 }

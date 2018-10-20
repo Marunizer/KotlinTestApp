@@ -22,9 +22,15 @@ class DownloadTestActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.testing_layout)
 
-        onInit()
+        //onInit()
 
     }
+
+    private fun onDownloadInit(){
+        //TODO: Add download logic for sfb model files
+        //first must research if there is a way to compress it
+    }
+
 
     private fun onInit() {
 
