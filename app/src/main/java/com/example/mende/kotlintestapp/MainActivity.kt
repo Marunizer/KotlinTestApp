@@ -12,10 +12,10 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.ResultReceiver
 import android.provider.Settings
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import android.text.InputFilter
 import android.text.InputType
 import android.util.Log
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
     private val EMPTY = ""
 
     //We use this to update progress bar
-    //TODO: Make progress bar much cooler
+    //TODO: Make progress bar much cooler B)))
     private var addressRequested = false
     private val ADDRESS_REQUESTED_KEY = "address-request-pending"
     private val LOCATION_ADDRESS_KEY = "location-address"
@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         resultReceiver = AddressResultReceiver(Handler())
 
         progressBar = findViewById(R.id.progress_bar)
-        //progressBar.indeterminateDrawable
+        //progressBar.indeterminateDrawable //don't remember what this was for *thinking face*
 
         // Set defaults, then update using values stored in the Bundle.
         addressRequested = false
@@ -99,7 +99,6 @@ class MainActivity : AppCompatActivity() {
         SharedPref().init(applicationContext)
         MenuListHolder().init()
         checkRadius()
-
         setupPermissions()
     }
 
@@ -223,7 +222,7 @@ class MainActivity : AppCompatActivity() {
                                         }
                                     })
                         } else {
-                            explain("You need to give some mandatory permissions to continue. Do you want to go to app settings?")
+                            explain("You need to give some mandatory permissions to continue. Would you like to be directed to app settings?")
                             //proceed with logic by disabling the related features or quit the app.
                         }//permission is denied (and never ask again is  checked)
                         //shouldShowRequestPermissionRationale will return false
@@ -267,7 +266,7 @@ class MainActivity : AppCompatActivity() {
         // create dialog box
         alert = dialogBuilder.create()
         // set title for alert dialog box
-        alert.setTitle("No Location? That's Okay !")
+        alert.setTitle("No Location?? That's Okay !")
         // set the editText for alert dialog box
         alert.setView(editTextZip)
 
@@ -301,7 +300,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun explain(msg: String) {
-        val dialog = android.support.v7.app.AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
         dialog.setMessage(msg)
                 .setPositiveButton("OK") { paramDialogInterface, paramInt ->
                     startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:com.example.mende.kotlintestapp")))
@@ -317,7 +316,6 @@ class MainActivity : AppCompatActivity() {
 
     //If user has no strict radius in place, set radius to default + check if a radius is mismatched
     private fun checkRadius() {
-        //TODO: Not sure if we want this !! for turning a String into a float
         val radiusKM = SharedPref().read(SharedPref().RADIUS_KM, EMPTY)
         val radiusMiles = SharedPref().read(SharedPref().RADIUS_MILES, EMPTY)
 
@@ -396,7 +394,6 @@ class MainActivity : AppCompatActivity() {
 
             // Display the address string or an error message sent from the intent service.
             locationServiceRequest = resultData.getBoolean(LocationConstants.RESULT_DATA_KEY).toString()
-            // displayAddressOutput()
 
             // Show a toast message if an address was found.
             if (resultCode == LocationConstants.SUCCESS_RESULT) {

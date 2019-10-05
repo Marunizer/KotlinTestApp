@@ -8,13 +8,14 @@ import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.android.synthetic.main.activity_model_ar.*
 import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.adapters.ItemCircleViewAdapter
 import com.example.mende.kotlintestapp.objects.ItemCircle
@@ -30,7 +31,6 @@ import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.*
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
-import kotlinx.android.synthetic.main.activity_model_ar.*
 import kotlinx.android.synthetic.main.model_description_view.view.*
 
 /**
@@ -361,7 +361,7 @@ class ModelARViewActivity : AppCompatActivity() {
     private fun updateTracking(): Boolean {
         val frame = arFragment.arSceneView.arFrame
         val wasTracking = isTracking
-        isTracking = frame.camera.trackingState == TrackingState.TRACKING
+        isTracking = frame!!.camera.trackingState == TrackingState.TRACKING
         return isTracking != wasTracking
     }
 
@@ -402,7 +402,7 @@ class ModelARViewActivity : AppCompatActivity() {
             animatedNode.isSelected = false
             oldAnimatedNode = animatedNode
             oldAnimatedNode.isInitialized = true
-            currentAnchor = anchorNode.anchor
+            currentAnchor = anchorNode.anchor!!
             nodeAllocated = false
         }
     }

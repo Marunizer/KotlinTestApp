@@ -1,18 +1,14 @@
 package com.example.mende.kotlintestapp.views
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.util.Log
-import android.widget.TextView
 import android.widget.Toast
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonArrayRequest
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import kotlinx.android.synthetic.main.activity_home.*
 import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.adapters.RestaurantCardAdapter
 import com.example.mende.kotlintestapp.interfaces.LoadMore
@@ -24,7 +20,6 @@ import com.example.mende.kotlintestapp.util.SharedPref
 import com.example.mende.kotlintestapp.util.VolleySingleton
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.location_bar.*
-import org.json.JSONObject
 import kotlin.collections.ArrayList
 
 /**
@@ -91,87 +86,96 @@ class HomeActivity : AppCompatActivity(), LoadMore {
                                                               //userLongitude       userLatitude
         val url = "https://api.noni.menu/v1/restaurants?lat="+ 28.469953+ "&lng=" + -81.341406 + "&radius=" + 5000
 
-        val jsonArrayRequest = JsonArrayRequest(Request.Method.GET, url, null,
-                Response.Listener { response ->
-
-
-                    for ( i in 0 until response.length()) {
-
-                        val restaurant = response.get(i) as JSONObject
-
-                        val id : String = restaurant.getString("id")
-                        val name : String = restaurant.getString("name")
-                        val phone : String = restaurant.getString("phone")
-                        val subtitle : String = restaurant.getString("subtitle")
-                        val description : String = restaurant.getString("description")
-                        val webUrl: String = restaurant.getString("webUrl")
-                        val website : String = restaurant.getString("website")
-                        val priceLevel : Int = restaurant.getInt("priceLevel")
-                        val isLive : Boolean = restaurant.getBoolean("isLive")
-                        val type : String = restaurant.getJSONObject("location").getString("type")
-                        val longitude : Double = restaurant.getJSONObject("location").getJSONArray("coordinates").get(0) as Double
-                        val latitude : Double = restaurant.getJSONObject("location").getJSONArray("coordinates").get(1) as Double
-
-
-                        var types : ArrayList<String> = ArrayList()
-                        for ( j in 0 until restaurant.getJSONArray("types").length()) {
-                            types.add(restaurant.getJSONArray("types").get(j) as String)
-                        }
-
-                        var bannerImages : ArrayList<String> = ArrayList()
-                        val bannerImagesJSON = restaurant.getJSONObject("bannerImages")
-                        bannerImages.add(bannerImagesJSON.getString("at1x"))
-                        bannerImages.add(bannerImagesJSON.getString("at2x"))
-                        bannerImages.add(bannerImagesJSON.getString("at3x"))
-
-                        var thumbNailImages : ArrayList<String> = ArrayList()
-                        val thumbNailImagesJSON = restaurant.getJSONObject("thumbnailImages")
-                        thumbNailImages.add(thumbNailImagesJSON.getString("at1x"))
-                        thumbNailImages.add(thumbNailImagesJSON.getString("at2x"))
-                        thumbNailImages.add(thumbNailImagesJSON.getString("at3x"))
-
-
-                        var deliveryLinks : ArrayList<String> = ArrayList()
-                        val deliveryLinksJSON = restaurant.getJSONObject("deliveryLinks")
-                        deliveryLinks.add(deliveryLinksJSON.getString("postmates"))
-                        deliveryLinks.add(deliveryLinksJSON.getString("caviar"))
-                        deliveryLinks.add(deliveryLinksJSON.getString("uberEats"))
-                        deliveryLinks.add(deliveryLinksJSON.getString("grubHub"))
-                        deliveryLinks.add(deliveryLinksJSON.getString("eat24"))
-                        deliveryLinks.add(deliveryLinksJSON.getString("doorDash"))
-
-                        Log.d(TAG, "Response: %s".format(id))
-                        Log.d(TAG, "Response: %s".format(name))
-                        Log.d(TAG, "Response: %s".format(phone))
-                        Log.d(TAG, "Response: %s".format(subtitle))
-                        Log.d(TAG, "Response: %s".format(description))
-                        Log.d(TAG, "Response: %s".format(webUrl))
-                        Log.d(TAG, "Response: %s".format(website))
-                        Log.d(TAG, "Response: %s".format(priceLevel.toString()))
-                        Log.d(TAG, "Response: %s".format(isLive.toString()))
-                        Log.d(TAG, "Response: %s".format(type))
-                        Log.d(TAG, "Response: %s".format(longitude.toString()))
-                        Log.d(TAG, "Response: %s".format(latitude.toString()))
-                        Log.d(TAG, "Response: %s".format(types.toString()))
-                        Log.d(TAG, "Response: %s".format(bannerImages.toString()))
-                        Log.d(TAG, "Response: %s".format(thumbNailImages.toString()))
-                        Log.d(TAG, "Response: %s".format(deliveryLinks.toString()))
-
-                        val tempRestaurantReference = Restaurant(id,name,phone,subtitle,description,
-                                webUrl, website,priceLevel,isLive, type,longitude,latitude,types,
-                                bannerImages, thumbNailImages,deliveryLinks)
-                        restaurantDataList.add(tempRestaurantReference)
-                        MenuListHolder().addList(tempRestaurantReference.id, getItemList())
-                    }
-                    addTestData(restaurantDataList)
-                    addTestDataPictures()
-                    onLoadMore()
-                },
-                Response.ErrorListener { error ->
-                    Log.e(TAG, "Response: %s ERROR :( $error ")
-                }
-        )
-        VolleySingleton.getInstance(this).addToRequestQueue(jsonArrayRequest)
+//        val jsonArrayRequest = JsonArrayRequest(Request.Method.GET, url, null,
+//                Response.Listener { response ->
+//
+//
+//                    for ( i in 0 until response.length()) {
+//
+//                        val restaurant = response.get(i) as JSONObject
+//
+//                        val id : String = restaurant.getString("id")
+//                        val name : String = restaurant.getString("name")
+//                        val phone : String = restaurant.getString("phone")
+//                        val subtitle : String = restaurant.getString("subtitle")
+//                        val description : String = restaurant.getString("description")
+//                        val webUrl: String = restaurant.getString("webUrl")
+//                        val website : String = restaurant.getString("website")
+//                        val priceLevel : Int = restaurant.getInt("priceLevel")
+//                        val isLive : Boolean = restaurant.getBoolean("isLive")
+//                        val type : String = restaurant.getJSONObject("location").getString("type")
+//                        val longitude : Double = restaurant.getJSONObject("location").getJSONArray("coordinates").get(0) as Double
+//                        val latitude : Double = restaurant.getJSONObject("location").getJSONArray("coordinates").get(1) as Double
+//
+//
+//                        var types : ArrayList<String> = ArrayList()
+//                        for ( j in 0 until restaurant.getJSONArray("types").length()) {
+//                            types.add(restaurant.getJSONArray("types").get(j) as String)
+//                        }
+//
+//                        var bannerImages : ArrayList<String> = ArrayList()
+//                        val bannerImagesJSON = restaurant.getJSONObject("bannerImages")
+//                        bannerImages.add(bannerImagesJSON.getString("at1x"))
+//                        bannerImages.add(bannerImagesJSON.getString("at2x"))
+//                        bannerImages.add(bannerImagesJSON.getString("at3x"))
+//
+//                        var thumbNailImages : ArrayList<String> = ArrayList()
+//                        val thumbNailImagesJSON = restaurant.getJSONObject("thumbnailImages")
+//                        thumbNailImages.add(thumbNailImagesJSON.getString("at1x"))
+//                        thumbNailImages.add(thumbNailImagesJSON.getString("at2x"))
+//                        thumbNailImages.add(thumbNailImagesJSON.getString("at3x"))
+//
+//
+//                        var deliveryLinks : ArrayList<String> = ArrayList()
+//                        val deliveryLinksJSON = restaurant.getJSONObject("deliveryLinks")
+//                        deliveryLinks.add(deliveryLinksJSON.getString("postmates"))
+//                        deliveryLinks.add(deliveryLinksJSON.getString("caviar"))
+//                        deliveryLinks.add(deliveryLinksJSON.getString("uberEats"))
+//                        deliveryLinks.add(deliveryLinksJSON.getString("grubHub"))
+//                        deliveryLinks.add(deliveryLinksJSON.getString("eat24"))
+//                        deliveryLinks.add(deliveryLinksJSON.getString("doorDash"))
+//
+//                        Log.d(TAG, "Response: %s".format(id))
+//                        Log.d(TAG, "Response: %s".format(name))
+//                        Log.d(TAG, "Response: %s".format(phone))
+//                        Log.d(TAG, "Response: %s".format(subtitle))
+//                        Log.d(TAG, "Response: %s".format(description))
+//                        Log.d(TAG, "Response: %s".format(webUrl))
+//                        Log.d(TAG, "Response: %s".format(website))
+//                        Log.d(TAG, "Response: %s".format(priceLevel.toString()))
+//                        Log.d(TAG, "Response: %s".format(isLive.toString()))
+//                        Log.d(TAG, "Response: %s".format(type))
+//                        Log.d(TAG, "Response: %s".format(longitude.toString()))
+//                        Log.d(TAG, "Response: %s".format(latitude.toString()))
+//                        Log.d(TAG, "Response: %s".format(types.toString()))
+//                        Log.d(TAG, "Response: %s".format(bannerImages.toString()))
+//                        Log.d(TAG, "Response: %s".format(thumbNailImages.toString()))
+//                        Log.d(TAG, "Response: %s".format(deliveryLinks.toString()))
+//
+////                        val tempRestaurantReference = Restaurant(id,name,phone,subtitle,description,
+////                                webUrl, website,priceLevel,isLive, type,longitude,latitude,types,
+////                                bannerImages, thumbNailImages,deliveryLinks)
+//
+////                        restaurantDataList.add(tempRestaurantReference)
+////                        MenuListHolder().addList(tempRestaurantReference.id, getItemList())
+//                    }
+////                    addTestData(restaurantDataList)
+////                    addTestDataPictures()
+////                    onLoadMore()
+//                },
+//                Response.ErrorListener { error ->
+//                    Log.e(TAG, "Response: %s ERROR :( $error ")
+//                }
+//        )
+        val tempRestaurantReference = Restaurant("123214","isDizDaKrustyKrab","12345678910","no!DizIzPatrick","no!DizIzPatrick",
+                "ww", "34",3,true, "good",40.6782,73.9442)
+        restaurantDataList.add(tempRestaurantReference)
+        MenuListHolder().addList(tempRestaurantReference.id, getItemList())
+        addTestData(restaurantDataList)
+        addTestDataPictures()
+        onLoadMore()
+//        VolleySingleton.getInstance(this).addToRequestQueue(jsonArrayRequest)
+        VolleySingleton.getInstance(this).requestQueue
     }
 
     private fun onInit() {

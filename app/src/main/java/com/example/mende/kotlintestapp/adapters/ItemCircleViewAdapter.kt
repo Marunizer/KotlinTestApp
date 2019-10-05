@@ -2,17 +2,15 @@ package com.example.mende.kotlintestapp.adapters
 
 import android.app.Activity
 import android.graphics.Color
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.android.volley.toolbox.NetworkImageView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.objects.ItemCircle
 import kotlinx.android.synthetic.main.circle_menu_item.view.*
-import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 
 internal var lastVisibleItem: Int = 0

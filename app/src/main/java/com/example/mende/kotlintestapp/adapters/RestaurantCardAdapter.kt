@@ -1,21 +1,18 @@
 package com.example.mende.kotlintestapp.adapters
 
 import android.app.Activity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.android.volley.toolbox.NetworkImageView
-import com.bumptech.glide.Glide
+import android.widget.ImageView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.RequestOptions
 import com.example.mende.kotlintestapp.R
 import com.example.mende.kotlintestapp.interfaces.LoadMore
 import com.example.mende.kotlintestapp.objects.RestaurantCard
-import com.example.mende.kotlintestapp.util.VolleySingleton
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.card_restaurant.view.*
-import java.net.URI
 import java.util.ArrayList
 
 internal lateinit var cardOptions : RequestOptions
@@ -35,7 +32,7 @@ internal class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     var restaurantDistance = view.restaurant_distance
     var restaurantEmoji = view.restaurant_emoji
     var restaurantCost = view.restaurant_cost
-    var restaurantImage = view.restaurant_image as NetworkImageView
+    var restaurantImage = view.restaurant_image as ImageView// NetworkImageView
 }
 
 class RestaurantCardAdapter(recyclerView: RecyclerView,

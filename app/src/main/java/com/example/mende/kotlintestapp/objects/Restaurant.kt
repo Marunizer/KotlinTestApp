@@ -30,11 +30,11 @@ data class Restaurant(
         val isLive: Boolean,
         val type: String,
         val longitude: Double,
-        val latitude: Double,
-        val typesList: ArrayList<String>,
-        val bannerImagesList: ArrayList<String>,
-        val thumbNailImagesList: ArrayList<String>,
-        val deliveryLinks: ArrayList<String>
+        val latitude: Double
+//        val typesList: ArrayList<String>,
+//        val bannerImagesList: ArrayList<String>,
+//        val thumbNailImagesList: ArrayList<String>,
+//        val deliveryLinks: ArrayList<String>
 
         //val listOfItems : ArrayList<RestaurantMenuItem>
         //val userLocation: Location,  // TODO: value should taken from sharedPref in function calling this

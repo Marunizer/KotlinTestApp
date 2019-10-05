@@ -3,9 +3,6 @@ package com.example.mende.kotlintestapp.views
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
-import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.*
 import com.example.mende.kotlintestapp.R
@@ -17,10 +14,11 @@ import com.example.mende.kotlintestapp.util.AnimatedNode
 import com.example.mende.kotlintestapp.util.RotatingNode
 import android.view.ScaleGestureDetector
 import com.google.ar.sceneform.*
-import android.text.method.Touch.onTouchEvent
 import android.view.MotionEvent
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 //import com.example.mende.kotlintestapp.util.RotationGestureDetector
-import android.text.method.Touch.onTouchEvent
 import com.google.ar.sceneform.math.Quaternion
 
 

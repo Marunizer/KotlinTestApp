@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Noni 2.0</string>
-
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_model">Model View</string>
     <string name="order_now_btn">Order Now</string>
